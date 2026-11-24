@@ -728,7 +728,7 @@ header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
   .mtabs [data-t=snd]{display:none}.sim-video .mtabs [data-t=snd]{display:block}
   #p-sim[data-mt=scene] .panel>[data-g]:not([data-g=scene]),#p-sim[data-mt=expo] .panel>[data-g]:not([data-g=expo]),
   #p-sim[data-mt=snd] .panel>[data-g]:not([data-g=snd]),#p-sim[data-mt=more] .panel>[data-g]:not([data-g=more]){display:none!important}
-  .panel{gap:8px;min-width:0}.panel .ctl{padding:10px}
+  .panel{gap:8px;min-width:0;padding:10px!important;max-height:calc(100vh - 12px);max-height:calc(100dvh - 12px);overflow:auto;-webkit-overflow-scrolling:touch;position:sticky;top:calc(4px + env(safe-area-inset-top))}.panel .ctl{padding:10px}
   .seg button,.tg,.ctl .row button{min-height:38px}
   .seg button{font-size:11.5px!important;padding-inline:2px!important;white-space:normal;line-height:1.15;text-overflow:clip}
   .panel .seg,.panel .seg.s4,.panel .seg.s5,#cWB .seg{grid-template-columns:repeat(auto-fit,minmax(72px,1fr))!important}.panel .lbl{font-size:12px}
