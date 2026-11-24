@@ -706,6 +706,34 @@ header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
 .guide,.review{padding-top:env(safe-area-inset-top)}
 @media (max-width:959px){.vfblock{top:calc(50px + env(safe-area-inset-top))!important}}
 .app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+/* ===== phone held sideways: the screen beside a narrow control column, settings in a third column ===== */
+@media (orientation:landscape) and (max-height:560px){
+  header{position:static!important;padding-top:0}
+  .app{padding-top:4px;padding-bottom:8px}
+  input,select,textarea{font-size:16px!important}
+  main{grid-template-columns:auto minmax(0,1fr)!important;gap:8px;align-items:start}
+  .vf-wrap{display:contents}
+  .camsel{grid-column:1/-1}.camlbl,.vf-wrap>.tip,.panel .dup-m,.chchip{display:none!important}
+  .vfblock{position:sticky!important;top:calc(4px + env(safe-area-inset-top))!important;z-index:9;display:grid;grid-template-columns:auto 104px;column-gap:8px;row-gap:6px;align-content:start;margin:0;padding:0;background:transparent;border:0;box-shadow:none}
+  .vfblock>.vf{grid-column:1;grid-row:1/span 5;width:min(calc((100vh - 14px)*1.5),calc((100dvh - 14px)*1.5),52vw)!important;margin:0}
+  .vfblock>.shootbar,.vfblock>.distbar,.vfblock>.mtabs{grid-column:2;margin:0;padding:0}
+  .shootbar{display:flex!important;flex-direction:column;align-items:center;gap:6px}
+  .shootbar .thumbs{display:none}.shootbar .expo{order:2;width:100%;align-items:center;padding:5px 4px;font-size:11px;text-align:center}
+  .shootbar .shutter{width:58px!important;height:58px!important}.shootbar .shutter::after{width:42px!important;height:42px!important}
+  .distbar{flex-wrap:wrap;gap:4px;justify-content:center}.distbar input{display:none}
+  .distbar button{flex:1 1 40%;min-height:34px;padding:0 2px;font-size:11px}.distbar b{flex:1 1 100%;font-size:12px;order:3}
+  .mtabs{display:grid!important;grid-auto-flow:row!important;grid-template-columns:1fr 1fr;grid-auto-columns:auto!important;gap:4px}
+  .mtabs button{border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text-secondary,#9aa3b2);border-radius:8px;min-height:32px;padding:0 2px;font:inherit;font-size:11px;font-weight:600;cursor:pointer}
+  .mtabs button.on{color:var(--accent-gold,#D4AF37);border-color:var(--border-gold,#D4AF37);background:rgba(212,175,55,.1)}
+  .mtabs [data-t=snd]{display:none}.sim-video .mtabs [data-t=snd]{display:block}
+  #p-sim[data-mt=scene] .panel>[data-g]:not([data-g=scene]),#p-sim[data-mt=expo] .panel>[data-g]:not([data-g=expo]),
+  #p-sim[data-mt=snd] .panel>[data-g]:not([data-g=snd]),#p-sim[data-mt=more] .panel>[data-g]:not([data-g=more]){display:none!important}
+  .panel{gap:8px;min-width:0}.panel .ctl{padding:10px}
+  .seg button,.tg,.ctl .row button{min-height:38px}
+  .seg button{font-size:11.5px!important;padding-inline:2px!important;white-space:normal;line-height:1.15;text-overflow:clip}
+  .panel .seg,.panel .seg.s4,.panel .seg.s5,#cWB .seg{grid-template-columns:repeat(auto-fit,minmax(72px,1fr))!important}.panel .lbl{font-size:12px}
+  .toast{bottom:10px}
+}
 </style>
 </head>
 <body>
