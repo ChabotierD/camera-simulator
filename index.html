@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0f">
+<title>סימולטור צילום · משולש החשיפה</title>
+<style>
+:root{
+  --bg:#0b0c0f; --panel:#15171c; --panel2:#1c1f26; --line:#2a2e37;
+  --text:#e9ecf1; --muted:#9aa3b2; --acc:#ff8a1f; --ok:#3ddc84; --warn:#ffcc33; --bad:#ff5a5a;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Heebo,Rubik,Arial,sans-serif}
+.app{max-width:1440px;margin:0 auto;padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
+header .sub{font-size:12.5px;color:var(--muted)}
+.badge{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);white-space:nowrap}
+main{display:grid;gap:12px}
+@media (min-width:960px){main{grid-template-columns:minmax(0,1fr) 370px;align-items:start}}
+@media (max-height:520px) and (orientation:landscape){
+  main{grid-template-columns:minmax(0,1fr) 300px}
+  .panel{max-height:calc(100vh - 70px);overflow:auto}
+  header{margin-bottom:6px}
+}
+
+/* ---------- Viewfinder ---------- */
+.vf-wrap{position:relative}
+.vf{position:relative;aspect-ratio:3/2;background:#000;border-radius:12px;overflow:hidden;
+  container-type:inline-size;touch-action:manipulation;cursor:crosshair;
+  box-shadow:0 0 0 1px #000,0 10px 40px rgba(0,0,0,.5)}
+.vf canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ov{position:absolute;inset:0;pointer-events:none;direction:ltr;color:#fff;
+  font-family:"SF Pro Text",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  text-shadow:0 0 .35cqw rgba(0,0,0,.9),0 0 .1cqw #000}
+.top{position:absolute;top:2.2cqw;left:2.6cqw;right:2.6cqw;display:flex;justify-content:space-between;
+  font-size:2.5cqw;font-weight:600;letter-spacing:.05em}
+.top .l,.top .r{display:flex;gap:2.2cqw;align-items:center}
+.modebox{border:.25cqw solid #fff;border-radius:.6cqw;padding:0 .9cqw;font-size:2.7cqw;line-height:1.25}
+.batt{display:inline-flex;align-items:center;gap:.4cqw}
+.batt i{display:inline-block;width:4.4cqw;height:2.1cqw;border:.25cqw solid #fff;border-radius:.4cqw;position:relative}
+.batt i::before{content:"";position:absolute;inset:.3cqw;right:1.1cqw;background:#fff;border-radius:.1cqw}
+.batt i::after{content:"";position:absolute;right:-.75cqw;top:.5cqw;width:.4cqw;height:.8cqw;background:#fff;border-radius:0 .2cqw .2cqw 0}
+.bottom{position:absolute;left:0;right:0;bottom:0;padding:4cqw 3.2cqw 2.1cqw;
+  background:linear-gradient(transparent,rgba(0,0,0,.55));display:flex;align-items:flex-end;justify-content:space-between;
+  font-size:3.6cqw;font-weight:600;letter-spacing:.03em}
+.bottom .v{transition:color .2s}
+.bottom .v.hot{color:var(--acc)}
+.bottom .v.auto{opacity:.95}
+.meter{display:flex;flex-direction:column;align-items:center;gap:.3cqw;font-size:2cqw}
+.meter .scale{position:relative;width:30cqw;height:3cqw}
+.meter .ticks{position:absolute;left:0;right:0;bottom:0;height:1.4cqw;
+  background:
+   linear-gradient(90deg,#fff 0 .25cqw,transparent .25cqw) 0 100%/5cqw 1.4cqw repeat-x;
+  border-bottom:.22cqw solid #fff}
+.meter .nums{position:absolute;left:-1cqw;right:-1cqw;top:-2.4cqw;display:flex;justify-content:space-between;font-size:1.8cqw;opacity:.9}
+.meter .mk{position:absolute;bottom:1.6cqw;width:0;height:0;border-left:1.1cqw solid transparent;border-right:1.1cqw solid transparent;
+  border-top:1.5cqw solid var(--acc);transform:translateX(-50%);transition:left .12s}
+.meter .mm{font-size:2.3cqw;display:flex;gap:.8cqw}
+.meter.blink .mk{animation:bl .5s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.histo{position:absolute;right:3cqw;bottom:12cqw;width:19cqw;height:10cqw;background:rgba(0,0,0,.35);
+  border:.15cqw solid rgba(255,255,255,.6)}
+.histo canvas{position:static;width:100%;height:100%}
+.grid{position:absolute;inset:0;opacity:.45;
+  background:
+   linear-gradient(90deg,transparent calc(33.333% - .5px),#fff calc(33.333% - .5px),#fff calc(33.333% + .5px),transparent calc(33.333% + .5px),
+     transparent calc(66.666% - .5px),#fff calc(66.666% - .5px),#fff calc(66.666% + .5px),transparent calc(66.666% + .5px)),
+   linear-gradient(0deg,transparent calc(33.333% - .5px),#fff calc(33.333% - .5px),#fff calc(33.333% + .5px),transparent calc(33.333% + .5px),
+     transparent calc(66.666% - .5px),#fff calc(66.666% - .5px),#fff calc(66.666% + .5px),transparent calc(66.666% + .5px))}
+.af{position:absolute;width:12cqw;height:16cqw;transform:translate(-50%,-50%);transition:left .05s linear,top .05s linear}
+.af span{position:absolute;width:2.6cqw;height:2.6cqw;border:0 solid var(--ok)}
+.af span:nth-child(1){left:0;top:0;border-left-width:.35cqw;border-top-width:.35cqw}
+.af span:nth-child(2){right:0;top:0;border-right-width:.35cqw;border-top-width:.35cqw}
+.af span:nth-child(3){left:0;bottom:0;border-left-width:.35cqw;border-bottom-width:.35cqw}
+.af span:nth-child(4){right:0;bottom:0;border-right-width:.35cqw;border-bottom-width:.35cqw}
+.af.spot{width:7cqw;height:7cqw}
+.shake-warn{position:absolute;left:3cqw;top:7cqw;font-size:2.2cqw;color:var(--warn);display:none}
+.shake-warn.on{display:block}
+.blackout{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .06s}
+.blackout.on{opacity:1}
+.exposing{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;
+  gap:1cqw;font-size:3cqw;color:#fff;direction:rtl;font-family:inherit}
+.exposing.on{display:flex}
+.exposing .dot{width:2.2cqw;height:2.2cqw;border-radius:50%;background:var(--bad);animation:bl 1s steps(2) infinite}
+/* ---- skins ---- */
+.sk{display:none;position:absolute;inset:0}
+.vf[data-sk=sony] .sk[data-sk=sony],.vf[data-sk=canon] .sk[data-sk=canon],.vf[data-sk=nikon] .sk[data-sk=nikon],.vf[data-sk=lumix] .sk[data-sk=lumix]{display:block}
+.vf[data-sk=canon]{--hot:#ffffff;--af:#38e04a}
+.vf[data-sk=nikon]{--hot:#ffd21f;--af:#3ddc84}
+.vf[data-sk=lumix],.vf[data-sk=sony]{--hot:#ffd21f;--af:#3ddc84}
+.v.hot{color:var(--hot)!important}
+.af span{border-color:var(--af)}
+.vf[data-sk=lumix] .af span,.vf[data-sk=sony] .af span{border-color:#fff}
+.vf[data-sk=lumix] .af.ok span,.vf[data-sk=sony] .af.ok span{border-color:var(--af)}
+/* canon */
+.cn-top{position:absolute;top:2cqw;left:2.4cqw;right:2.4cqw;display:flex;justify-content:space-between;align-items:center}
+.cn-mode{font-size:3.6cqw;font-weight:800;letter-spacing:.02em}
+.cn-q{border:.25cqw solid #fff;border-radius:.8cqw;width:4.6cqw;height:4.6cqw;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.8cqw}
+.cn-left{position:absolute;left:2.4cqw;top:9cqw;display:flex;flex-direction:column;gap:1.4cqw;font-size:2cqw;font-weight:700}
+.cn-bar{position:absolute;left:0;right:0;bottom:0;height:8.6cqw;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.4cqw;font-size:3.1cqw;font-weight:700;font-stretch:condensed;letter-spacing:.01em}
+.cn-mode2{font-size:3.4cqw;font-weight:800;min-width:5cqw}
+.cn-meter{position:relative;width:28cqw;height:6cqw;font-size:1.6cqw}
+.cn-meter .nums{display:flex;justify-content:space-between;padding:0 .2cqw}
+.cn-meter .dots{text-align:center;white-space:nowrap;font-size:1.7cqw;letter-spacing:-.05em;margin-top:.2cqw}
+.cn-meter .mk{position:absolute;bottom:.1cqw;width:0;height:0;border-left:.9cqw solid transparent;border-right:.9cqw solid transparent;border-bottom:1.3cqw solid #fff;transform:translateX(-50%)}
+.cn-batt{display:flex;align-items:center;gap:1cqw;font-size:2.4cqw}
+/* nikon */
+.nk-top{position:absolute;top:2cqw;left:2.6cqw;right:2.6cqw;display:flex;justify-content:space-between;font-size:2.3cqw;font-weight:700;letter-spacing:.06em}
+.nk-top>div{display:flex;gap:2.2cqw;align-items:center}
+.nk-mode{background:#fff;color:#000;text-shadow:none;padding:0 .9cqw;border-radius:.3cqw;font-size:2.7cqw}
+.nk-bottom{position:absolute;left:0;right:0;bottom:0;padding:3cqw 2.6cqw 2cqw;display:flex;justify-content:space-between;align-items:flex-end;
+  font-size:3.4cqw;font-weight:700;letter-spacing:.06em;background:linear-gradient(transparent,rgba(0,0,0,.45))}
+.nk-meter{position:relative;width:26cqw;height:5cqw}
+.nk-meter .lbl{display:flex;justify-content:space-between;font-size:2cqw}
+.nk-meter .bars{position:absolute;left:0;right:0;bottom:.6cqw;height:1.2cqw;border-bottom:.25cqw solid #fff;
+  background:linear-gradient(90deg,#fff 0 .22cqw,transparent .22cqw) 0 100%/4.33cqw 1.2cqw repeat-x}
+.nk-meter .mk{position:absolute;bottom:-.9cqw;width:.6cqw;height:1.4cqw;background:var(--hot);transform:translateX(-50%)}
+.nk-shots{font-size:2.6cqw}
+/* lumix */
+.lx-top{position:absolute;top:1.8cqw;left:2.4cqw;right:2.4cqw;display:flex;justify-content:space-between;font-size:2.6cqw;font-weight:800}
+.lx-top>div{display:flex;gap:1.6cqw;align-items:center}
+.lx-card{border:.25cqw solid #fff;border-radius:.4cqw .4cqw .4cqw 1.2cqw;font-size:1.5cqw;padding:.1cqw .6cqw}
+.lx-box{border:.25cqw solid #fff;border-radius:.4cqw;padding:0 .7cqw;font-size:1.8cqw;background:rgba(255,255,255,.12)}
+.lx-mid{gap:1.4cqw!important}
+.lx-wifi{font-size:1.8cqw;letter-spacing:-.1em}
+.lx-wbox{background:rgba(255,255,255,.9)!important;width:5cqw;height:2.6cqw;display:inline-block}
+.lx-circ{width:3cqw;height:3cqw;border:.25cqw solid #fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.6cqw}
+.lx-pct{font-size:1.8cqw}
+.lx-touch{position:absolute;right:13cqw;top:6.5cqw;width:6.5cqw;height:4.2cqw;font-size:2cqw}
+.vf.vf[data-sk=sony] .histo{top:12.5cqw}
+.lx-tabs{position:absolute;top:10cqw;display:flex;flex-direction:column;gap:.8cqw}
+.lx-tabs.l{left:1.6cqw}.lx-tabs.r{right:1.6cqw}
+.lx-tab{width:8cqw;height:6cqw;border:.3cqw solid #fff;border-radius:.8cqw;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;
+  font-family:inherit;font-weight:800;font-size:2.2cqw;line-height:1;color:#fff;overflow:hidden;text-shadow:inherit;padding:0}
+button.lx-tab{pointer-events:auto;cursor:pointer}
+.lx-tab small{font-size:1.4cqw;line-height:1;margin-inline-end:.4cqw}.lx-tab b{font-size:3.4cqw}
+.lx-tab .rec{width:2.8cqw;height:2.8cqw;border-radius:50%;background:#e8231f;display:block}
+.lx-bottom{position:absolute;left:12cqw;right:12cqw;bottom:1.8cqw;display:grid;grid-template-columns:1.1fr 1fr 1fr 1.6fr;gap:.6cqw}
+.lx-cell{position:relative;border:.3cqw solid #fff;border-radius:.4cqw;background:rgba(0,0,0,.5);font-size:3.2cqw;font-weight:800;padding:.2cqw 1cqw;text-align:start;letter-spacing:.02em}
+.lx-ev{display:flex;gap:1cqw;align-items:center}
+.lx-evicon{border:.25cqw solid #fff;font-size:2cqw;padding:0 .4cqw}
+.lx-ev .mk{position:absolute;bottom:.4cqw;height:.5cqw;width:.5cqw;background:transparent}
+.vf[data-sk=canon] .histo,.vf[data-sk=nikon] .histo{bottom:auto;top:8cqw}
+.vf[data-sk=sony] .histo,.vf[data-sk=lumix] .histo{right:11.5cqw;bottom:auto;top:7.5cqw}
+.vf[data-sk=lumix] .shake-warn,.vf[data-sk=sony] .shake-warn{left:12cqw}
+.vf[data-sk=canon] .shake-warn{left:13cqw;top:2.6cqw}
+.guide-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:1px solid var(--line);background:linear-gradient(90deg,#1f232b,#262b35);
+  color:#fff;border-radius:12px;padding:11px 12px;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.guide-btn small{font-weight:400;color:var(--muted);font-size:12px}
+.guide{position:fixed;inset:0;background:var(--bg);z-index:25;display:none;flex-direction:column}
+.guide.on{display:flex}
+.g-head{padding:12px 14px 10px;border-bottom:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;gap:10px}
+.g-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.g-row h2{margin:0;font-size:17px}
+.g-x{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:#fff;font-size:18px;cursor:pointer}
+.g-search{width:100%;font:inherit;font-size:16px;padding:11px 12px;border-radius:11px;border:1px solid #3a404d;background:#0f1116;color:#fff;outline:none}
+.g-search:focus{border-color:var(--acc)}
+.g-cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.g-cats button{flex:none;border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:999px;padding:6px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+.g-cats button.on{color:#1b0d00;background:var(--acc);border-color:var(--acc);font-weight:700}
+.g-body{flex:1;overflow:auto;padding:12px 14px calc(24px + env(safe-area-inset-bottom))}
+.g-wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.g-note{font-size:12px;color:var(--muted);line-height:1.5}
+.g-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.g-card h4{margin:0 0 4px;font-size:15px;display:flex;justify-content:space-between;gap:8px}
+.g-card h4 span{font-size:11px;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap;align-self:center}
+.g-card p{margin:0 0 9px;font-size:13px;color:#c9d0db;line-height:1.5}
+.g-path{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.g-step{background:#232835;border:1px solid #343b4a;border-radius:8px;padding:4px 8px;line-height:1.2}
+.g-step b{display:block;font-size:13px}
+.g-step i{display:block;font-style:normal;font-size:11px;color:var(--acc);direction:ltr;text-align:right}
+.g-arr{color:var(--muted);font-size:14px}
+.g-empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+/* camera menu screen */
+.cm{position:relative;aspect-ratio:4/3;max-height:62vh;margin:0 auto;width:100%;background:#000;border-radius:14px;overflow:hidden;container-type:inline-size;
+  display:flex;direction:ltr;box-shadow:0 0 0 7px #1b1d22,0 0 0 8px #33363d,0 10px 30px rgba(0,0,0,.6);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#fff}
+@media (min-width:700px){.cm{aspect-ratio:3/2;max-width:820px}}
+.cm .tabs{display:flex;flex-direction:column;background:#111;flex:none;width:11cqw;overflow-y:auto}
+.cm .tab{flex:none;height:9.5cqw;border:0;background:transparent;color:#bbb;font:700 2.8cqw/1 inherit;font-family:inherit;cursor:pointer;position:relative;padding:0}
+.cm .tab small{display:block;font-size:1.6cqw;font-weight:400;margin-top:.6cqw;opacity:.8}
+.cm .main{flex:1;display:flex;flex-direction:column;min-width:0}
+.cm .hdr{display:flex;align-items:center;gap:1.5cqw;padding:1.4cqw 2.2cqw;border-bottom:.25cqw solid #333;min-height:8cqw}
+.cm .hdr .back{border:.25cqw solid #777;background:#1c1c1c;color:#fff;border-radius:.8cqw;font:700 2.6cqw/1 inherit;font-family:inherit;padding:.8cqw 1.4cqw;cursor:pointer}
+.cm .hdr .tt{font-size:3.4cqw;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm .hdr .th{margin-left:auto;direction:rtl;font-size:2.6cqw;color:#9aa3b2;white-space:nowrap}
+.cm .list{flex:1;overflow-y:auto;scroll-behavior:smooth}
+.cm .row{display:flex;align-items:center;gap:2cqw;min-height:9cqw;padding:.8cqw 2.4cqw;border-bottom:.15cqw solid #262626;cursor:pointer}
+.cm .row .en{font-size:3.3cqw;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm .row .he{margin-left:auto;direction:rtl;font-size:2.7cqw;color:#9aa3b2;text-align:right;line-height:1.2}
+.cm .row .ar{font-size:3cqw;color:#888;flex:none}
+.cm .row.dim .en{color:#666}
+.cm .empty{padding:4cqw;color:#777;font-size:3cqw;direction:rtl;text-align:center}
+/* Sony */
+.cm-sony .tab.on{background:#2f2f2f;color:#fff}
+.cm-sony .tab.on::before{content:"";position:absolute;left:0;top:0;bottom:0;width:.8cqw;background:#ff8a1f}
+.cm-sony .row.sel{background:#3b3b3b;box-shadow:inset 0 0 0 .4cqw #ff8a1f}
+/* Canon */
+.cm-canon{flex-direction:column}
+.cm-canon .tabs{flex-direction:row;width:auto;height:8cqw;background:#000;gap:.6cqw;padding:.8cqw 1cqw 0}
+.cm-canon .tab{flex:1;height:auto;border-radius:.8cqw .8cqw 0 0;color:#fff;font-size:2.4cqw;opacity:.45;background:var(--tc)}
+.cm-canon .tab small{display:none}
+.cm-canon .tab.on{opacity:1}
+.cm-canon .main{border-top:.6cqw solid var(--tcur,#d6322f)}
+.cm-canon .row.sel{box-shadow:inset 0 0 0 .5cqw #ff9a1f;background:#1e1e1e}
+/* Nikon */
+.cm-nikon .tabs{background:#1a1a1a}
+.cm-nikon .tab.on{background:#f5c400;color:#000}
+.cm-nikon .hdr{background:#222}
+.cm-nikon .row.sel{background:#f5c400}
+.cm-nikon .row.sel .en,.cm-nikon .row.sel .he,.cm-nikon .row.sel .ar{color:#000}
+/* Lumix */
+.cm-lumix .tabs{background:#0e2a3d}
+.cm-lumix .tab.on{background:#1f6fa8;color:#fff}
+.cm-lumix .hdr{background:#0e2a3d;border-bottom-color:#ffd21f}
+.cm-lumix .row.sel{background:#ffd21f}
+.cm-lumix .row.sel .en,.cm-lumix .row.sel .he,.cm-lumix .row.sel .ar{color:#000}
+.g-info{background:var(--panel);border:1px solid var(--acc);border-radius:12px;padding:11px 12px}
+.g-info h4{margin:0 0 4px;font-size:15.5px}
+.g-info p{margin:0 0 9px;font-size:13.5px;color:#c9d0db;line-height:1.5}
+.g-res{display:flex;flex-direction:column;gap:6px}
+.g-r{display:block;width:100%;text-align:right;border:1px solid var(--line);background:var(--panel);color:#fff;border-radius:10px;padding:9px 11px;font:inherit;cursor:pointer}
+.g-r b{font-size:14px}
+.g-r span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.g-r.on{border-color:var(--acc)}
+.gmodels{display:flex;overflow-x:auto;gap:6px;padding-bottom:2px}
+.gmodels button{flex:none;padding:8px 12px;white-space:nowrap}
+.cm .row .en em{font-style:normal;display:inline-block;min-width:5cqw;color:#ff8a1f;font-weight:700}
+.cm .row .he{font-size:2.5cqw;max-width:45%}
+.cm .pages{display:flex;align-items:center;gap:.6cqw;padding:1cqw 1.6cqw;border-bottom:.2cqw solid #333;overflow-x:auto}
+.cm .pg{flex:none;min-width:6cqw;height:6cqw;border:0;border-radius:.6cqw;background:#2a2a2a;color:#aaa;font:700 2.8cqw/1 inherit;font-family:inherit;cursor:pointer}
+.cm .pg.on{background:var(--tcur);color:#fff}
+.cm .pgname{margin-left:auto;font-size:3cqw;font-weight:700;padding:0 1cqw;white-space:nowrap}
+.g-n{color:#ffd9a8!important;margin:9px 0 0!important}
+.g-note a{color:var(--acc)}
+.g-note a.shots{display:block;margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;text-decoration:none;background:var(--panel);font-size:13.5px}
+.g-step b{direction:ltr;text-align:right}
+.g-step i{color:#9aa3b2!important;direction:rtl!important}
+.g-cap{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:15px;padding:4px 2px}
+.g-cap .stp{font-size:11.5px;background:var(--acc);color:#1b0d00;border-radius:999px;padding:2px 9px;font-weight:700;flex:none}
+.g-cap span:not(.stp){flex:1}
+.g-cap button{border:1px solid var(--acc);background:transparent;color:var(--acc);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.cm .cols{flex:1;display:flex;min-height:0}
+.cm .grps{width:38%;flex:none;overflow-y:auto;border-right:.25cqw solid #333;background:#0a0a0a}
+.cm .grp{display:flex;align-items:center;gap:1.2cqw;min-height:8.4cqw;padding:.6cqw 1.4cqw;font-size:2.7cqw;font-weight:600;color:#bbb;cursor:pointer;border-bottom:.15cqw solid #1c1c1c}
+.cm .grp em{font-style:normal;color:#888;min-width:3.4cqw;font-size:2.4cqw}
+.cm .grp span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm .grp.on{background:#3a3a3a;color:#fff}.cm .grp.on em{color:#ff8a1f}
+.cm-sony .row{min-height:8.4cqw}.cm-sony .row .en{font-size:2.9cqw}
+.cm .row .bk{margin-left:auto;font-size:2.6cqw}
+.cm .cur{outline:.6cqw solid #ffe14d!important;outline-offset:-.6cqw;background:rgba(255,225,77,.22)!important;position:relative;z-index:2;animation:curp .5s ease-in-out infinite alternate}
+.cm .tab.cur,.cm .pg.cur{color:#fff!important;opacity:1!important}
+@keyframes curp{to{background:rgba(255,225,77,.4)}}
+.cm .row.cur::after,.cm .grp.cur::after{content:"👈";position:absolute;right:1.5cqw;font-size:4cqw;animation:pt .45s ease-in-out infinite alternate}
+@keyframes pt{to{transform:translateX(-1.2cqw)}}
+.cm .row.flash{animation:fl .35s 4 alternate}
+@keyframes fl{to{background:#ff8a1f;}}
+.menu-press{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:5}
+.menu-press span{border:.5cqw solid #fff;border-radius:1.6cqw;padding:2cqw 5cqw;font-size:6cqw;font-weight:800;letter-spacing:.1em;animation:mp .5s ease-in-out infinite alternate}
+@keyframes mp{to{background:#fff;color:#000;transform:scale(.94)}}
+
+/* --- looks matched to real camera menu screenshots --- */
+.cm .tab span{display:flex;align-items:center;justify-content:center}
+.cm-sony{background:#111}
+.cm-sony .tabs{width:8.5cqw;background:#1a1a1a;padding-top:8cqw}
+.cm-sony .tab{height:7.4cqw;font-size:3cqw;color:#ddd}
+.cm-sony .tab span{width:6.4cqw;height:6.2cqw;margin:0 auto;border-radius:.5cqw}
+.cm-sony .tab.on{background:transparent}.cm-sony .tab.on::before{display:none}
+.cm-sony .tab.on span{background:var(--tc);color:#fff}
+.cm-sony .hdr{position:absolute;left:0;right:0;top:0;height:8cqw;min-height:0;border:0;background:#161616;padding:0 2.4cqw;z-index:1}
+.cm-sony .hdr .tt{font-size:3.1cqw;font-weight:500}.cm-sony .hdr .th{font-size:3.3cqw;color:#fff}
+.cm-sony .main{padding-top:8cqw;position:static}
+.cm-sony .grps{width:34%;background:#2a2a2a;border-right:0}
+.cm-sony .grp{min-height:7.4cqw;border-bottom:.2cqw solid #1a1a1a;color:#aaa;font-weight:500;font-size:2.9cqw}
+.cm-sony .grp em{background:#444;color:#ccc;min-width:4.4cqw;height:4.4cqw;display:inline-flex;align-items:center;justify-content:center;border-radius:.4cqw;font-size:2.6cqw;font-weight:700}
+.cm-sony .grp.on{background:#2a2a2a;color:#fff}.cm-sony .grp.on em{background:var(--tcur);color:#fff}
+.cm-sony .list{background:#3a3a3a;box-shadow:-1cqw 0 2cqw rgba(0,0,0,.5)}
+.cm-sony .row{min-height:7.4cqw;border-bottom:.2cqw solid #262626;padding:.4cqw 2cqw}
+.cm-sony .row .en{font-size:3.2cqw;font-weight:500}
+.cm-sony .row.sel{background:#b93a1c;box-shadow:none}
+.cm-sony .ftr{display:flex;justify-content:flex-end;align-items:center;gap:2.4cqw;height:7cqw;background:#111;padding:0 2.4cqw;font-size:2.9cqw;flex:none}
+.cm-sony .ftr .k{border:.25cqw solid #aaa;border-radius:.5cqw;padding:.3cqw 1.4cqw}.cm-sony .ftr b{font-size:2.2cqw;background:#ddd;color:#000;padding:0 .6cqw;border-radius:.3cqw}
+.cm-nikon{background:#000}
+.cm-nikon .tabs{width:10cqw;background:#2c2c2c}
+.cm-nikon .tab{height:10cqw;font-size:4cqw;color:#ddd}
+.cm-nikon .tab.on{background:#3f9a3c;color:#fff}
+.cm-nikon .hdr{background:#3a3a3a;justify-content:center;border-bottom:.5cqw solid #000;margin-left:.5cqw}
+.cm-nikon .hdr .tt{font-size:3.9cqw;font-weight:500;text-transform:uppercase;letter-spacing:.02em}.cm-nikon .hdr .th{display:none}
+.cm-nikon .hdr .back{position:absolute;left:11.5cqw}
+.cm-nikon .list{margin-left:.5cqw;background:#000}
+.cm-nikon .row{background:#3a3a3a;border-bottom:.5cqw solid #000;min-height:8.6cqw}
+.cm-nikon .row .en{font-size:3.8cqw;font-weight:500}
+.cm-nikon .row .ar{margin-left:auto;font-size:4.4cqw;color:#ddd}.cm-nikon .row .bk+.ar{margin-left:1.5cqw}
+.cm-nikon .row.sel{background:#f3e23d}
+.cm-canon{background:#000}
+.cm-canon .tabs{height:8.4cqw;padding:1.4cqw 6cqw 0;gap:0;background:#000}
+.cm-canon .tab{background:transparent;opacity:1;color:#ccc;font-size:3.4cqw;border-radius:.6cqw .6cqw 0 0}
+.cm-canon .tab.on{background:var(--tc);color:#fff}
+.cm-canon .main{border-top:0}
+.cm-canon .pages{border-bottom:.4cqw solid var(--tcur);padding:.6cqw 6cqw 0;gap:0}
+.cm-canon .pg{background:transparent;border-radius:0;min-width:7.4cqw;height:5.6cqw;color:#ddd;font-weight:500;font-size:3.1cqw}
+.cm-canon .pg.on{background:transparent;color:#fff;font-weight:800;box-shadow:inset 0 -.9cqw 0 var(--tcur)}
+.cm-canon .pgname{display:none}
+.cm-canon .list{padding:1.6cqw 6cqw}
+.cm-canon .row{border-bottom:.15cqw solid #333;min-height:7.4cqw;padding:.4cqw 2.4cqw}
+.cm-canon .row .en{font-size:3.5cqw;font-weight:500}
+.cm-canon .row.sel{background:transparent;box-shadow:inset 0 0 0 .5cqw var(--tcur),inset 2.2cqw 0 0 var(--tcur),inset -2.2cqw 0 0 var(--tcur)}
+mark{background:rgba(255,138,31,.35);color:inherit;border-radius:3px}
+.camsel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.camsel button{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:10px;padding:8px 2px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;line-height:1.25}
+.camsel button small{display:block;font-weight:400;font-size:10.5px;opacity:.8}
+.camsel button.on{color:#fff;border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.camlbl{font-size:12.5px;color:var(--muted);margin:-4px 0 0}
+.tip{margin-top:8px;font-size:12.5px;color:var(--muted);text-align:center}
+
+/* ---------- Panel ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:12px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel2);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;padding:8px 4px;border-radius:8px;cursor:pointer}
+.seg button.on{background:#2d323d;color:#fff;box-shadow:inset 0 0 0 1px #3a404d}
+.mode-hint{font-size:12.5px;color:var(--muted);margin-top:-4px}
+.ctl{background:var(--panel2);border-radius:12px;padding:10px 12px}
+.ctl .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl .name{font-weight:700;font-size:14.5px}
+.ctl .def{font-size:11.5px;color:var(--muted);margin-inline-start:6px;font-weight:400}
+.ctl .val{font-weight:800;font-size:17px;direction:ltr;color:var(--acc);font-variant-numeric:tabular-nums}
+.ctl.dis .val{color:#cfd5df}
+.ctl .row{display:flex;align-items:center;gap:8px;margin:6px 0 2px;direction:ltr}
+.ctl .row button{width:34px;height:34px;flex:none;border-radius:9px;border:1px solid var(--line);background:#232731;color:#fff;font-size:18px;cursor:pointer}
+.ctl.dis .row button{opacity:.35;pointer-events:none}
+.ctl .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);direction:ltr;padding:0 42px}
+.ctl .hint{font-size:12.5px;color:#c9d0db;margin-top:6px;min-height:1.3em}
+.ctl .autotag{font-size:11px;background:#2e3442;color:#cfd5df;border-radius:6px;padding:1px 6px;margin-inline-start:6px;display:none}
+.ctl.dis .autotag{display:inline}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,#3a404d,#596173)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:linear-gradient(90deg,#3a404d,#596173)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;margin-top:-9px;box-shadow:0 0 0 4px rgba(255,138,31,.35)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 4px rgba(255,138,31,.35)}
+input[type=range]:disabled{opacity:.45}
+.expo{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;background:var(--panel2);border-radius:12px;padding:10px 12px}
+.expo b{direction:ltr;display:inline-block}
+.toggles{display:flex;gap:6px;flex-wrap:wrap}
+.tg{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
+.tg.on{color:#fff;border-color:#4a5263;background:#262b35}
+.tg.on::before{content:"● ";color:var(--ok)}
+.shoot{display:flex;align-items:center;gap:12px}
+@media (max-width:959px) and (orientation:portrait){
+  .app{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+  .shoot{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(13,14,18,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+  .shoot .shutter{width:66px;height:66px}
+  .toast{bottom:110px}
+}
+.shutter{width:74px;height:74px;flex:none;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 50% 45%,#f0f0f0,#bdbdbd);
+  box-shadow:0 0 0 4px #2a2e37,0 6px 18px rgba(0,0,0,.6);cursor:pointer}
+.shutter:active{transform:scale(.95)}
+.shutter:disabled{opacity:.5}
+.thumbs{display:flex;gap:6px;overflow-x:auto;flex:1;min-height:52px;align-items:center}
+.thumbs img{height:48px;aspect-ratio:3/2;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:pointer}
+.thumbs .empty{font-size:12px;color:var(--muted)}
+.challenges h3{font-size:14px;margin:0 0 8px}
+.ch{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:9px 10px;margin-bottom:6px;cursor:pointer}
+.ch.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.ch .st{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid #4a5263;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px}
+.ch.done .st{border-color:var(--ok);background:var(--ok);color:#06210f;font-weight:900}
+.ch .t{font-weight:700;font-size:13.5px}
+.ch .d{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ---------- Review ---------- */
+.review{position:fixed;inset:0;background:rgba(5,6,8,.94);display:none;z-index:20;overflow:auto;
+  padding:14px 14px calc(20px + env(safe-area-inset-bottom))}
+.review.on{display:block}
+.rv{max-width:1100px;margin:0 auto;display:grid;gap:12px}
+@media (min-width:900px){.rv{grid-template-columns:minmax(0,1fr) 330px;align-items:start}}
+.rv img{width:100%;border-radius:10px;display:block;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.rv .info{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.rv .exif{direction:ltr;text-align:center;font-weight:700;font-size:15px;background:var(--panel2);border-radius:10px;padding:8px;margin-bottom:10px;font-variant-numeric:tabular-nums}
+.rv ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.rv li{display:flex;gap:8px;font-size:13.5px;line-height:1.45}
+.rv li .ic{flex:none;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;margin-top:1px}
+.ic.g{background:var(--ok);color:#06210f}.ic.y{background:var(--warn);color:#2a1f00}.ic.r{background:var(--bad);color:#2a0000}
+.rv .banner{border-radius:10px;padding:10px;margin-bottom:10px;font-weight:700;font-size:14px}
+.banner.win{background:rgba(61,220,132,.15);color:var(--ok);border:1px solid rgba(61,220,132,.4)}
+.banner.lose{background:rgba(255,204,51,.1);color:var(--warn);border:1px solid rgba(255,204,51,.35)}
+.rv .btns{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;text-align:center;border-radius:10px;padding:11px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:var(--panel2);color:#fff}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#1b0d00}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#232731;border:1px solid var(--line);color:#fff;
+  padding:10px 14px;border-radius:12px;font-size:13.5px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>סימולטור צילום</h1>
+      <div class="sub">שלב 1 · משולש החשיפה: צמצם, מהירות תריס ו-ISO</div>
+    </div>
+    <span class="badge">אב-טיפוס</span>
+  </header>
+
+  <main>
+    <section class="vf-wrap">
+      <div class="vf" id="vf" data-sk="sony">
+        <canvas id="cv" width="1200" height="800"></canvas>
+        <div class="ov">
+          <div class="grid" id="grid"></div>
+          <div class="af" id="af"><span></span><span></span><span></span><span></span></div>
+          <div class="shake-warn" id="shakeWarn">((•)) סכנת רעידת יד</div>
+          <div class="histo" id="histoBox"><canvas id="histo" width="128" height="64"></canvas></div>
+
+          <!-- Sony-style (touch tabs, like Daniel's photo) -->
+          <div class="sk" data-sk="sony">
+            <div class="lx-top">
+              <div><span class="lx-card">SD</span><span class="d-shots">999</span><span class="lx-box">RAW</span></div>
+              <div class="lx-mid"><span class="lx-wifi">((·))</span><span class="lx-box lx-wbox">&nbsp;&nbsp;&nbsp;</span><span class="lx-circ">E</span></div>
+              <div><span class="batt lx-batt"><i></i></span><span class="lx-pct">78%</span></div>
+            </div>
+            <span class="lx-tab lx-touch">☝︎</span>
+            <div class="lx-tabs l">
+              <button class="lx-tab lx-modetab"><small>📷</small><b class="d-mode">M</b></button>
+              <span class="lx-tab">▭</span><span class="lx-tab">[•]</span><span class="lx-tab">AWB</span><span class="lx-tab">Fn</span>
+            </div>
+            <div class="lx-tabs r">
+              <span class="lx-tab">◯</span><span class="lx-tab"><i class="rec"></i></span><span class="lx-tab">☺</span><span class="lx-tab">▤</span><span class="lx-tab">▶</span>
+            </div>
+            <div class="lx-bottom">
+              <span class="lx-cell v d-s">1/250</span>
+              <span class="lx-cell v d-a">F5.6</span>
+              <span class="lx-cell lx-ev d-meter"><span class="lx-evicon">±</span><span class="d-ev">0</span><div class="mk"></div></span>
+              <span class="lx-cell v d-i">ISO 200</span>
+            </div>
+          </div>
+
+          <!-- Canon-style -->
+          <div class="sk" data-sk="canon">
+            <div class="cn-top"><span class="cn-mode d-mode">M</span><span class="cn-q">Q</span></div>
+            <div class="cn-left"><span>ONE SHOT</span><span>AWB</span><span>L</span><span>[ ]</span></div>
+            <div class="cn-bar">
+              <span class="cn-mode2 d-mode">M</span>
+              <span class="v d-s">1/250</span>
+              <span class="v d-a">F5.6</span>
+              <div class="cn-meter d-meter">
+                <div class="nums"><span>-3</span><span>2</span><span>1</span><span>0</span><span>1</span><span>2</span><span>+3</span></div>
+                <div class="dots">· · · · : · · · · : · · · · ┃ · · · · : · · · · : · · · ·</div>
+                <div class="mk"></div>
+              </div>
+              <span class="v d-i">ISO 200</span>
+              <span class="cn-batt"><span class="batt"><i></i></span><span>[<span class="d-shots">999</span>]</span></span>
+            </div>
+          </div>
+
+          <!-- Nikon-style -->
+          <div class="sk" data-sk="nikon">
+            <div class="nk-top">
+              <div><span class="nk-mode d-mode">M</span><span>AF-S</span><span>[▪]</span><span>AUTO</span></div>
+              <div><span>FX</span><span class="batt"><i></i></span></div>
+            </div>
+            <div class="nk-bottom">
+              <span class="v d-s">1/250</span>
+              <span class="v d-a">F5.6</span>
+              <div class="nk-meter d-meter" data-rev="1">
+                <div class="lbl"><span>+</span><span>0</span><span>−</span></div>
+                <div class="bars"></div><div class="mk"></div>
+              </div>
+              <span class="v d-i">ISO 200</span>
+              <span class="nk-shots">[ <span class="d-shots">999</span> ]</span>
+            </div>
+          </div>
+
+          <!-- Lumix-style (touch tabs) -->
+          <div class="sk" data-sk="lumix">
+            <div class="lx-top">
+              <div><span class="lx-card">SD</span><span class="d-shots">999</span><span class="lx-box">RAW</span></div>
+              <div><span class="lx-box">4:3</span><span class="batt lx-batt"><i></i></span></div>
+            </div>
+            <div class="lx-tabs l">
+              <button class="lx-tab lx-modetab"><small>📷</small><b class="d-mode">M</b></button>
+              <span class="lx-tab">▭</span><span class="lx-tab">[•]</span><span class="lx-tab">AWB</span><span class="lx-tab">Fn</span>
+            </div>
+            <div class="lx-tabs r">
+              <span class="lx-tab">◯</span><span class="lx-tab"><i class="rec"></i></span><span class="lx-tab">☺</span><span class="lx-tab">▤</span><span class="lx-tab">▶</span>
+            </div>
+            <div class="lx-bottom">
+              <span class="lx-cell v d-s">1/250</span>
+              <span class="lx-cell v d-a">F5.6</span>
+              <span class="lx-cell lx-ev d-meter"><span class="lx-evicon">±</span><span class="d-ev">0</span><div class="mk"></div></span>
+              <span class="lx-cell v d-i">ISO 200</span>
+            </div>
+          </div>
+          <div class="blackout" id="blackout"></div>
+          <div class="exposing" id="exposing"><div class="dot"></div><div id="expTxt">חושף…</div></div>
+        </div>
+      </div>
+      <div class="tip">גע בתמונה כדי לבחור נקודת פוקוס: על הרץ, על הרקע או על הצמחים בקדמה</div>
+    </section>
+
+    <aside class="panel">
+      <div class="camsel" id="camsel">
+        <button data-sk="sony" class="on">Sony<small>מסך מגע</small></button>
+        <button data-sk="canon">Canon<small>סגנון</small></button>
+        <button data-sk="nikon">Nikon<small>סגנון</small></button>
+        <button data-sk="lumix">Lumix<small>מסך מגע</small></button>
+      </div>
+      <div class="camlbl" id="camlbl"></div>
+      <button class="guide-btn" id="openGuide"><span>📖 מדריך הגדרות בעברית<br><small>איפה כל דבר בתפריט: שעון, פרמוט, RAW, פוקוס…</small></span><span>‹</span></button>
+      <div class="seg" id="modes">
+        <button data-m="M" class="on">M ידני</button>
+        <button data-m="A">A צמצם</button>
+        <button data-m="S">S מהירות</button>
+      </div>
+      <div class="mode-hint" id="modeHint"></div>
+
+      <div class="ctl" id="cA">
+        <div class="hd"><div><span class="name">צמצם</span><span class="def">כמה רחב הפתח שמכניס אור</span><span class="autotag">אוטומטי</span></div><span class="val" id="tA"></span></div>
+        <div class="row"><button data-d="-1">‹</button><input type="range" id="rA" dir="ltr"><button data-d="1">›</button></div>
+        <div class="ends"><span>פתוח · f/1.4</span><span>סגור · f/22</span></div>
+        <div class="hint" id="hA"></div>
+      </div>
+
+      <div class="ctl" id="cS">
+        <div class="hd"><div><span class="name">מהירות תריס</span><span class="def">כמה זמן החיישן חשוף</span><span class="autotag">אוטומטי</span></div><span class="val" id="tS"></span></div>
+        <div class="row"><button data-d="-1">‹</button><input type="range" id="rS" dir="ltr"><button data-d="1">›</button></div>
+        <div class="ends"><span>איטי · 4"</span><span>מהיר · 1/8000</span></div>
+        <div class="hint" id="hS"></div>
+      </div>
+
+      <div class="ctl" id="cI">
+        <div class="hd"><div><span class="name">ISO</span><span class="def">כמה החיישן רגיש לאור</span></div><span class="val" id="tI"></span></div>
+        <div class="row"><button data-d="-1">‹</button><input type="range" id="rI" dir="ltr"><button data-d="1">›</button></div>
+        <div class="ends"><span>100 · נקי</span><span>51200 · רועש</span></div>
+        <div class="hint" id="hI"></div>
+      </div>
+
+      <div class="expo"><span>חשיפה לפי מד האור</span><b id="expoTxt">±0.0</b></div>
+
+      <div class="toggles">
+        <button class="tg on" id="tgGrid">רשת שלישים</button>
+        <button class="tg on" id="tgHisto">היסטוגרמה</button>
+        <button class="tg" id="tgTripod">חצובה</button>
+      </div>
+
+      <div class="shoot">
+        <button class="shutter" id="shutter" aria-label="צלם"></button>
+        <div class="thumbs" id="thumbs"><span class="empty">התמונות שתצלם יופיעו כאן</span></div>
+      </div>
+
+      <div class="challenges">
+        <h3>אתגרים</h3>
+        <div id="chList"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div class="review" id="review">
+  <div class="rv">
+    <img id="rvImg" alt="התמונה שצילמת">
+    <div class="info">
+      <div id="rvBanner"></div>
+      <div class="exif" id="rvExif"></div>
+      <ul id="rvList"></ul>
+      <div class="btns">
+        <button class="btn pri" id="rvBack">חזרה לצילום</button>
+        <button class="btn" id="rvSave">שמור תמונה</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="guide" id="guide">
+  <div class="g-head">
+    <div class="g-row"><h2>מדריך הגדרות</h2><button class="g-x" id="closeGuide" aria-label="סגור">✕</button></div>
+    <div class="camsel gmodels" id="gCams">
+      <button data-m="a7iv">Sony α7 IV</button><button data-m="fx3">Sony FX3</button><button data-m="z9">Nikon Z9</button><button data-m="z6iii">Nikon Z6 III</button><button data-m="r5">Canon R5</button><button data-m="r6">Canon R6</button><button data-m="r7">Canon R7</button>
+    </div>
+    <input class="g-search" id="gSearch" type="search" placeholder="חפש: שעון, פרמוט, RAW, זיהוי עיניים…" autocomplete="off">
+  </div>
+  <div class="g-body"><div class="g-wrap">
+    <div class="cm" id="cm"></div>
+    <div class="g-cap" id="gCap"></div>
+    <div id="gInfo"></div>
+    <div class="g-note" id="gNote"></div>
+    <div id="gList"></div>
+  </div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{
+"use strict";
+// ================= Constants =================
+const W=1200,H=800;
+const FOCAL=85;          // mm
+const SCENE_EV=12;       // late-afternoon light in a park (EV at ISO 100)
+const SUBJ_D=5000;       // runner distance, mm
+const FEET_Y=0.795*H;
+const RUN_PERIOD=4.4;    // seconds for one pass incl. off-screen
+const RUN_SPEED=1.28*W/RUN_PERIOD; // px per second on sensor
+const AP=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
+const SH=[['4"',4],['3.2"',3.2],['2.5"',2.5],['2"',2],['1.6"',1.6],['1.3"',1.3],['1"',1],['0.8"',.8],['0.6"',.6],['0.5"',.5],['0.4"',.4],['0.3"',.3],
+ ['1/4',1/4],['1/5',1/5],['1/6',1/6],['1/8',1/8],['1/10',1/10],['1/13',1/13],['1/15',1/15],['1/20',1/20],['1/25',1/25],['1/30',1/30],['1/40',1/40],
+ ['1/50',1/50],['1/60',1/60],['1/80',1/80],['1/100',1/100],['1/125',1/125],['1/160',1/160],['1/200',1/200],['1/250',1/250],['1/320',1/320],
+ ['1/400',1/400],['1/500',1/500],['1/640',1/640],['1/800',1/800],['1/1000',1/1000],['1/1250',1/1250],['1/1600',1/1600],['1/2000',1/2000],
+ ['1/2500',1/2500],['1/3200',1/3200],['1/4000',1/4000],['1/5000',1/5000],['1/6400',1/6400],['1/8000',1/8000]];
+const ISO=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800,16000,20000,25600,32000,40000,51200];
+
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+// ================= State =================
+const st={mode:'M',ai:AP.indexOf(5.6),si:SH.findIndex(s=>s[0]==='1/250'),ii:ISO.indexOf(200),
+  focusD:SUBJ_D,focusOn:'subject',focusPt:{x:.5,y:.5},grid:true,histo:true,tripod:false,
+  shots:999,challenge:0,done:{},busy:false};
+try{const s=JSON.parse(localStorage.getItem('photosim1')||'{}');if(s.done)st.done=s.done;}catch(e){}
+function saveProg(){try{localStorage.setItem('photosim1',JSON.stringify({done:st.done}));}catch(e){}}
+
+const N_=()=>AP[st.ai], T_=()=>SH[st.si][1], I_=()=>ISO[st.ii];
+function camEV(){return Math.log2(N_()*N_()/T_())-Math.log2(I_()/100);}
+function offset(){return SCENE_EV-camEV();} // + = overexposed
+function nearestIdx(arr,val,get){let b=0,bd=1e9;arr.forEach((v,i)=>{const d=Math.abs(Math.log2(get(v))-Math.log2(val));if(d<bd){bd=d;b=i;}});return b;}
+function autoSolve(){
+  const evI=SCENE_EV+Math.log2(I_()/100);
+  if(st.mode==='A'){const t=N_()*N_()/Math.pow(2,evI);st.si=nearestIdx(SH,t,s=>s[1]);}
+  if(st.mode==='S'){const n=Math.sqrt(T_()*Math.pow(2,evI));st.ai=nearestIdx(AP,n,v=>v);}
+}
+
+// ================= Optics =================
+// circle of confusion (px on our 1200px-wide "sensor" of 36mm)
+function cocPx(d){const f=FOCAL,s=st.focusD,N=N_();const c=(f*f)/(N*(s-f))*Math.abs(d-s)/d;return c/36*W;}
+
+// ================= Blur support =================
+let FILTER_OK=false;
+try{const t=mk(9,9),g=t.getContext('2d');g.filter='blur(2px)';g.fillStyle='#fff';g.fillRect(4,4,1,1);g.filter='none';
+  FILTER_OK=g.getImageData(2,4,1,1).data[3]>0;}catch(e){}
+function blurInto(src,r){
+  const out=mk(src.width,src.height),o=out.getContext('2d');
+  if(r<0.6){o.drawImage(src,0,0);return out;}
+  if(FILTER_OK){o.filter='blur('+(r*0.45).toFixed(2)+'px)';o.drawImage(src,0,0);o.filter='none';return out;}
+  const f=Math.max(1,r*0.55);const w=Math.max(1,Math.round(src.width/f)),h=Math.max(1,Math.round(src.height/f));
+  let cur=src,cw=src.width,ch=src.height;
+  while(cw/2>w){const t=mk(Math.round(cw/2),Math.round(ch/2));const tg=t.getContext('2d');tg.imageSmoothingQuality='high';tg.drawImage(cur,0,0,t.width,t.height);cur=t;cw=t.width;ch=t.height;}
+  const s=mk(w,h),sg=s.getContext('2d');sg.imageSmoothingQuality='high';sg.drawImage(cur,0,0,w,h);
+  o.imageSmoothingEnabled=true;o.imageSmoothingQuality='high';o.drawImage(s,0,0,src.width,src.height);return out;
+}
+
+// ================= Scene drawing =================
+function fadeTop(g,y0,px){ // soften top edge of a strip
+  g.save();g.globalCompositeOperation='destination-in';
+  const gr=g.createLinearGradient(0,y0,0,y0+px);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,1)');
+  g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();
+}
+function grass(g,y0,y1,n,len,seed,c1,c2,shade){
+  const r=rng(seed);
+  const gr=g.createLinearGradient(0,y0,0,y1);gr.addColorStop(0,c1);gr.addColorStop(1,c2);
+  g.fillStyle=gr;g.fillRect(0,y0,W,y1-y0);
+  g.lineCap='round';
+  for(let i=0;i<n;i++){
+    const x=r()*W,y=y0+r()*(y1-y0),l=len*(0.6+r()*0.8),a=(r()-.5)*0.7;
+    const h=95+r()*30,s=35+r()*25,lt=(shade?22:30)+r()*22;
+    g.strokeStyle=`hsl(${h},${s}%,${lt}%)`;g.lineWidth=Math.max(1,len/9)*(0.6+r()*0.8);
+    g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+Math.sin(a)*l*.5,y-l*.6,x+Math.sin(a)*l,y-l);g.stroke();
+  }
+}
+function drawBG(g){
+  // sky
+  let gr=g.createLinearGradient(0,0,0,0.62*H);
+  gr.addColorStop(0,'#7fa9d6');gr.addColorStop(.55,'#b9cfe3');gr.addColorStop(1,'#f1dcbc');
+  g.fillStyle=gr;g.fillRect(0,0,W,0.62*H);
+  // sun glow
+  gr=g.createRadialGradient(0.16*W,0.12*H,10,0.16*W,0.12*H,0.5*W);
+  gr.addColorStop(0,'rgba(255,246,220,.95)');gr.addColorStop(.25,'rgba(255,236,200,.35)');gr.addColorStop(1,'rgba(255,236,200,0)');
+  g.fillStyle=gr;g.fillRect(0,0,W,0.62*H);
+  // clouds
+  const r=rng(7);
+  for(let i=0;i<7;i++){const cx=r()*W,cy=0.06*H+r()*0.18*H;for(let j=0;j<6;j++){
+    g.fillStyle=`rgba(255,255,255,${.25+r()*.25})`;g.beginPath();g.ellipse(cx+(r()-.5)*160,cy+(r()-.5)*20,60+r()*70,14+r()*12,0,0,7);g.fill();}}
+  // skyline
+  let x=-20;
+  while(x<W){const bw=40+r()*90,bh=0.06*H+r()*0.17*H,by=0.53*H-bh;
+    const l=62+r()*10;g.fillStyle=`hsl(215,18%,${l}%)`;g.fillRect(x,by,bw,bh+5);
+    g.fillStyle=`hsla(40,60%,92%,.55)`;
+    for(let wy=by+8;wy<0.52*H;wy+=12)for(let wx=x+6;wx<x+bw-6;wx+=10)if(r()<.35)g.fillRect(wx,wy,4,5);
+    x+=bw+r()*12;}
+  // far grass
+  gr=g.createLinearGradient(0,0.5*H,0,0.63*H);gr.addColorStop(0,'#8aa865');gr.addColorStop(1,'#74974f');
+  g.fillStyle=gr;g.fillRect(0,0.5*H,W,0.13*H);
+  // trees
+  for(let tx=-40;tx<W+60;tx+=55+r()*55){
+    const base=0.535*H+r()*0.03*H,th=0.09*H+r()*0.05*H,cw=50+r()*45;
+    g.fillStyle='#4a3a2c';g.fillRect(tx-4,base-th,8,th);
+    for(let k=0;k<9;k++){const cx=tx+(r()-.5)*cw*1.2,cy=base-th-(r())*cw*.9,rr=cw*(.35+r()*.35);
+      g.fillStyle=`hsl(${100+r()*25},${30+r()*15}%,${22+r()*10}%)`;g.beginPath();g.arc(cx,cy,rr,0,7);g.fill();
+      g.fillStyle=`hsla(${80+r()*20},45%,${45+r()*10}%,.45)`;g.beginPath();g.arc(cx-rr*.35,cy-rr*.3,rr*.5,0,7);g.fill();}
+    // sun glints (become bokeh when blurred)
+    for(let k=0;k<4;k++){g.fillStyle='rgba(255,250,215,.95)';g.beginPath();g.arc(tx+(r()-.5)*cw,base-th-r()*cw*.9,2+r()*3,0,7);g.fill();}
+  }
+  // lamp posts
+  for(const lx of [0.3*W,0.68*W]){g.strokeStyle='#2c3138';g.lineWidth=5;g.beginPath();g.moveTo(lx,0.6*H);g.lineTo(lx,0.38*H);g.stroke();
+    g.fillStyle='#2c3138';g.fillRect(lx-12,0.375*H,24,10);g.fillStyle='#f6eccc';g.fillRect(lx-8,0.385*H,16,6);}
+}
+function drawBand1(g){grass(g,0.585*H,0.675*H,1600,4,11,'#7a9c54','#6c9147');fadeTop(g,0.585*H,14);}
+function drawBand2(g){
+  grass(g,0.655*H,0.735*H,1800,6,12,'#6c9147','#62893f');
+  // bench
+  const bx=0.79*W,by=0.70*H;g.fillStyle='#5b3f2a';
+  for(let i=0;i<3;i++)g.fillRect(bx,by-34+i*9,150,6);
+  g.fillRect(bx,by-4,150,7);g.fillStyle='#2b2f35';g.fillRect(bx+10,by,6,22);g.fillRect(bx+134,by,6,22);g.fillRect(bx+10,by-38,5,38);g.fillRect(bx+135,by-38,5,38);
+  fadeTop(g,0.655*H,12);
+}
+function drawPath(g){
+  grass(g,0.715*H,0.75*H,900,7,13,'#62893f','#5d8a3b');
+  const y0=0.745*H,y1=0.83*H;
+  let gr=g.createLinearGradient(0,y0,0,y1);gr.addColorStop(0,'#c9b28c');gr.addColorStop(1,'#b89c74');
+  g.fillStyle=gr;g.fillRect(0,y0,W,y1-y0);
+  const r=rng(21);
+  for(let i=0;i<5000;i++){const l=40+r()*40;g.fillStyle=`hsla(35,${20+r()*20}%,${l}%,.55)`;g.fillRect(r()*W,y0+r()*(y1-y0),1+r()*2.5,1+r()*2);}
+  g.fillStyle='rgba(80,60,40,.35)';g.fillRect(0,y0,W,3);g.fillRect(0,y1-3,W,3);
+  g.fillStyle='rgba(255,255,255,.7)';for(let x=0;x<W;x+=70)g.fillRect(x,0.788*H,38,4);
+  fadeTop(g,0.715*H,10);
+}
+function drawNear(g){
+  grass(g,0.82*H,H,2600,16,14,'#5a8838','#3f6c28',true);fadeTop(g,0.82*H,10);
+}
+function drawFG(g){
+  const r=rng(31);
+  // tall blades + flowers bottom-left and bottom-right
+  g.lineCap='round';
+  for(let i=0;i<120;i++){const left=r()<.6;const x=left? r()*0.32*W : W-r()*0.22*W;const y=H+10,l=60+r()*170,a=(r()-.5)*0.6;
+    g.strokeStyle=`hsl(${95+r()*25},${40+r()*20}%,${20+r()*18}%)`;g.lineWidth=4+r()*5;
+    g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+Math.sin(a)*l*.4,y-l*.6,x+Math.sin(a)*l,y-l);g.stroke();}
+  for(let i=0;i<16;i++){const x=r()*0.3*W,y=H-60-r()*150;
+    for(let p=0;p<6;p++){g.fillStyle=r()<.5?'#fff6e8':'#ffe066';const a=p/6*Math.PI*2;g.beginPath();g.ellipse(x+Math.cos(a)*9,y+Math.sin(a)*9,9,5,a,0,7);g.fill();}
+    g.fillStyle='#e0a100';g.beginPath();g.arc(x,y,6,0,7);g.fill();}
+  // leafy branch from top-right corner
+  g.strokeStyle='#3b2a1e';g.lineWidth=14;g.beginPath();g.moveTo(W+20,-10);g.quadraticCurveTo(0.9*W,0.12*H,0.74*W,0.17*H);g.stroke();
+  for(let i=0;i<46;i++){const u=r();const x=W+20-(W+20-0.74*W)*u+(r()-.5)*70,y=-10+0.19*H*u+(r()-.5)*70;
+    g.save();g.translate(x,y);g.rotate(r()*Math.PI*2);g.fillStyle=`hsl(${90+r()*30},${40+r()*20}%,${18+r()*22}%)`;
+    g.beginPath();g.ellipse(0,0,32,13,0,0,7);g.fill();g.restore();}
+}
+const LAYERS=[
+  {id:'bg',d:40000,draw:drawBG},
+  {id:'b1',d:15000,draw:drawBand1},
+  {id:'b2',d:8000,draw:drawBand2},
+  {id:'path',d:SUBJ_D,draw:drawPath},
+  {id:'near',d:3000,draw:drawNear},
+  {id:'fg',d:1600,draw:drawFG}
+];
+LAYERS.forEach(L=>{L.src=mk(W,H);L.draw(L.src.getContext('2d'));});
+let dirty=true;
+function rebuild(){LAYERS.forEach(L=>{const r=cocPx(L.d);L.r=r;L.img=blurInto(L.src,r);});dirty=false;}
+
+// ================= Runner =================
+const SPR=mk(320,420),SOX=160,SOY=405;
+function limb(g,x0,y0,a,len,w,col){const x1=x0+Math.sin(a)*len,y1=y0+Math.cos(a)*len;g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke();return[x1,y1];}
+function leg(g,hx,hy,p,skin,shoe){
+  const a=Math.sin(p)*0.75;const kb=0.25+1.15*Math.max(0,Math.sin(p-1.9));
+  const k=limb(g,hx,hy,a,92,25,skin);const f=limb(g,k[0],k[1],a-kb,90,20,skin);
+  g.save();g.translate(f[0],f[1]);g.rotate(-(a-kb)*0.5);g.fillStyle=shoe;g.beginPath();g.roundRect? g.roundRect(-10,-8,36,15,7):g.rect(-10,-8,36,15);g.fill();g.fillStyle='#fff';g.fillRect(-10,4,36,3);g.restore();
+}
+function arm(g,sx,sy,p,skin){const ua=-Math.sin(p)*0.85;const e=limb(g,sx,sy,ua,62,16,skin);limb(g,e[0],e[1],ua+1.55,52,14,skin);}
+function drawRunner(g,ph){
+  g.lineCap='round';g.lineJoin='round';
+  const bob=-Math.abs(Math.cos(ph))*8;
+  // shadow
+  g.fillStyle='rgba(40,25,10,.28)';g.beginPath();g.ellipse(8,0,70,9,0,0,7);g.fill();
+  g.save();g.translate(0,bob);
+  const hipY=-178;g.save();g.translate(0,hipY);g.rotate(0.13);
+  const skinF='#a46a49',skin='#c88b63';
+  arm(g,4,-104,ph+Math.PI,skinF);
+  leg(g,0,0,ph+Math.PI,skinF,'#1d5fc4');
+  // torso
+  g.fillStyle='#d8322f';g.beginPath();g.moveTo(-22,6);g.lineTo(-26,-104);g.quadraticCurveTo(0,-122,26,-104);g.lineTo(22,6);g.closePath();g.fill();
+  g.fillStyle='rgba(0,0,0,.12)';g.fillRect(-26,-104,10,110);
+  g.fillStyle='#fff';g.fillRect(-14,-70,30,24);g.fillStyle='#222';g.font='bold 16px Arial';g.textAlign='center';g.fillText('27',1,-52);
+  // shorts
+  g.fillStyle='#1f2a44';g.beginPath();g.moveTo(-24,-6);g.lineTo(24,-6);g.lineTo(28,30);g.lineTo(-28,30);g.closePath();g.fill();
+  leg(g,0,0,ph,skin,'#2b7de9');
+  // neck + head
+  g.fillStyle=skin;g.fillRect(-6,-128,13,16);
+  g.beginPath();g.arc(4,-150,25,0,7);g.fill();
+  g.fillStyle='#2a1b12';g.beginPath();g.arc(0,-156,25,Math.PI*.95,Math.PI*2.05);g.fill();g.beginPath();g.arc(-12,-146,14,0,7);g.fill();
+  g.fillStyle='#fff';g.fillRect(-21,-165,48,6);
+  g.fillStyle='#9c6243';g.beginPath();g.arc(-2,-148,5,0,7);g.fill();
+  arm(g,4,-104,ph,skin);
+  g.restore();g.restore();
+}
+function runnerX(t){const u=(t%RUN_PERIOD)/RUN_PERIOD;return -0.14*W+u*1.28*W;}
+function runnerSprite(t){
+  const g=SPR.getContext('2d');g.clearRect(0,0,SPR.width,SPR.height);g.save();g.translate(SOX,SOY);drawRunner(g,t*Math.PI*2*1.45);g.restore();
+  const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
+}
+function runnerBox(t){const x=runnerX(t);return{x0:x-70,x1:x+80,y0:FEET_Y-360,y1:FEET_Y,cx:x+5,cy:FEET_Y-230};}
+
+// ================= Compose =================
+function compose(g,t,dx,dy,zoom){
+  g.save();
+  if(zoom){g.translate(W/2,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);}
+  g.translate(dx||0,dy||0);
+  g.fillStyle='#b9cfe3';g.fillRect(-60,-60,W+120,H+120);
+  for(const L of LAYERS){g.drawImage(L.img,0,0);
+    if(L.id==='path'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(runnerSprite(t),x-SOX,FEET_Y-SOY);}}
+  g.restore();
+}
+const TMP=mk(W,H),TG=TMP.getContext('2d');
+function applyExposure(g,stops){
+  let m=Math.pow(2,stops/2.2);
+  g.save();
+  if(m<1){g.globalCompositeOperation='source-over';g.fillStyle='rgba(0,0,0,'+(1-m)+')';g.fillRect(0,0,W,H);}
+  else{
+    g.globalCompositeOperation='lighter';
+    let guard=0;
+    while(m>=2&&guard++<8){TG.clearRect(0,0,W,H);TG.drawImage(g.canvas,0,0);g.drawImage(TMP,0,0);m/=2;}
+    if(m>1.01){TG.clearRect(0,0,W,H);TG.drawImage(g.canvas,0,0);g.globalAlpha=m-1;g.drawImage(TMP,0,0);}
+  }
+  g.restore();
+}
+// noise textures
+function noiseTex(color,seed){const c=mk(256,256),g=c.getContext('2d'),d=g.createImageData(256,256),r=rng(seed);
+  for(let i=0;i<d.data.length;i+=4){const n=()=>{let s=0;for(let k=0;k<3;k++)s+=r();return (s/3-.5)*2;};
+    if(color){d.data[i]=clamp(128+n()*150,0,255);d.data[i+1]=clamp(128+n()*150,0,255);d.data[i+2]=clamp(128+n()*150,0,255);}
+    else{const v=clamp(128+n()*150,0,255);d.data[i]=d.data[i+1]=d.data[i+2]=v;}d.data[i+3]=255;}
+  g.putImageData(d,0,0);return c;}
+const NL=noiseTex(false,3),NC=noiseTex(true,5);
+const patCache=new WeakMap();
+function pats(g){let p=patCache.get(g);if(!p){p={l:g.createPattern(NL,'repeat'),c:g.createPattern(NC,'repeat')};patCache.set(g,p);}return p;}
+function applyNoise(g,iso,ox,oy){
+  const s=Math.log2(iso/100);const lum=clamp(0.03+s*0.06,0,0.62),chroma=s>3.5?clamp((s-3.5)*0.07,0,0.4):0;
+  const p=pats(g);g.save();g.globalCompositeOperation='overlay';
+  g.translate(-ox,-oy);
+  g.globalAlpha=lum;g.fillStyle=p.l;g.fillRect(0,0,W+256,H+256);
+  if(chroma>0){g.translate(ox*.37,oy*.61);g.globalAlpha=chroma;g.fillStyle=p.c;g.fillRect(-256,-256,W+512,H+512);}
+  g.restore();
+}
+
+// ================= Live view =================
+const cv=$('cv'),cx=cv.getContext('2d');
+const hc=$('histo'),hg=hc.getContext('2d');const HS=mk(120,80),HSG=HS.getContext('2d',{willReadFrequently:true});
+let t0=performance.now(),frame=0,animT=0;
+function drawHisto(){
+  HSG.drawImage(cv,0,0,120,80);const d=HSG.getImageData(0,0,120,80).data;const b=new Array(64).fill(0);
+  for(let i=0;i<d.length;i+=4){const y=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];b[Math.min(63,y>>2)]++;}
+  const mx=Math.max(...b.slice(1,63),1);hg.clearRect(0,0,128,64);hg.fillStyle='rgba(255,255,255,.85)';
+  b.forEach((v,i)=>{const h=Math.min(64,v/mx*60);hg.fillRect(i*2,64-h,2,h);});
+  if(b[63]>40){hg.fillStyle='rgba(255,90,90,.9)';hg.fillRect(124,0,4,64);}
+  if(b[0]>40){hg.fillStyle='rgba(90,140,255,.9)';hg.fillRect(0,0,4,64);}
+}
+const af=$('af');
+function placeAF(){
+  let x,y;
+  if(st.focusOn==='subject'){const b=runnerBox(animT);const inF=b.cx>0&&b.cx<W;x=inF?b.cx/W:st.focusPt.x;y=inF?b.cy/H:st.focusPt.y;if(inF)st.focusPt={x,y};af.classList.remove('spot');}
+  else{x=st.focusPt.x;y=st.focusPt.y;af.classList.add('spot');}
+  af.classList.toggle('ok',st.focusOn!=='subject'||(runnerBox(animT).cx>0&&runnerBox(animT).cx<W));
+  af.style.left=(x*100)+'%';af.style.top=(y*100)+'%';
+}
+function loop(now){
+  animT=(now-t0)/1000;
+  if(!st.busy){
+    if(dirty)rebuild();
+    compose(cx,animT);
+    applyExposure(cx,offset());
+    applyNoise(cx,I_(),(Math.random()*256)|0,(Math.random()*256)|0);
+    if(st.histo&&frame%6===0)drawHisto();
+    placeAF();frame++;
+  }
+  requestAnimationFrame(loop);
+}
+
+// ================= UI =================
+const rA=$('rA'),rS=$('rS'),rI=$('rI');
+rA.min=0;rA.max=AP.length-1;rS.min=0;rS.max=SH.length-1;rI.min=0;rI.max=ISO.length-1;
+const fmtA=n=>'f/'+n, fmtEV=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(1);
+function hintA(n){return n<=2?'פתוח מאוד: הרבה אור, רקע מטושטש מאוד':n<=4?'פתוח: רקע רך, הנושא בולט':n<=8?'בינוני: רוב התמונה חדה':'סגור: הכל חד, נכנס מעט אור';}
+function hintS(t){return t<=1/1000?'מקפיא כל תנועה, מעט מאוד אור':t<=1/250?'מקפיא תנועה של אדם רץ':t<=1/60?'תנועה מהירה תיטשטש קצת':t<=1/15?'טשטוש תנועה, צריך יד יציבה או חצובה':'חשיפה ארוכה: חצובה חובה';}
+function hintI(i){return i<=200?'איכות מקסימלית, בלי רעש':i<=800?'רעש מועט':i<=3200?'הרעש מתחיל להיראות':'רעש חזק, רק כשאין ברירה';}
+const MODEHINT={M:'ידני: אתה קובע את שלושת הערכים, ומד האור מראה אם התמונה תצא בהירה או כהה.',
+  A:'עדיפות צמצם: אתה בוחר צמצם ו-ISO, והמצלמה מתאימה את מהירות התריס.',
+  S:'עדיפות מהירות: אתה בוחר מהירות ו-ISO, והמצלמה מתאימה את הצמצם.'};
+let hotTimer;
+const HOTC={vA:'.d-a',vS:'.d-s',vI:'.d-i'};
+function hot(id){document.querySelectorAll('.v.hot').forEach(e=>e.classList.remove('hot'));document.querySelectorAll(HOTC[id]).forEach(e=>e.classList.add('hot'));
+  clearTimeout(hotTimer);hotTimer=setTimeout(()=>document.querySelectorAll('.v.hot').forEach(e=>e.classList.remove('hot')),1400);}
+const setAll=(sel,txt)=>document.querySelectorAll(sel).forEach(e=>e.textContent=txt);
+const SKINS={sony:{modes:{M:'M',A:'A',S:'S'},ap:n=>'F'+(Number.isInteger(n)?n.toFixed(1):n),lbl:'מסך מגע כמו בתמונה ששלחת. נגיעה בלשונית M מחליפה מצב'},
+  canon:{modes:{M:'M',A:'Av',S:'Tv'},ap:n=>'F'+n,lbl:'מסך בסגנון Canon EOS R. אצלם A נקרא Av ו-S נקרא Tv'},
+  nikon:{modes:{M:'M',A:'A',S:'S'},ap:n=>'F'+n,lbl:'מסך בסגנון Nikon Z. שים לב: במד האור של ניקון הפלוס משמאל'},
+  lumix:{modes:{M:'M',A:'A',S:'S'},ap:n=>'F'+(Number.isInteger(n)?n.toFixed(1):n),lbl:'מסך מגע בסגנון Panasonic Lumix, כמו בתמונה ששלחת. נגיעה בלשונית M מחליפה מצב'}};
+st.skin='sony';try{const k=localStorage.getItem('photosimSkin');if(SKINS[k])st.skin=k;}catch(e){}
+function setSkin(k){st.skin=k;$('vf').dataset.sk=k;try{localStorage.setItem('photosimSkin',k);}catch(e){}
+  document.querySelectorAll('#camsel button').forEach(b=>b.classList.toggle('on',b.dataset.sk===k));$('camlbl').textContent=SKINS[k].lbl;updateUI();}
+function updateUI(){
+  autoSolve();
+  rA.value=st.ai;rS.value=st.si;rI.value=st.ii;
+  rA.disabled=st.mode==='S';rS.disabled=st.mode==='A';
+  $('cA').classList.toggle('dis',st.mode==='S');$('cS').classList.toggle('dis',st.mode==='A');
+  $('tA').textContent=fmtA(N_());$('tS').textContent=SH[st.si][0];$('tI').textContent=I_();
+  $('hA').textContent=hintA(N_());$('hS').textContent=hintS(T_());$('hI').textContent=hintI(I_());
+  const SK=SKINS[st.skin||'sony'];
+  setAll('.d-a',SK.ap(N_()));setAll('.d-s',SH[st.si][0]);setAll('.d-i','ISO '+I_());setAll('.d-mode',SK.modes[st.mode]);
+  const o=offset();const oc=Math.round(o*3)/3;
+  document.querySelectorAll('.d-meter').forEach(m=>{const dir=m.dataset.rev?-1:1;const mk=m.querySelector('.mk');
+    if(mk)mk.style.left=(50+dir*clamp(oc,-3,3)/3*50)+'%';m.classList.toggle('blink',Math.abs(o)>3.05||(st.mode!=='M'&&Math.abs(o)>0.5));});
+  setAll('.d-mmlbl',st.mode==='M'?'M.M.':'');
+  setAll('.d-ev',Math.abs(oc)<0.05?'±0.0':fmtEV(oc));
+  const ex=$('expoTxt');const ao=Math.abs(oc);
+  ex.textContent=(Math.abs(oc)<0.05?'±0.0':fmtEV(oc))+'  ·  '+(ao<=0.34?'מדויקת':oc>0?(ao<=1?'בהירה מעט':'בהירה מדי'):(ao<=1?'כהה מעט':'כהה מדי'));
+  ex.style.color=ao<=0.34?'var(--ok)':ao<=1?'var(--warn)':'var(--bad)';
+  $('modeHint').textContent=MODEHINT[st.mode];
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===st.mode));
+  $('shakeWarn').classList.toggle('on',!st.tripod&&T_()>1/FOCAL*1.01);
+  setAll('.d-shots',st.shots);
+}
+function setIdx(key,v,hotId){const max={ai:AP.length-1,si:SH.length-1,ii:ISO.length-1}[key];const nv=clamp(v,0,max);if(nv===st[key])return;
+  st[key]=nv;if(key==='ai')dirty=true;hot(hotId);updateUI();if(key!=='ai'&&st.mode==='S')dirty=true;}
+rA.addEventListener('input',()=>setIdx('ai',+rA.value,'vA'));
+rS.addEventListener('input',()=>setIdx('si',+rS.value,'vS'));
+rI.addEventListener('input',()=>setIdx('ii',+rI.value,'vI'));
+[['cA','ai','vA'],['cS','si','vS'],['cI','ii','vI']].forEach(([c,k,h])=>{
+  $(c).querySelectorAll('.row button').forEach(b=>b.addEventListener('click',()=>{setIdx(k,st[k]+(+b.dataset.d),h);if(st.mode==='S')dirty=true;}));});
+document.querySelectorAll('#modes button').forEach(b=>b.addEventListener('click',()=>{st.mode=b.dataset.m;updateUI();dirty=true;}));
+function tgl(id,key,cb){const el=$(id);el.addEventListener('click',()=>{st[key]=!st[key];el.classList.toggle('on',st[key]);cb&&cb();updateUI();});}
+tgl('tgGrid','grid',()=>$('grid').style.display=st.grid?'':'none');
+tgl('tgHisto','histo',()=>$('histoBox').style.display=st.histo?'':'none');
+tgl('tgTripod','tripod',()=>toast(st.tripod?'המצלמה על חצובה: אין רעידת יד גם בחשיפה ארוכה':'צילום ביד חופשית: במהירות איטית מ-1/85 התמונה עלולה לרעוד'));
+
+// focus by tap
+$('vf').addEventListener('pointerdown',e=>{
+  if(st.busy)return;
+  const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  const b=runnerBox(animT);let d,on='spot',name;
+  if(x>b.x0-20&&x<b.x1+20&&y>b.y0-20&&y<b.y1+10){d=SUBJ_D;on='subject';name='פוקוס על הרץ (5 מ׳)';}
+  else if((x>0.72*W&&y<0.3*H)||(y>0.88*H&&(x<0.32*W||x>0.8*W))){d=1600;name='פוקוס על הצמחים בקדמה (1.6 מ׳)';}
+  else if(y<0.58*H){d=40000;name='פוקוס על הרקע (40 מ׳)';}
+  else if(y<0.66*H){d=15000;name='פוקוס על הדשא הרחוק (15 מ׳)';}
+  else if(y<0.735*H){d=8000;name='פוקוס על הספסל (8 מ׳)';}
+  else if(y<0.83*H){d=SUBJ_D;name='פוקוס על השביל (5 מ׳)';}
+  else{d=3000;name='פוקוס על הדשא הקרוב (3 מ׳)';}
+  st.focusD=d;st.focusOn=on;st.focusPt={x:x/W,y:y/H};dirty=true;toast(name);
+});
+
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800);}
+
+// ================= Challenges =================
+const CH=[
+  {t:'חשיפה מדויקת',d:'צלם תמונה שמד האור שלה בטווח של ±0.3 סטופ.',ok:r=>Math.abs(r.o)<=0.34},
+  {t:'הקפא את הרץ',d:'הרץ בפריים ובפוקוס, חד לגמרי בלי טשטוש תנועה, וחשיפה תקינה.',ok:r=>r.inF&&r.focusOK&&r.motion<=2.5&&!r.shake&&Math.abs(r.o)<=0.7},
+  {t:'רקע חלומי',d:'הרץ חד, והרקע מאחוריו מטושטש מאוד. רמז: צמצם פתוח.',ok:r=>r.inF&&r.focusOK&&r.bgBlur>=14&&Math.abs(r.o)<=0.7},
+  {t:'תחושת מהירות',d:'הרץ מטושטש מתנועה, הרקע חד ויציב, וחשיפה תקינה. רמז: חצובה, ואיך מחזירים אור?',ok:r=>r.inF&&r.motion>=11&&!r.shake&&Math.abs(r.o)<=0.7}
+];
+function renderCH(){const L=$('chList');L.innerHTML='';CH.forEach((c,i)=>{const el=document.createElement('div');
+  el.className='ch'+(st.challenge===i+1?' on':'')+(st.done[i]?' done':'');
+  el.innerHTML=`<div class="st">${st.done[i]?'✓':i+1}</div><div><div class="t">${c.t}</div><div class="d">${c.d}</div></div>`;
+  el.onclick=()=>{st.challenge=st.challenge===i+1?0:i+1;renderCH();if(st.challenge)toast('אתגר פעיל: '+c.t);};L.appendChild(el);});}
+
+// ================= Capture =================
+let AC;
+function click(at,gain){const len=0.04;const buf=AC.createBuffer(1,Math.floor(AC.sampleRate*len),AC.sampleRate);const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  const s=AC.createBufferSource();s.buffer=buf;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=2400;f.Q.value=.7;const g=AC.createGain();g.gain.value=gain;
+  s.connect(f);f.connect(g);g.connect(AC.destination);s.start(at);}
+function shutterSound(t){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const n=AC.currentTime+.01;click(n,1);click(n+Math.min(t,4)+0.05,.7);}catch(e){}}
+
+const ACC=mk(W,H),AG=ACC.getContext('2d'),SMP=mk(W,H),SG=SMP.getContext('2d');
+const shots=[];
+async function capture(){
+  if(st.busy)return;st.busy=true;$('shutter').disabled=true;
+  if(dirty)rebuild();
+  const t=T_(),N=N_(),iso=I_(),o=offset(),tStart=animT;
+  shutterSound(t);
+  const shake=!st.tripod&&t>1/FOCAL*1.01;
+  const shakeAmp=shake?Math.min(30,(t*FOCAL-1)*2.4+2):0;
+  const motion=RUN_SPEED*t;
+  const n=clamp(Math.ceil(Math.max(motion,shakeAmp*2)/2.2),1,64);
+  // hand-shake path
+  const r=rng((Math.random()*1e9)|0);const sx=[],sy=[];let x=0,y=0,vx=0,vy=0;
+  for(let i=0;i<n;i++){vx=vx*.8+(r()-.5);vy=vy*.8+(r()-.5);x+=vx;y+=vy;sx.push(x);sy.push(y);}
+  const mx=Math.max(1,...sx.map(Math.abs),...sy.map(Math.abs));
+  AG.globalAlpha=1;AG.clearRect(0,0,W,H);
+  for(let i=0;i<n;i++){
+    const ti=tStart+(n>1?t*i/(n-1):0);
+    SG.clearRect(0,0,W,H);
+    compose(SG,ti,shake?sx[i]/mx*shakeAmp:0,shake?sy[i]/mx*shakeAmp*.7:0,shake?1.05:0);
+    AG.globalAlpha=1/(i+1);AG.drawImage(SMP,0,0);
+  }
+  AG.globalAlpha=1;
+  applyExposure(AG,o);applyNoise(AG,iso,(Math.random()*256)|0,(Math.random()*256)|0);
+  const url=ACC.toDataURL('image/jpeg',0.9);
+  // show blackout / long exposure
+  $('blackout').classList.add('on');
+  const wait=Math.min(t,4)*1000;
+  if(t>=0.5){$('exposing').classList.add('on');const t1=performance.now();
+    const tick=()=>{const left=Math.max(0,(wait-(performance.now()-t1))/1000);$('expTxt').textContent='חושף… '+left.toFixed(1)+' שנ׳';if(left>0&&st.busy)requestAnimationFrame(tick);};tick();}
+  await new Promise(res=>setTimeout(res,Math.max(90,wait)));
+  $('exposing').classList.remove('on');$('blackout').classList.remove('on');
+  // analysis
+  const mid=tStart+t/2,rx=runnerX(mid);
+  const res={o,t,N,iso,motion,shake,shakeAmp,inF:rx>0.06*W&&rx<0.92*W,focusOK:cocPx(SUBJ_D)<2.5,bgBlur:cocPx(40000),
+    label:SH[st.si][0],mode:st.mode};
+  const shot={url,res,ch:st.challenge?st.challenge-1:-1,win:false};
+  if(shot.ch>=0&&CH[shot.ch].ok(res)){shot.win=true;st.done[shot.ch]=true;saveProg();renderCH();}
+  shots.unshift(shot);if(shots.length>12)shots.pop();
+  st.shots=Math.max(0,st.shots-1);renderThumbs();updateUI();
+  openReview(shot);
+  st.busy=false;$('shutter').disabled=false;
+}
+function feedback(r){
+  const L=[];const a=Math.abs(r.o);
+  if(a<=0.34)L.push(['g','חשיפה מדויקת. התמונה לא בהירה ולא כהה מדי.']);
+  else if(r.o>0)L.push([a<=1?'y':'r',`התמונה בהירה מדי ב-${a.toFixed(1)} סטופ. כדי להחשיך: לסגור צמצם, להגביר מהירות, או להוריד ISO.`]);
+  else L.push([a<=1?'y':'r',`התמונה כהה מדי ב-${a.toFixed(1)} סטופ. כדי להבהיר: לפתוח צמצם, להאט מהירות, או להעלות ISO.`]);
+  if(!r.inF)L.push(['r','הרץ לא היה בפריים ברגע הצילום. נסה לתזמן את הלחיצה כשהוא באמצע.']);
+  else{
+    if(!r.focusOK)L.push(['y','הפוקוס לא היה על הרץ, ולכן הוא יצא רך. גע בו בעינית כדי להחזיר אליו את הפוקוס.']);
+    if(r.motion<=2.5)L.push(['g','התנועה קפואה: הרץ חד לגמרי.']);
+    else if(r.motion<=10)L.push(['y','טשטוש תנועה קל ברגליים ובידיים. להקפאה מלאה צריך בערך 1/500 ומעלה.']);
+    else L.push(['y','טשטוש תנועה חזק. מתאים כשרוצים להראות מהירות, לא כשרוצים להקפיא.']);
+  }
+  if(r.shake)L.push(['r',`רעידת יד: צילמת ב-${r.label} בלי חצובה. כלל אצבע: ביד חופשית לא לצלם איטי מ-1 חלקי אורך העדשה (כאן 1/85).`]);
+  if(r.bgBlur>=14)L.push(['g','הרקע מטושטש יפה, והנושא נפרד ממנו. זה האפקט של צמצם פתוח.']);
+  else if(r.bgBlur<5)L.push(['g','עומק שדה גדול: גם הרקע יחסית חד. טוב לנוף, פחות לפורטרט.']);
+  if(r.iso>=3200)L.push(['y',`ISO ${r.iso} מייצר רעש בולט. אם יש מספיק אור, עדיף ISO נמוך.`]);
+  else if(r.iso<=200)L.push(['g','ISO נמוך: התמונה נקייה מרעש.']);
+  return L;
+}
+function openReview(s){
+  $('rvImg').src=s.url;curShot=s;
+  $('rvExif').textContent=`${s.res.label}  ·  f/${s.res.N}  ·  ISO ${s.res.iso}  ·  85mm  ·  ${s.res.mode}`;
+  const b=$('rvBanner');
+  if(s.ch>=0){b.className='banner '+(s.win?'win':'lose');b.textContent=s.win?`✓ אתגר הושלם: ${CH[s.ch].t}`:`עוד לא: ${CH[s.ch].t}. בדוק את ההערות למטה.`;b.style.display='';}
+  else b.style.display='none';
+  $('rvList').innerHTML=feedback(s.res).map(([c,tx])=>`<li><span class="ic ${c}">${c==='g'?'✓':'!'}</span><span>${tx}</span></li>`).join('');
+  $('review').classList.add('on');$('review').scrollTop=0;
+}
+function renderThumbs(){const T=$('thumbs');if(!shots.length)return;T.innerHTML='';shots.forEach(s=>{const i=new Image();i.src=s.url;i.onclick=()=>openReview(s);T.appendChild(i);});}
+let curShot=null,DL=null;
+try{window.claude&&window.claude.use&&window.claude.use('downloads').then(d=>{DL=d;}).catch(()=>{});}catch(e){}
+$('rvSave').onclick=async()=>{if(!curShot)return;const name='photosim-'+Date.now()+'.jpg';
+  try{if(DL){const blob=await (await fetch(curShot.url)).blob();await DL.save({filename:name,data:blob});return;}}catch(e){toast('השמירה בוטלה');return;}
+  const a=document.createElement('a');a.href=curShot.url;a.download=name;document.body.appendChild(a);a.click();a.remove();};
+$('rvBack').onclick=()=>$('review').classList.remove('on');
+$('shutter').addEventListener('click',capture);
+document.addEventListener('keydown',e=>{if(e.code==='Escape')$('guide').classList.remove('on');if(e.target.tagName==='INPUT'&&e.target.type!=='range')return;if(e.code==='Space'&&!$('review').classList.contains('on')&&!$('guide').classList.contains('on')){e.preventDefault();capture();}
+  if(e.code==='Escape')$('review').classList.remove('on');});
+
+// ================= Start =================
+document.querySelectorAll('#camsel button').forEach(b=>b.addEventListener('click',()=>setSkin(b.dataset.sk)));
+document.querySelectorAll('.lx-modetab').forEach(el=>el.addEventListener('pointerdown',e=>{e.stopPropagation();st.mode={M:'A',A:'S',S:'M'}[st.mode];dirty=true;updateUI();toast('מצב '+st.mode);}));
+const SONY_HE={'Shooting':'צילום','Exposure/Color':'חשיפה/צבע','Focus':'פוקוס','Playback':'ניגון','Network':'רשת','Setup':'הגדרות',
+'Image Quality':'איכות תמונה','Image Quality/Rec':'איכות תמונה/הקלטה','Media':'כרטיסי זיכרון','File':'קבצים','Shooting Mode':'מצב צילום','Drive Mode':'צילום בודד/רציף','Shutter/Silent':'תריס/שקט','Audio Recording':'הקלטת קול','TC/UB':'טיימקוד','Image Stabilization':'ייצוב תמונה','Zoom':'זום','Shooting Display':'תצוגה בזמן צילום','Marker Display':'סימוני מסגרת','Shooting Option':'אפשרויות צילום',
+'Exposure':'חשיפה','Exposure Comp.':'פיצוי חשיפה','Metering':'מדידת אור','Flash':'מבזק','White Balance':'איזון לבן','Color/Tone':'צבע/גוון','Zebra Display':'זברה',
+'AF/MF':'פוקוס אוטומטי/ידני','Focus Area':'אזור פוקוס','Face/Eye AF':'פוקוס פנים/עיניים','Focus Assistant':'עזרי פוקוס','Peaking Display':'פיקינג',
+'Playback Target':'מה לנגן','Magnification':'הגדלה','Selection/Memo':'סימון ודירוג','Delete':'מחיקה','Edit':'עריכה','Viewing':'צפייה','Playback Option':'אפשרויות ניגון',
+'Cnct./Remote Sht.':'חיבור/צילום מרחוק','FTP Transfer':'העברת FTP','Streaming':'שידור חי','Creators\' Cloud':'ענן','Wi-Fi':'Wi-Fi','Bluetooth':'בלוטות','Wired LAN':'רשת קווית','USB-LAN/Tethering':'USB-LAN','Network Option':'אפשרויות רשת',
+'Area/Date':'אזור/תאריך','Reset/Save Settings':'איפוס/שמירת הגדרות','Operation Customize':'התאמת תפעול','Dial Customize':'התאמת חוגות','Touch Operation':'מגע','Accessibility':'נגישות','Finder/Monitor':'עינית/מסך','Monitor':'מסך','Display Option':'אפשרויות תצוגה','Power Setting Option':'חשמל וחיסכון','Sound Option':'קול','USB':'USB','External Output':'יציאה חיצונית (HDMI)','Setup Option':'אפשרויות נוספות'};
+const SONY_COMMON_FOCUS=`AF/MF: Focus Mode; Priority Set in AF-S; Priority Set in AF-C; AF Tracking Sensitivity; AF Illuminator; Aperture Drive in AF; AF w/ Shutter; Pre-AF; AF Transition Speed; AF Subj. Shift Sensitivity; AF Assist`;
+const SONY_NET=`Cnct./Remote Sht.: Smartphone Connection; Remote Shoot Function; Select on Cam & Send; Reset Transfer Status; Cnct. while Power OFF; Remote Shoot Setting
+FTP Transfer: FTP Transfer Func.
+Streaming: Network Streaming@
+Creators' Cloud: Cloud Connection; Cloud Information
+Wi-Fi: Wi-Fi Connect; WPS Push; Access Point Set.; Wi-Fi Frequency Band; Display Wi-Fi Info.; SSID/PW Reset
+Bluetooth: Bluetooth Function; Pairing; Manage Paired Device; Bluetooth Rmt Ctrl; Disp Device Address
+Wired LAN: IP Address Setting; Display Wired LAN Info.
+USB-LAN/Tethering: USB-LAN Connection; USB-LAN Disconnection; Tethering Connection; Tethering Disconnection
+Network Option: Airplane Mode; Edit Device Name; Import Root Certificate; Access Authen. Settings; Access Authen. Info; Security(IPsec); Wi-Fi Direct Settings; Reset Network Set.`;
+const NIKON_TABS_HE={'PLAYBACK MENU':'ניגון','PHOTO SHOOTING MENU':'צילום סטילס','VIDEO RECORDING MENU':'וידאו','CUSTOM SETTINGS MENU':'הגדרות מותאמות','SETUP MENU':'הגדרות','NETWORK MENU':'רשת',
+'a Focus':'פוקוס','b Metering/exposure':'מדידה/חשיפה','c Timers/AE lock':'טיימרים/נעילת חשיפה','d Shooting/display':'צילום/תצוגה','e Bracketing/flash':'ברקטינג/מבזק','f Controls':'כפתורים וחוגות','g Video':'וידאו'};
+const NIKON_BE=`b Metering/exposure: b1 ISO sensitivity step value; b2 EV steps for exposure cntrl; b3 Easy exposure compensation; b4 Matrix metering face detection; b5 Center-weighted area; b6 Fine-tune optimal exposure; b7 Keep exp. when f/ changes
+c Timers/AE lock: c1 Shutter-release button AE-L; c2 Self-timer; c3 Power off delay`;
+const NIKON_E=`e Bracketing/flash: e1 Flash sync speed; e2 Flash shutter speed; e3 Exposure comp. for flash; e4 Auto ISO sensitivity control (flash); e5 Modeling flash; e6 Auto bracketing (mode M); e7 Bracketing order; e8 Flash burst priority`;
+const CANON_HE={'SHOOT':'צילום','AF':'פוקוס','PLAY':'ניגון','WIRELESS':'אלחוטי','SET UP':'הגדרות','C.Fn':'פונקציות מותאמות'};
+const CANON_CFN12=`1: Exposure level increments; ISO speed setting increments; Speed from metering/ISO Auto; Bracketing auto cancel; Bracketing sequence; Number of bracketed shots; Safety shift`;
+const MODELS={
+a7iv:{name:'Sony α7 IV',brand:'sony',src:'https://helpguide.sony.net/ilc/2110/v1/en/contents/TP1001803623.html',tabs:[
+['Shooting','◉',`Image Quality: JPEG/HEIF Switch; Image Quality Settings; Aspect Ratio; File Format (movie); Movie Settings; S&Q Settings; Proxy Settings; APS-C S35 Shooting; Long Exposure NR; High ISO NR; HLG Still Image; Color Space; Lens Compensation
+Media: Format; Rec. Media Settings; Recover Image DB; Display Media Info.
+File: File/Folder Settings; Select REC Folder; Create New Folder; IPTC Information; Copyright Info; Write Serial Number; File Settings
+Shooting Mode: Exposure Ctrl Type; Recall Camera Setting; Camera Set. Memory; Memory/Recall Media; Reg. Custom Shoot Set
+Drive Mode: Drive Mode; Bracket Settings; Interval Shoot Func.
+Shutter/Silent: Silent Mode Settings; Shutter Type; e-Front Curtain Shut.; Release w/o Lens; Release w/o Card; Anti-flicker Set.
+Audio Recording: Audio Recording; Audio Rec Level; Audio Out Timing; Wind Noise Reduct.; Shoe Audio Set.; Audio Level Display
+TC/UB: Time Code Preset; User Bit Preset; Time Code Format; Time Code Run; Time Code Make; User Bit Time Rec
+Image Stabilization: SteadyShot; SteadyShot Adjust.; Focal Length
+Zoom: Zoom; Zoom Range; Custom Key Z. Speed; Remote Zoom Speed
+Shooting Display: Grid Line Display; Grid Line Type; Live View Display Set.; Emphasized REC Display
+Marker Display: Marker Display; Center Marker; Aspect Marker; Safety Zone; Guideframe`],
+['Exposure/Color','±',`Exposure: Auto Slow Shutter; ISO; ISO Range Limit; ISO AUTO Min. SS; Auto/Manual Swt. Set.
+Exposure Comp.: Exposure Comp.; Exposure step; Exposure Std. Adjust
+Metering: Metering Mode; Face Priority in Multi Metering; Spot Metering Point; AEL w/ Shutter
+Flash: Flash Mode; Flash Comp.; Exp.comp.set; Wireless Flash; Red Eye Reduction; External Flash Set.; Reg. Flash Shooting Set
+White Balance: White Balance; Priority Set in AWB; Shutter AWB Lock; Shockless WB
+Color/Tone: D-Range Optimizer; Creative Look; Picture Profile; Soft Skin Effect
+Zebra Display: Zebra Display; Zebra Level`],
+['Focus','[+]',SONY_COMMON_FOCUS+`
+Focus Area: Focus Area; Focus Area Limit; Switch V/H AF Area; Focus Area Color; AF Area Registration; Del. Regist. AF Area; AF Area Auto Clear; Area Disp. dur Tracking; AF-C Area Display; Phase Detect. Area; Circ. of Focus Point; AF Frame Move Amt
+Face/Eye AF: Face/Eye Prior. in AF; Face/Eye Subject; Subject Sel. Setting; Right/Left Eye Select; Face/Eye Frame Disp.; Face Memory; Regist. Faces Priority
+Focus Assistant: Focus Map; Auto Magnifier in MF; Focus Magnifier; Focus Magnif. Time; Initial Focus Mag.; AF in Focus Mag.
+Peaking Display: Peaking Display; Peaking Level; Peaking Color`],
+['Playback','▶',`Playback Target: Play Set of Multi. Media; Disp Set of Multi Media; Playback Filter Condition; Image Order
+Magnification: Enlarge Image; Enlarge Initial Mag.; Enlarge Initial Position
+Selection/Memo: Protect; Rating; Rating Set(Custom Key); Clip Flag
+Delete: Delete; Delete pressing twice; Delete confirm.
+Edit: Crop; Rotate; Copy; Photo Capture; Create Still Image; JPEG/HEIF Switch
+Viewing: Cont. Play for Interval; Play Speed for Interval; Slide Show
+Playback Option: Image Index; Display as Group; Display Rotation; Focus Frame Display; Disp Specified Time Img.; Image Jump Setting`],
+['Network','((·))',SONY_NET.replace('@','; USB Streaming')],
+['Setup','⚙︎',`Area/Date: Language; Area/Date/Time Setting; NTSC/PAL Selector
+Reset/Save Settings: Setting Reset; Save/Load Settings
+Operation Customize: Custom Key/Dial Set.; Custom Key Setting; Fn Menu Settings; Different Set for Still/Mv; DISP (Screen Disp) Set; REC w/ Shutter; Zoom Ring Rotate
+Dial Customize: My Dial Settings; Av/Tv Rotate; Function Ring(Lens); Lock Operation Parts
+Touch Operation: Touch Operation; Touch Panel/Pad; Touch Panel Settings; Touch Pad Settings
+Accessibility: Screen Reader; Enlarge Screen
+Finder/Monitor: Select Finder/Monitor; Monitor Brightness; Viewfinder Bright.; Finder Color Temp.; Display Quality; Finder Frame Rate; Vertical Display
+Display Option: TC/UB Disp. Setting; Gamma Display Assist; Gamma Disp. Assist Typ.; Remain Shoot Display; Auto Review
+Power Setting Option: Auto Monitor OFF; Power Save Start Time; Power Save by Monitor; Auto Power OFF Temp.
+Sound Option: Volume Settings; 4ch Audio Monitoring; Audio signals
+USB: USB Connection Mode; USB LUN Setting; USB Power Supply
+External Output: HDMI Resolution; HDMI Output Settings; HDMI Info. Display; CTRL FOR HDMI
+Setup Option: Video Light Mode; Anti-dust Function; Auto Pixel Mapping; Pixel Mapping; Version; Display Serial Number; Privacy Notice; Certification Logo`]]},
+fx3:{name:'Sony FX3',brand:'sony',src:'https://helpguide.sony.net/ilc/2210/v1/en/contents/TP1000888827.html',tabs:[
+['Shooting','◉',`Image Quality/Rec: JPEG/HEIF Switch; Image Quality Settings; Aspect Ratio; File Format (movie); Movie Settings; S&Q Settings; Log Shooting Setting; Proxy Settings; APS-C S35 Shooting; Long Exposure NR; High ISO NR; HLG Still Image; Color Space; Lens Compensation
+Media: Format; Rec. Media Settings; Recover Image DB; Display Media Info.
+File: File/Folder Settings; Select REC Folder; Create New Folder; IPTC Information; Copyright Info; Write Serial Number; File Settings
+Shooting Mode: Exposure Mode; Exposure Ctrl Type; Recall Camera Setting; Camera Set. Memory; Memory/Recall Media; Reg. Custom Shoot Set
+Drive Mode: Drive Mode; Bracket Settings; Interval Shoot Func.
+Shutter/Silent: Silent Mode Settings; Shutter Type; e-Front Curtain Shut.; Release w/o Lens; Release w/o Card; Anti-flicker Shoot.
+Audio Recording: Audio Recording; Audio Rec Level; Audio Out Timing; Wind Noise Reduct.; Shoe Audio Set.
+TC/UB: Time Code Preset; User Bit Preset; Time Code Format; Time Code Run; Time Code Make; User Bit Time Rec
+Image Stabilization: SteadyShot; SteadyShot Adjust.; Focal Length
+Zoom: Zoom Range; Zoom Lever Speed; Custom Key Z. Speed; Remote Zoom Speed
+Shooting Display: Grid Line Display; Grid Line Type; Live View Display Set.; Emphasized REC Display
+Marker Display: Marker Display; Center Marker; Aspect Marker; Safety Zone; Guideframe
+Shooting Option: Framing Settings`],
+['Exposure/Color','±',`Exposure: Shutter Mode; Auto Slow Shutter; ISO; ISO Range Limit; ISO AUTO Min. SS; Base ISO; Exposure Index; Auto/Manual Swt. Set.; ND Filter
+Exposure Comp.: Exposure Comp.; Exposure step; Exposure Std. Adjust
+Metering: Metering Mode; Face Priority in Multi Metering; Spot Metering Point; AEL w/ Shutter
+Flash: Flash Mode; Flash Comp.; Exp.comp.set; Wireless Flash; Red Eye Reduction; External Flash Set.
+White Balance: White Balance; Priority Set in AWB; Shutter AWB Lock; Shockless WB
+Color/Tone: D-Range Optimizer; Creative Look; Picture Profile; Select LUT; Manage User LUTs
+Zebra Display: Zebra Display; Zebra Level`],
+['Focus','[+]',SONY_COMMON_FOCUS+`
+Focus Area: Focus Area; Focus Area Limit; Switch V/H AF Area; Focus Area Color; AF Area Registration; Del. Regist. AF Area; AF Area Auto Clear; AF-C Area Display; Phase Detect. Area; Circ. of Focus Point; AF Frame Move Amt
+Face/Eye AF: Face/Eye Prior. in AF; Face/Eye Subject; Right/Left Eye Select; Face/Eye Frame Disp.; Face Memory; Regist. Faces Priority
+Focus Assistant: Auto Magnifier in MF; Focus Magnifier; Focus Magnif. Time; Initial Focus Mag.; AF in Focus Mag.
+Peaking Display: Peaking Display; Peaking Level; Peaking Color`],
+['Playback','▶',`Playback Target: Select Playback Media; View Mode
+Magnification: Enlarge Image; Enlarge Initial Mag.; Enlarge Initial Position
+Selection/Memo: Protect; Rating; Rating Set(Custom Key); Clip Flag
+Delete: Delete; Delete pressing twice; Delete confirm.
+Edit: Rotate; Copy; Photo Capture; JPEG/HEIF Switch
+Viewing: Cont. Play for Interval; Play Speed for Interval; Slide Show
+Playback Option: Image Index; Display as Group; Display Rotation; Focus Frame Display; Disp Specified Time Img.; Image Jump Setting`],
+['Network','((·))',SONY_NET.replace('@','')],
+['Setup','⚙︎',`Area/Date: Language; Area/Date/Time Setting; NTSC/PAL Selector
+Reset/Save Settings: Setting Reset; Save/Load Settings
+Operation Customize: Custom Key/Dial Set.; Custom Key Setting; Fn Menu Settings; Different Set for Still/Mv; Home (Lower Left); DISP (Screen Disp) Set; REC w/ Shutter; Zoom Ring Rotate
+Dial Customize: My Dial Settings; Av/Tv Rotate; Function Ring(Lens); Lock Operation Parts
+Touch Operation: Touch Operation; Touch Sensitivity; Swipe Up; Touch Func. in Shooting
+Monitor: Monitor Brightness; Display Quality; Monitor Flip Direction
+Display Option: TC/UB Disp. Setting; Gamma Display Assist; Gamma Disp. Assist Typ.; Display LUT; De-Squeeze Display; Remain Shoot Display; Auto Review; Display File Name
+Power Setting Option: Power Save Start Time; Auto Power OFF Temp.
+Sound Option: Volume Settings; 4ch Audio Monitoring; Audio signals
+USB: USB Connection Mode; USB LUN Setting; USB Power Supply
+External Output: HDMI Resolution; HDMI Output Settings; HDMI Info. Display; CTRL FOR HDMI
+Setup Option: Video Light Mode; REC Lamp; Fan Control; IR Remote Ctrl; Sensor Cleaning; Auto Pixel Mapping; Pixel Mapping; Version; Display Serial Number; Privacy Notice`]]},
+z9:{name:'Nikon Z9',brand:'nikon',src:'https://onlinemanual.nikonimglib.com/z9/en/15_menu_guide_00.html',tabs:[
+['PLAYBACK MENU','▶',`: Delete; Playback folder; Playback display options; Delete pictures from both slots; Dual-format recording PB slot; Filtered playback criteria; Picture review; After delete; After burst, show; Rotate tall; Copy image(s)`],
+['PHOTO SHOOTING MENU','◉',`: Shooting menu bank; Extended menu banks; Storage folder; File naming; Role played by card in Slot 2; Image area; Image quality; Image size; RAW recording; ISO sensitivity settings; White balance; Set Picture Control; Manage Picture Control; Color space; Active D-Lighting; Long exposure NR; High ISO NR; Vignette control; Diffraction compensation; Auto distortion control; Photo flicker reduction; Metering; Flash control; Focus mode; AF-area mode; AF subject detection options; Vibration reduction; Auto bracketing; Multiple exposure; HDR overlay; Interval timer shooting; Time-lapse video; Focus shift shooting`],
+['VIDEO RECORDING MENU','■',`: Shooting menu bank; Extended menu banks; Storage folder; File naming; Destination; Video file type; Frame size/frame rate; Video quality (N-RAW); Image area; Extended oversampling; ISO sensitivity settings; White balance; Set Picture Control; Manage Picture Control; HLG quality; Active D-Lighting; High ISO NR; Vignette control; Diffraction compensation; Auto distortion control; Video flicker reduction; Metering; Focus mode; AF-area mode; AF subject detection options; Vibration reduction; Electronic VR; Microphone sensitivity; Attenuator; Frequency response; Wind noise reduction; Mic jack plug-in power; Headphone volume; Timecode; External rec. cntrl (HDMI)`],
+['CUSTOM SETTINGS MENU','✎',`a Focus: a1 AF-C priority selection; a2 AF-S priority selection; a3 Focus tracking with lock-on; a4 Focus points used; a5 Store points by orientation; a6 AF activation; a7 Focus point persistence; a8 Limit AF-area mode selection; a9 Focus mode restrictions; a10 Focus point wrap-around; a11 Focus point display; a12 Built-in AF-assist illuminator; a13 Focus peaking; a14 Focus point selection speed; a15 Manual focus ring in AF mode
+`+NIKON_BE+`
+d Shooting/display: d1 Continuous shooting speed; d2 Maximum shots per burst; d3 Limit release mode selection; d4 C30/C120 options; d5 Sync. release mode options; d6 Extended shutter speeds (M); d7 Limit selectable image area; d8 File number sequence; d9 View mode (photo Lv); d10 Starlight view (photo Lv); d11 Warm display colors; d12 LCD illumination; d13 View all in continuous mode; d14 Release timing indicator; d15 Image frame; d16 Grid type; d17 Virtual horizon type; d18 Custom monitor shooting display; d19 Custom viewfinder shooting display; d20 High fps viewfinder display
+`+NIKON_E+`
+f Controls: f1 Customize i menu; f2 Custom controls (shooting); f3 Custom controls (playback); f4 Control lock; f5 Reverse dial rotation; f6 Release button to use dial; f7 Reverse indicators; f8 Reverse ring for focus; f9 Focus ring rotation range; f10 Control ring response; f11 Switch focus/control ring roles; f12 Full-frame playback flicks; f13 Prefer sub-selector center
+g Video: g1 Customize i menu; g2 Custom controls; g3 Control lock; g4 Limit AF-area mode selection; g5 Focus mode restrictions; g6 AF speed; g7 AF tracking sensitivity; g8 Fine ISO control (mode M); g9 Extended shutter speeds (mode M); g10 View assist; g11 Zebra pattern; g12 Limit zebra pattern tone range; g13 Grid type; g14 Brightness information display; g15 Custom monitor shooting display; g16 Custom viewfinder shooting display; g17 Red REC frame indicator`],
+['SETUP MENU','⚙︎',`: Format memory card; Language; Time zone and date; Monitor brightness; Monitor color balance; Viewfinder brightness; Viewfinder color balance; Finder display size (photo Lv); Limit monitor mode selection; Auto rotate info display; AF fine-tuning options; Non-CPU lens data; Save focus position; Auto temperature cutout; Sensor shield behavior at power off; Clean image sensor; Image Dust Off ref photo; Pixel mapping; Image comment; Copyright information; IPTC; Voice memo options; Camera sounds; Silent mode; Touch controls; HDMI; USB connection priority; Location data (built-in); Wireless remote (WR) options; Assign remote (WR) Fn button; Conformity marking; Battery info; USB power delivery; Energy saving (photo mode); Slot empty release lock; Save/load menu settings; Reset all settings; Firmware version`],
+['NETWORK MENU','((·))',`: Airplane mode; Wired LAN; Connect to smart device; Connect to computer; Connect to FTP server; Connect to other cameras; USB; Start via LAN; Router frequency band; MAC address`]]},
+z6iii:{name:'Nikon Z6 III',brand:'nikon',src:'https://onlinemanual.nikonimglib.com/z6III/en/sum_menu_items_and_initial_setting_313.html',tabs:[
+['PLAYBACK MENU','▶',`: Delete; Playback folder; Playback display options; Delete pictures from both slots; Dual-format recording PB slot; Filtered playback criteria; Series playback; Picture review; After delete; After burst, show; Record camera orientation; Auto-rotate pictures; Auto-rotate during playback; Copy image(s)`],
+['PHOTO SHOOTING MENU','◉',`: Reset photo shooting menu; Storage folder; File naming; Primary slot selection; Secondary slot function; Image area; Tone mode; Image quality settings; Image size settings; RAW recording; ISO sensitivity settings; White balance; Set Picture Control; Manage Picture Control; Set Picture Control (HLG); Color space; Active D-Lighting; Long exposure NR; High ISO NR; Vignette control; Diffraction compensation; Auto distortion control; Skin softening; Portrait impression balance; Photo flicker reduction; High-frequency flicker reduction; Metering; Flash control; Flash mode; Flash compensation; Release mode; Focus mode; AF-area mode; AF/MF subject detection options; MF subject detection area; Vibration reduction; Link VR to focus point; Auto bracketing; Multiple exposure; HDR overlay; Interval timer shooting; Time-lapse video; Focus shift shooting; Pixel shift shooting; Auto capture`],
+['VIDEO RECORDING MENU','■',`: Reset video recording menu; Storage folder; File naming; Destination; Video file type; Frame size/frame rate; Video quality (N-RAW); Image area; ISO sensitivity settings; White balance; Set Picture Control; Manage Picture Control; HLG quality; Active D-Lighting; High ISO NR; Vignette control; Diffraction compensation; Auto distortion control; Skin softening; Portrait impression balance; Video flicker reduction; High-frequency flicker reduction; Metering; Focus mode; AF-area mode; AF/MF subject detection options; MF subject detection area; Vibration reduction; Electronic VR; Audio input selection; Audio input sensitivity; Attenuator; Frequency response; Wind noise reduction; Mic jack plug-in power; Headphone volume; Timecode; External rec. cntrl (HDMI); Hi-Res Zoom; Auto capture`],
+['CUSTOM SETTINGS MENU','✎',`a Focus: a1 AF-C priority selection; a2 AF-S priority selection; a3 Focus tracking with lock-on; a4 Focus points used; a5 Store points by orientation; a6 AF activation; a7 Focus point persistence; a8 Limit AF-area mode selection; a9 Focus point wrap-around; a10 Focus point display; a11 Built-in AF-assist illuminator; a12 Focus peaking; a13 Maximum aperture Lv; a14 Focus point selection speed; a15 Focus limiter setting; a16 Manual focus ring in AF mode
+`+NIKON_BE+`
+d Shooting/display: d1 CL mode shooting speed; d2 Maximum shots per burst; d3 Pre-Release Capture options; d4 Sync. release mode options; d5 Exposure delay mode; d6 Shutter type; d7 Extended shutter speeds (M); d8 Limit selectable image area; d9 File number sequence; d10 View mode (photo Lv); d11 Starlight view (photo Lv); d12 Warm display colors; d13 LCD illumination; d14 Display on during burst; d15 Release timing indicator; d16 Image frame; d17 Grid type; d18 Virtual horizon type; d19 Half-press to cancel zoom (MF); d20 Custom monitor shooting display; d21 Custom viewfinder shooting display; d22 High fps viewfinder display
+`+NIKON_E+`
+f Controls: f1 Customize i menu; f2 Custom controls (shooting); f3 Custom controls (playback); f4 Touch Fn; f5 Control lock; f6 Reverse dial rotation; f7 Release button to use dial; f8 Reverse indicators; f9 Reverse ring for focus; f10 Focus ring rotation range; f11 Zoom ring control (PZ lens); f12 Assign power zoom; f13 Control ring response; f14 Switch focus/control ring roles; f15 Full-frame playback flicks; f16 Prefer sub-selector center
+g Video: g1 Customize i menu; g2 Custom controls; g3 Control lock; g4 Limit AF-area mode selection; g5 AF speed; g6 AF tracking sensitivity; g7 Hi-Res Zoom speed; g8 Assign power zoom; g9 Power/Hi-Res Zoom collab; g10 Fine ISO control (mode M); g11 Extended shutter speeds (S/M); g12 Shutter mode; g13 View assist; g14 Zebra pattern; g15 Limit zebra pattern tone range; g16 Grid type; g17 Brightness information display; g18 Half-press to cancel zoom (MF); g19 Custom monitor shooting display; g20 Custom viewfinder shooting display; g21 Red REC frame indicator`],
+['SETUP MENU','⚙︎',`: Format memory card; Save user settings; Reset user settings; Language; Time zone and date; Monitor brightness; Monitor color balance; Viewfinder brightness; Viewfinder color balance; Viewfinder display size; Limit monitor mode selection; Auto rotate info display; AF fine-tuning options; Non-CPU lens data; Distance units; Save focus position; Save zoom position (PZ lenses); Auto temperature cutout; Clean image sensor; Image Dust Off ref photo; Pixel mapping; Image comment; Copyright information; IPTC; Voice memo options; Camera sounds; Silent mode; Touch controls; HDMI; USB connection priority; Location data; Wireless remote (WR) options; Assign remote (WR) Fn button; Conformity marking; Battery info; USB power delivery; Energy saving (photo mode); Slot empty release lock; Save/load menu settings; Reset all settings; Firmware version`],
+['NETWORK MENU','((·))',`: Airplane mode; Nikon Imaging Cloud; Connect to smart device; Wireless remote (ML-L7) options; Connect to computer; Connect to FTP server; Connect to other cameras; ATOMOS AirGlu BT options; USB; Router frequency band; MAC address`]]},
+r5:{name:'Canon EOS R5',brand:'canon',src:'https://cam.start.canon/en/C003/manual/html/UG-07_Set-up_0020.html',tabs:[
+['SHOOT','●',`1: Image quality; Dual Pixel RAW; Cropping/aspect ratio
+2: Expo.comp./AEB; ISO speed settings; HDR PQ settings; Auto Lighting Optimizer; Highlight tone priority; Anti-flicker shoot.; External Speedlite control
+3: White balance; Custom White Balance; WB Shift/Bkt.; Color space; Picture Style; Clarity; Lens aberration correction
+4: Long exp. noise reduction; High ISO speed NR; Dust Delete Data
+5: Multiple exposure; HDR Mode; Focus bracketing; IBIS High resolution shot
+6: Interval timer; Bulb timer; Shutter mode; Release shutter without card
+7: IS (Image Stabilizer) mode; Touch Shutter; Image review; High speed display; Metering timer; Expo. simulation; Shooting info. disp.
+8: VF display format; Disp. performance`,'#d6322f'],
+['AF','AF',`1: AF operation; AF method; Subject to detect; Eye detection; Continuous AF; Touch & drag AF settings
+2: MF peaking settings; Focus guide; AF-assist beam firing
+3: Case 1; Case 2; Case 3; Case 4; Case A; Tracking sensitivity; Accel./decel. tracking
+4: Lens electronic MF; One-Shot AF release prior.; Switching tracked subjects; Lens drive when AF impossible; Limit AF methods; AF method selection control; Orientation linked AF point
+5: Initial Servo AF pt for Face+Tracking; Focus ring rotation; RF lens MF focus ring sensitivity; Multi-controller sensitivity - AF pt select; Electronic full-time MF`,'#b0399b'],
+['PLAY','▶',`1: Protect images; Erase images; Rotate stills; Change mov rotate info; Rating; Protect when setting the rating; Image copy
+2: Print order; Photobook Set-up
+3: RAW processing (RAW/DPRAW); DPRAW processing; Resize; Cropping; HEIF→JPEG conversion
+4: Slide show; Set image search conditions; Magnificatn (apx); Image jump w/Main Dial; Switch Main Dial/Quick Control Dial 2; RATE/Voice memo button function; Memo audio quality
+5: Playback information display; Highlight alert; AF point disp.; Playback grid; Movie play count; HDMI HDR output`,'#2f6fd6'],
+['WIRELESS','((·))',`1: Wi-Fi/Bluetooth connection; Airplane mode; Wi-Fi settings; Bluetooth settings; Nickname; GPS device settings; Image transfer
+2: Save/load comm. settings on card; Reset communication settings`,'#7d5cc6'],
+['SET UP','🔧',`1: Record func+card/folder sel.; File numbering; File name; Format card; Auto rotate; Add movie rotate info; Date/Time/Zone
+2: Language; Video system; Help text size; Beep; Headphone volume; Power saving; Eco mode
+3: Screen/viewfinder display; Screen brightness; Viewfinder brightness; Screen/viewfinder color tone; Fine-tune VF color tone; UI magnification
+4: HDMI resolution; Touch control; Multi function lock; Shutter at shutdown; Sensor cleaning; Manage password
+5: Reset camera; Custom shooting mode (C1-C3); Save/load cam settings on card
+6: Battery info.; Copyright information; Show log; Manual/software URL; Certification Logo Display; Firmware`,'#c99a00'],
+['C.Fn','C.Fn',CANON_CFN12+`
+2: Same expo. for new aperture; AE lock meter. mode after focus; Restrict shooting modes; Set shutter speed range; Set aperture range
+3: Dial direction during Tv/Av; Control ring rotation; Customize buttons; Customize dials; Clear customized settings
+4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off; Add IPTC information
+5: Clear all Custom Func. (C.Fn)`,'#e07b16']]},
+r6:{name:'Canon EOS R6',brand:'canon',src:'https://cam.start.canon/en/C004/manual/html/UG-07_Set-up_0020.html',tabs:[
+['SHOOT','●',`1: Image quality; Cropping/aspect ratio
+2: Expo.comp./AEB; ISO speed settings; HDR PQ settings; Auto Lighting Optimizer; Highlight tone priority; Anti-flicker shoot.; External Speedlite control
+3: White balance; Custom White Balance; WB Shift/Bkt.; Color space; Picture Style; Clarity; Lens aberration correction
+4: Long exp. noise reduction; High ISO speed NR; Dust Delete Data
+5: Multiple exposure; HDR Mode; Focus bracketing
+6: Interval timer; Bulb timer; Shutter mode; Release shutter without card
+7: IS (Image Stabilizer) mode; Touch Shutter; Image review; High speed display; Metering timer; Expo. simulation; Shooting info. disp.
+8: VF display format; Disp. performance
+9: Movie rec quality; Sound recording; ISO speed settings (movie); Auto slow shutter; Shutter btn function for movies`,'#d6322f'],
+['AF','AF',`1: AF operation; AF method; Subject to detect; Eye detection; Continuous AF; Movie Servo AF; Touch & drag AF settings
+2: MF peaking settings; Focus guide; AF-assist beam firing
+3: Case 1; Case 2; Case 3; Case 4; Case A; Tracking sensitivity; Accel./decel. tracking
+4: Lens electronic MF; One-Shot AF release prior.; Switching tracked subjects; Lens drive when AF impossible; Limit AF methods; AF method selection control; Orientation linked AF point
+5: Initial Servo AF pt for Face+Tracking; Focus ring rotation; RF lens MF focus ring sensitivity; Multi-controller sensitivity - AF pt select; Electronic full-time MF`,'#b0399b'],
+['PLAY','▶',`1: Protect images; Erase images; Rotate stills; Change mov rotate info; Rating; Image copy
+2: Print order; Photobook Set-up
+3: RAW image processing; Resize; Cropping; HEIF→JPEG conversion
+4: Slide show; Set image search conditions; Magnificatn (apx); Image jump w/Main Dial; Switch Main Dial/Quick Control Dial 2; RATE btn function
+5: Playback information display; Highlight alert; AF point disp.; Playback grid; Movie play count; HDMI HDR output`,'#2f6fd6'],
+['WIRELESS','((·))',`1: Wi-Fi/Bluetooth connection; Airplane mode; Wi-Fi settings; Bluetooth settings; Nickname; GPS device settings; Image transfer
+2: Reset communication settings`,'#7d5cc6'],
+['SET UP','🔧',`1: Record func+card/folder sel.; File numbering; File name; Format card; Auto rotate; Add movie rotate info; Date/Time/Zone
+2: Language; Video system; Help text size; Beep; Headphone volume; Power saving; Eco mode
+3: Screen/viewfinder display; Screen brightness; Viewfinder brightness; Screen/viewfinder color tone; Fine-tune VF color tone; UI magnification
+4: HDMI resolution; Touch control; Multi function lock; Shutter at shutdown; Sensor cleaning
+5: Reset camera; Custom shooting mode (C1-C3); Battery info.; Copyright information; Manual/software URL; Certification Logo Display; Firmware`,'#c99a00'],
+['C.Fn','C.Fn',CANON_CFN12+`
+2: Same expo. for new aperture; AE lock meter. mode after focus; Set shutter speed range; Set aperture range
+3: Dial direction during Tv/Av; Control ring rotation; Customize buttons; Customize dials; Clear customized settings
+4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off; Add IPTC information
+5: Clear all Custom Func. (C.Fn)`,'#e07b16']]},
+r7:{name:'Canon EOS R7',brand:'canon',src:'https://cam.start.canon/en/C005/manual/html/UG-08_Set-up_0020.html',tabs:[
+['SHOOT','●',`1: Image quality; Dual Pixel RAW; Still img aspect ratio
+2: Expo.comp./AEB; ISO speed settings; HDR shooting; HDR Mode; Auto Lighting Optimizer; Highlight tone priority; Anti-flicker shoot.
+3: External Speedlite control; Metering mode
+4: White balance; Custom White Balance; WB Shift/Bkt.; Color space; Picture Style; Clarity; Shooting creative filters
+5: Lens aberration correction; Long exp. noise reduction; High ISO speed NR; Dust Delete Data
+6: Multiple exposure; RAW burst mode; Focus bracketing
+7: Drive mode; Interval timer; Bulb timer; Silent shutter function; Shutter mode; Release shutter without card
+8: IS (Image Stabilizer) mode; Auto level; Customize Quick Controls; Touch Shutter; Image review; High speed display; Metering timer
+9: Display simulation; OVF sim. view assist; Shooting info. disp.; Reverse display; VF display format; Disp. performance
+10: Movie rec. size; Sound recording; ISO speed settings (movie); Auto slow shutter; Auto level (movie); Shutter btn function for movies`,'#d6322f'],
+['AF','AF',`1: AF operation; AF area; Subject tracking; Subject to detect; Eye detection; Switching tracked subjects
+2: Case 1; Case 2; Case 3; Case 4; Case A; Tracking sensitivity; Accel./decel. tracking
+3: One-Shot AF release prior.; Preview AF; Lens drive when AF impossible; AF-assist beam firing
+4: Touch & drag AF settings; Limit AF areas; Multi-controller sensitivity - AF pt select; Orientation linked AF point
+5: MF peaking settings; Focus guide; Movie Servo AF
+6: Electronic full-time MF; Lens electronic MF; Focus/control ring; Focus ring rotation; RF lens MF focus ring sensitivity`,'#b0399b'],
+['PLAY','▶',`1: Protect images; Erase images; Rotate stills; Change mov rotate info; Rating; Image copy
+2: Print order; Photobook Set-up
+3: RAW image processing; Creative Assist; Quick Control RAW processing; Cloud RAW image processing; Playback creative filters; Resize
+4: Cropping; HEIF→JPEG conversion
+5: Slide show; Set image search conditions; View from last seen; Magnification; Image jump w/ Main Dial
+6: Playback information display; Highlight alert; AF point disp.; Playback grid; Movie play count; HDMI HDR output`,'#2f6fd6'],
+['WIRELESS','((·))',`1: Wi-Fi/Bluetooth connection; Airplane mode; Wi-Fi settings; Bluetooth settings; Nickname; GPS device settings; Reset communication settings`,'#7d5cc6'],
+['SET UP','🔧',`1: Record func+card/folder sel.; File numbering; File name; Format card; Auto rotate; Date/Time/Zone
+2: Language; Video system; Help text size; Mode guide
+3: Beep; Volume; Headphones; Power saving
+4: Screen/viewfinder display; Screen brightness; Viewfinder brightness; Screen/viewfinder color tone; Fine-tune VF color tone; UI magnification; HDMI resolution
+5: Touch control; Multi function lock; Focus mode switch (AF/MF); Shutter at shutdown; Sensor cleaning; Choose USB connection app
+6: Reset camera; Custom shooting mode (C1-C3); Battery info.; Copyright information; Manual/software URL; Certification Logo Display; Firmware
+7: Manage password; Show log`,'#c99a00'],
+['C.Fn','C.Fn',CANON_CFN12+`
+2: Same expo. for new aperture; AE lock meter. mode after focus; Set shutter speed range; Set aperture range
+3: Dial direction to set Tv/Av; Control ring direction to set Tv/Av; Switch Main Dial/Quick Control Dial when shooting; Customize buttons; Customize dials; Clear customized settings
+4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off
+5: Clear all Custom Func. (C.Fn)`,'#e07b16']]}
+};
+// topic locations: per model "TabIndex|Item" or "!note"
+const S=(a,f)=>({a7iv:a,fx3:f||a}), N=(z9,z6)=>({z9:z9,z6iii:z6||z9}), C=(r5,r6,r7)=>({r5:r5,r6:r6||r5,r7:r7||r6||r5});
+const QN='!בדגם הזה זה לא בתפריט הראשי. לוחצים על כפתור Q (או M-Fn) בזמן צילום ובוחרים שם.';
+const TOPICS=[
+{t:'כיוון שעון ותאריך',k:'שעון שעה תאריך זמן אזור זמן שעון קיץ clock date time zone',w:'שעה נכונה חשובה לסידור התמונות, ובעיקר לסנכרון בין שתי מצלמות באותו אירוע. באותו מסך נמצאים גם אזור הזמן ושעון הקיץ.',
+ L:{...S('5|Area/Date/Time Setting'),...N('4|Time zone and date'),...C('4|Date/Time/Zone')}},
+{t:'פרמוט כרטיס זיכרון',k:'פרמוט פירמוט מחיקה כרטיס זיכרון format card sd',w:'מוחק את כל מה שיש בכרטיס. עושים את זה במצלמה ולא במחשב, אחרי שגיבית, ורצוי לפני כל אירוע.',
+ L:{...S('0|Format'),...N('4|Format memory card'),...C('4|Format card')}},
+{t:'שפת התפריטים',k:'שפה language אנגלית עברית',w:'אין עברית במצלמות האלה, ולכן המדריך מראה את השמות באנגלית בדיוק כמו שהם כתובים על המסך.',
+ L:{...S('5|Language'),...N('4|Language'),...C('4|Language')}},
+{t:'איפוס המצלמה להגדרות היצרן',k:'איפוס ריסט reset ברירת מחדל הגדרות יצרן',w:'מחזיר את ההגדרות למצב שבו המצלמה יצאה מהמפעל. שימושי כשמשהו מתנהג מוזר ולא מוצאים למה.',
+ L:{...S('5|Setting Reset'),...N('4|Reset all settings'),...C('4|Reset camera')}},
+{t:'כיבוי אוטומטי וחיסכון בסוללה',k:'סוללה כיבוי אוטומטי חיסכון שינה power save sleep battery',w:'קובע אחרי כמה זמן בלי שימוש המצלמה נכנסת לשינה. זמן קצר חוסך סוללה, זמן ארוך מונע החמצה של רגע.',
+ L:{...S('5|Power Save Start Time'),...N('3|c3 Power off delay'),...C('4|Power saving')}},
+{t:'RAW או JPEG',k:'raw jpeg heif פורמט קובץ איכות תמונה file format quality',w:'RAW שומר את כל המידע מהחיישן ונותן הכי הרבה חופש בעריכה. JPEG קטן ומוכן לשליחה. אפשר גם לשמור את שניהם.',
+ L:{...S('0|Image Quality Settings'),...N('1|Image quality','1|Image quality settings'),...C('0|Image quality')}},
+{t:'יחס גובה-רוחב ואזור תמונה',k:'יחס רוחב גובה פורמט ריבוע 16:9 3:2 aspect ratio crop image area חיתוך',w:'3:2 זה הפריים המלא של החיישן. 1:1 ו-16:9 חותכים חלק ממנו. ב-RAW בדרך כלל אפשר לחזור לפריים המלא בעריכה.',
+ L:{...S('0|Aspect Ratio'),...N('1|Image area'),...C('0|Cropping/aspect ratio','0|Cropping/aspect ratio','0|Still img aspect ratio')}},
+{t:'שני כרטיסים: גיבוי או המשך',k:'שני כרטיסים כרטיס כפול גיבוי סלוט slot backup dual card',w:'באירועים כמו חתונה כדאי לכתוב כל תמונה לשני הכרטיסים במקביל, כדי שכרטיס פגום לא יאבד את האירוע.',
+ L:{...S('0|Rec. Media Settings'),...N('1|Role played by card in Slot 2','1|Secondary slot function'),...C('4|Record func+card/folder sel.')}},
+{t:'מספור קבצים',k:'מספור קבצים שם קובץ ספירה file number naming',w:'מספור רציף ממשיך גם אחרי פרמוט, וכך לא נוצרים שני קבצים עם אותו שם. מומלץ להשאיר אותו.',
+ L:{...S('0|File/Folder Settings'),...N('3|d8 File number sequence','3|d9 File number sequence'),...C('4|File numbering')}},
+{t:'זכויות יוצרים ושם הצלם',k:'זכויות יוצרים שם צלם קופירייט copyright artist author',w:'כותב את השם שלך בתוך כל קובץ. כך אפשר להוכיח שהתמונה שלך.',
+ L:{...S('0|Copyright Info'),...N('4|Copyright information'),...C('4|Copyright information')}},
+{t:'איזון לבן',k:'איזון לבן צבע טמפרטורה קלווין kelvin white balance awb',w:'דואג שלבן ייראה לבן ולא צהוב או כחול. אוטומטי (AWB) עובד טוב ברוב המצבים. בתאורה מעורבת עדיף לקבוע ערך ידני.',
+ L:{...S('1|White Balance'),...N('1|White balance'),...C('0|White balance')}},
+{t:'ISO אוטומטי וגבול עליון',k:'iso אוטומטי רגישות גבול רעש auto iso sensitivity',w:'המצלמה בוחרת ISO לבד, ואתה קובע עד כמה מותר לה לעלות, כדי שהרעש לא יגזים.',
+ L:{...S('1|ISO Range Limit'),...N('1|ISO sensitivity settings'),...C('0|ISO speed settings')}},
+{t:'מצב מדידת אור',k:'מדידה מדידת אור מטריצה נקודתית מרכז metering spot matrix evaluative',w:'קובע איזה חלק מהתמונה המצלמה בודקת כדי להחליט על החשיפה. מדידה של כל התמונה מתאימה לרוב המצבים. נקודתית מתאימה לנושא מואר על רקע כהה.',
+ L:{...S('1|Metering Mode'),...N('1|Metering'),...C(QN,QN,'0|Metering mode')}},
+{t:'זברה (אזהרת אזורים שרופים)',k:'זברה פסים שרוף בהיר מדי zebra highlights',w:'מסמן בפסים את האזורים שבהירים מדי ועלולים להישרף. שימושי מאוד בווידאו ובשמלת כלה לבנה.',
+ L:{...S('1|Zebra Display'),...N('3|g11 Zebra pattern','3|g14 Zebra pattern')}},
+{t:'מצב פוקוס: יחיד או רציף',k:'פוקוס מיקוד רציף יחיד ידני af-s af-c one shot servo mf focus mode',w:'פוקוס יחיד (AF-S / One-Shot) ננעל פעם אחת, וטוב לנושא שעומד במקום. פוקוס רציף (AF-C / Servo) עוקב אחרי נושא שזז.',
+ L:{...S('2|Focus Mode'),...N('1|Focus mode'),...C('1|AF operation')}},
+{t:'אזור פוקוס',k:'אזור פוקוס נקודה רחב מרכז מעקב focus area af area method tracking',w:'קובע איפה בתמונה המצלמה מחפשת פוקוס: נקודה אחת שאתה בוחר, אזור, או כל התמונה עם מעקב.',
+ L:{...S('2|Focus Area'),...N('1|AF-area mode'),...C('1|AF method','1|AF method','1|AF area')}},
+{t:'זיהוי עיניים, פנים ונושא',k:'עין עיניים פנים זיהוי נושא eye af face detection subject',w:'המצלמה מוצאת את העין ושמה עליה את הפוקוס. מעולה לפורטרטים ולחתונות. אפשר לבחור אדם, חיה ועוד.',
+ L:{...S('2|Face/Eye Subject'),...N('1|AF subject detection options','1|AF/MF subject detection options'),...C('1|Subject to detect')}},
+{t:'פוקוס מכפתור אחורי',k:'כפתור אחורי back button focus af-on הפרדת פוקוס מהדק',w:'מפריד בין הפוקוס לבין הלחיצה על המהדק: הפוקוס מתבצע רק בכפתור האחורי (AF-ON). כך אפשר לנעול פוקוס ולצלם כמה תמונות בלי שהוא יזוז.',
+ n:{sony:'מכבים את AF w/ Shutter (Off).',nikon:'בוחרים AF-ON only.',canon:'בתוך Customize buttons: משנים את כפתור המהדק ל-Metering start.'},
+ L:{...S('2|AF w/ Shutter'),...N('3|a6 AF activation'),...C('5|Customize buttons')}},
+{t:'פיקינג (הדגשת פוקוס ידני)',k:'פיקינג הדגשה פוקוס ידני peaking mf assist',w:'בפוקוס ידני, צובע בצבע בולט את הקצוות שנמצאים בפוקוס, כדי שיהיה קל לדעת מה חד.',
+ L:{...S('2|Peaking Display'),...N('3|a13 Focus peaking','3|a12 Focus peaking'),...C('1|MF peaking settings')}},
+{t:'רשת קומפוזיציה',k:'רשת קווים שלישים קומפוזיציה grid guide line',w:'מציגה קווים שמחלקים את המסך לשלישים, ועוזרת למקם את הנושא ולשמור על אופק ישר.',
+ n:{canon:'בתוך Shooting info. disp. בוחרים Grid display.'},
+ L:{...S('0|Grid Line Display'),...N('3|d16 Grid type','3|d17 Grid type'),...C('0|Shooting info. disp.')}},
+{t:'היסטוגרמה ומידע על המסך',k:'היסטוגרמה גרף חשיפה histogram disp info תצוגה',w:'גרף שמראה כמה מהתמונה כהה וכמה בהירה. כאן קובעים אילו מסכי מידע יופיעו כשלוחצים על DISP או INFO.',
+ L:{...S('5|DISP (Screen Disp) Set'),...N('3|d18 Custom monitor shooting display','3|d20 Custom monitor shooting display'),...C('0|Shooting info. disp.')}},
+{t:'בהירות המסך',k:'בהירות מסך תצוגה שמש monitor brightness screen',w:'מסך בהיר מדי מטעה: התמונה נראית טובה ויוצאת כהה. עדיף להשאיר על רגיל ולסמוך על ההיסטוגרמה.',
+ L:{...S('5|Monitor Brightness'),...N('4|Monitor brightness'),...C('4|Screen brightness')}},
+{t:'צילום שקט',k:'שקט תריס אלקטרוני חופה טקס silent electronic shutter',w:'מצלם בלי רעש של תריס. מצוין לחופה ולטקסים. שים לב: תחת תאורת לד או פלורסנט עלולים להופיע פסים.',
+ n:{canon:'ב-Shutter mode בוחרים Electronic.'},
+ L:{...S('0|Silent Mode Settings'),...N('4|Silent mode'),...C('0|Shutter mode','0|Shutter mode','0|Silent shutter function')}},
+{t:'צפצוף וצלילי מצלמה',k:'צפצוף ביפ קול צליל beep sound audio',w:'הצליל שנשמע כשהפוקוס ננעל. כדאי לכבות אותו בטקסים ובאירועים.',
+ L:{...S('5|Audio signals'),...N('4|Camera sounds'),...C('4|Beep')}},
+{t:'מייצב תמונה',k:'מייצב ייצוב רעידה stabilizer steadyshot ibis vr is',w:'מקטין רעידת יד ומאפשר לצלם במהירות איטית יותר בלי חצובה.',
+ L:{...S('0|SteadyShot'),...N('1|Vibration reduction'),...C('0|IS (Image Stabilizer) mode')}},
+{t:'צילום רציף וטיימר',k:'רציף סדרה טיימר השהיה drive burst continuous self timer release',w:'רציף מצלם סדרה כל עוד מחזיקים את המהדק, וזה טוב לתנועה. טיימר טוב לתמונה קבוצתית או למניעת רעידה על חצובה.',
+ L:{...S('0|Drive Mode'),...N('!ב-Z9 זה לא בתפריט: מסובבים את חוגת מצב השחרור (Release mode dial) שבצד שמאל למעלה.','1|Release mode'),...C(QN,QN,'0|Drive mode')}},
+{t:'רזולוציה וקצב פריימים בווידאו',k:'וידאו סרט רזולוציה 4k fps קצב פריימים movie video frame rate',w:'קובע את איכות הווידאו (Full HD או 4K) ואת קצב הפריימים. 25p נראה טבעי בארץ, ו-50p מאפשר הילוך איטי.',
+ L:{...S('0|Movie Settings'),...N('2|Frame size/frame rate'),...C('!עוברים למצב וידאו (כפתור MODE). הפריט Movie rec quality מופיע אז בלשונית הצילום. המיקום המדויק לא אומת מול המדריך.','0|Movie rec quality','0|Movie rec. size')}},
+{t:'חיבור לטלפון',k:'טלפון וויפי בלוטות אפליקציה העברה wifi bluetooth smartphone app',w:'מעביר תמונות לטלפון ומאפשר לצלם מרחוק. האפליקציות: Creators\' App (סוני), Camera Connect (קנון), SnapBridge (ניקון).',
+ L:{...S('4|Smartphone Connection'),...N('5|Connect to smart device'),...C('3|Wi-Fi/Bluetooth connection')}},
+{t:'הגדרת כפתורים אישיים',k:'כפתור מותאם אישית fn custom button קיצור',w:'מאפשר לשים פונקציה שאתה משתמש בה הרבה, כמו ISO או זיהוי עיניים, על כפתור אחד.',
+ L:{...S('5|Custom Key/Dial Set.'),...N('3|f2 Custom controls (shooting)'),...C('5|Customize buttons')}}
+];
+const SHOTS={a7iv:'https://www.wimarys.com/sony-a7-iv-advanced-manual/',z6iii:'https://www.wimarys.com/nikon-z6-iii-advanced-manual/',z9:'https://www.wimarys.com/nikon-z9-advanced-manual/',r7:'https://www.wimarys.com/canon-eos-r7-advanced-manual/',r6:'https://www.wimarys.com/canon-eos-r6-advanced-manual/'};
+const TAB_HE=m=>m.brand==='sony'?SONY_HE:m.brand==='nikon'?NIKON_TABS_HE:CANON_HE;
+Object.values(MODELS).forEach(m=>{m.tabs=m.tabs.map(t=>({en:t[0],icon:t[1],color:t[3],groups:t[2].split('\n').map(l=>{const i=l.indexOf(':');return{en:l.slice(0,i).trim(),items:l.slice(i+1).split(';').map(x=>x.trim()).filter(Boolean)};})}));});
+const NMAP=[3,0,1,2,4,5];
+Object.values(MODELS).forEach(m=>{if(m.brand==='nikon')m.tabs=[1,2,3,0,4,5].map(i=>m.tabs[i]);});
+const SONY_COL={'Shooting':'#d8324e','Exposure/Color':'#8a3fb0','Focus':'#6a45c9','Playback':'#2f6fd6','Network':'#2e9a4a','Setup':'#b99a1c'};
+function locate(mid,ref){if(!ref||ref[0]==='!')return null;let [ti,item]=ref.split('|');if(MODELS[mid].brand==='nikon')ti=NMAP[+ti];const tab=MODELS[mid].tabs[+ti];
+  for(let g=0;g<tab.groups.length;g++){const i=tab.groups[g].items.indexOf(item);if(i>=0)return{t:+ti,g,i};}return null;}
+const G={model:'a7iv',t:0,g:-1,sel:null,topic:null,q:''};
+const norm=x=>(x||'').toLowerCase().replace(/[֑-ׇ"'׳״\-\/.]/g,' ').replace(/ך/g,'כ').replace(/ם/g,'מ').replace(/ן/g,'נ').replace(/ף/g,'פ').replace(/ץ/g,'צ').replace(/\s+/g,' ').trim();
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function topicAt(mid,t,g,i){return TOPICS.find(tp=>{const l=locate(mid,tp.L[mid]);return l&&l.t===t&&l.g===g&&l.i===i;});}
+let goLoc=function(l,topic){G.t=l.t;G.g=l.g;G.sel=l;G.topic=topic||topicAt(G.model,l.t,l.g,l.i)||null;gRender(true);};
+function goTopic(tp){const l=locate(G.model,tp.L[G.model]);if(l)goLoc(l,tp);else{stopPlay();G.topic=tp;G.sel=null;gRender();}}
+function pathOf(l){const m=MODELS[G.model],he=TAB_HE(m),tab=m.tabs[l.t],grp=tab.groups[l.g];const p=[{en:'MENU',he:'כפתור התפריט'},{en:tab.en,he:he[tab.en]||''}];
+  if(m.brand==='canon')p.push({en:tab.en+' '+grp.en,he:'עמוד '+grp.en});else if(grp.en)p.push({en:(m.brand==='sony'?(l.g+1)+'. ':'')+grp.en,he:he[grp.en]||''});
+  p.push({en:grp.items[l.i],he:''});return p;}
+function center(el){if(!el)return;const P=el.parentElement;if(P.scrollHeight>P.clientHeight)P.scrollTop=el.offsetTop-P.offsetTop-P.clientHeight/2+el.clientHeight/2;
+  if(P.scrollWidth>P.clientWidth)P.scrollLeft=el.offsetLeft-P.offsetLeft-P.clientWidth/2+el.clientWidth/2;}
+function gRender(scroll){
+  const mid=G.model,m=MODELS[mid],he=TAB_HE(m),tab=m.tabs[G.t],hi=G.hi||{};
+  document.querySelectorAll('#gCams button').forEach(b=>b.classList.toggle('on',b.dataset.m===mid));
+  const multi=tab.groups.length>1, canon=m.brand==='canon', sony=m.brand==='sony';
+  if((canon||sony)&&G.g<0)G.g=0; if(!multi)G.g=0;
+  const cm=$('cm');cm.className='cm cm-'+m.brand;
+  const C=(lvl,i)=>hi.lvl===lvl&&hi.idx===i?' cur':'';
+  let h='<div class="tabs">'+m.tabs.map((t,i)=>`<button class="tab ${i===G.t?'on':''}${C('tab',i)}" data-tab="${i}" style="--tc:${t.color||SONY_COL[t.en]||'#333'}"><span>${t.icon}</span></button>`).join('')+'</div><div class="main">';
+  const tcol=tab.color||SONY_COL[tab.en]||'#333';cm.style.setProperty('--tcur',tcol);
+  const itemsHtml=()=>tab.groups[G.g].items.map((it,i)=>{const sel=G.sel&&G.sel.t===G.t&&G.sel.g===G.g&&G.sel.i===i;const tp=topicAt(mid,G.t,G.g,i);
+      return `<div class="row ${sel?'sel':''}${C('item',i)}" data-i="${i}"><span class="en">${esc(it)}</span>${tp?'<span class="bk">📖</span>':''}${m.brand==='nikon'?'<span class="ar">›</span>':''}</div>`;}).join('');
+  if(canon){h+='<div class="pages">'+tab.groups.map((g,i)=>`<button class="pg ${i===G.g?'on':''}${C('grp',i)}" data-g="${i}">${g.en}</button>`).join('')+`<span class="pgname">${esc(tab.en)}${esc(tab.groups[G.g].en)}</span></div><div class="list">${itemsHtml()}</div>`;}
+  else if(sony){let gn=0,gt=0;m.tabs.forEach((t,ti)=>t.groups.forEach((g,gi)=>{gt++;if(ti<G.t||(ti===G.t&&gi<=G.g))gn++;}));
+    h+=`<div class="hdr"><span class="tt">${esc(tab.en)} &gt; ${esc(tab.groups[G.g].en)}</span><span class="th" dir="ltr">${gn}/${gt}</span></div><div class="cols"><div class="grps">`
+      +tab.groups.map((g,i)=>`<div class="grp ${i===G.g?'on':''}${C('grp',i)}" data-g="${i}"><em>${i+1}</em><span>${esc(g.en)}</span></div>`).join('')+`</div><div class="list">${itemsHtml()}</div></div><div class="ftr"><span>▼ Page</span><span class="k">🗑 ?</span><span class="k"><b>MENU</b> Close</span></div>`;}
+  else{h+='<div class="hdr">';if(multi&&G.g>=0)h+='<button class="back" data-back="1">◀</button>';
+    const g=G.g>=0?tab.groups[G.g]:null;
+    h+=`<span class="tt">${esc(g&&g.en?g.en:tab.en)}</span><span class="th">${esc(g&&g.en?(he[g.en]||''):(he[tab.en]||''))}</span></div><div class="list">`;
+    if(multi&&G.g<0)h+=tab.groups.map((g,i)=>{const sel=G.sel&&G.sel.t===G.t&&G.sel.g===i;
+      return `<div class="row ${sel?'sel':''}${C('grp',i)}" data-g="${i}"><span class="en">${esc(g.en)}</span><span class="he">${esc(he[g.en]||'')}</span><span class="ar">›</span></div>`;}).join('');
+    else h+=itemsHtml();
+    h+='</div>';}
+  h+='</div>';if(G.menuPress)h+='<div class="menu-press"><span>MENU</span></div>';
+  cm.innerHTML=h;
+  center(cm.querySelector('.grp.on'));center(cm.querySelector('.pg.on'));
+  if(scroll||G.hi)center(cm.querySelector('.row.cur')||cm.querySelector('.row.sel'));
+  if(G.hi)center(cm.querySelector('.grp.cur'));
+  if(G.playing)return;
+  // info
+  let info='';const tp=G.topic;
+  const steps=l=>pathOf(l).map(x=>`<span class="g-step"><b>${esc(x.en)}</b>${x.he?`<i>${esc(x.he)}</i>`:''}</span>`).join('<span class="g-arr">←</span>');
+  if(tp){const ref=tp.L[mid],l=locate(mid,ref);const note=tp.n&&tp.n[m.brand];
+    info=`<div class="g-info"><h4>${esc(tp.t)} · ${esc(m.name)}</h4><p>${esc(tp.w)}</p>`+(l?`<div class="g-path">${steps(l)}</div>`+(note?`<p class="g-n">${esc(note)}</p>`:''):`<p class="g-n">${esc(ref?ref.slice(1):'לא מצאתי את ההגדרה הזאת במדריך הרשמי של הדגם הזה, ולכן היא לא מסומנת בתפריט.')}</p>`)+'</div>';}
+  else if(G.sel)info=`<div class="g-info"><h4 dir="ltr">${esc(m.tabs[G.sel.t].groups[G.sel.g].items[G.sel.i])}</h4><p>לשורה הזאת עוד אין הסבר בעברית. רוצה שאוסיף? כתוב לי את השם שלה.</p><div class="g-path">${steps(G.sel)}</div></div>`;
+  else info='<div class="g-note">חפש הגדרה ולחץ עליה: התפריט של המצלמה יראה לך בהנפשה לאן ללכת, צעד אחרי צעד. אפשר גם לדפדף בתפריט בעצמך.</div>';
+  $('gInfo').innerHTML=info;
+  $('gCap').innerHTML=G.sel?`<span>✔ כאן: <b dir="ltr">${esc(m.tabs[G.sel.t].groups[G.sel.g].items[G.sel.i])}</b></span><button id="gReplay">▶ הצג שוב את הדרך</button>`:'';
+  // results
+  const words=norm(G.q).split(' ').filter(Boolean);
+  const its=TOPICS.filter(g=>!words.length||words.every(w=>norm(g.t+' '+g.k+' '+g.w).includes(w)));
+  let raw=[];
+  if(words.length)m.tabs.forEach((t,ti)=>t.groups.forEach((g,gi)=>g.items.forEach((it,ii)=>{if(raw.length<25&&words.every(w=>norm(it+' '+g.en).includes(w))&&!topicAt(mid,ti,gi,ii))raw.push({t:ti,g:gi,i:ii,it,tab:t.en});})));
+  $('gNote').innerHTML=(words.length?`${its.length+raw.length} תוצאות`:`${its.length} נושאים עם הסבר`)+` · ${esc(m.name)} · <a href="${m.src}" target="_blank" rel="noopener">המדריך הרשמי</a>. אפשר לחפש גם שם של שורה באנגלית.`+(SHOTS[mid]?` <a class="shots" href="${SHOTS[mid]}" target="_blank" rel="noopener">📷 צילומי מסך אמיתיים של התפריט (wimarys.com)</a>`:'');
+  $('gList').innerHTML='<div class="g-res">'+its.map(g=>{const l=locate(mid,g.L[mid]);const pp=l?pathOf(l).slice(1).map(x=>x.en).join(' › '):'לא בתפריט הראשי בדגם הזה';
+    return `<button class="g-r ${g===G.topic?'on':''}" data-t="${TOPICS.indexOf(g)}"><b>${esc(g.t)}</b><span dir="ltr">${esc(pp)}</span></button>`;}).join('')
+    +raw.map(r=>`<button class="g-r" data-l="${r.t},${r.g},${r.i}"><b dir="ltr">${esc(r.it)}</b><span dir="ltr">${esc(pathOf(r).slice(1,-1).map(x=>x.en).join(' › '))}</span></button>`).join('')
+    +((its.length+raw.length)?'':'<div class="g-empty">לא נמצא. נסה מילה אחרת, למשל "שעה", "כרטיס" או שם באנגלית.</div>')+'</div>';
+}
+// ---- animated walkthrough ----
+let playTok=0;const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function play(l,topic){
+  const tok=++playTok,m=MODELS[G.model],he=TAB_HE(m),tab=m.tabs[l.t],grp=tab.groups[l.g],multi=tab.groups.length>1;
+  const total=multi?4:3;let n=0;
+  const cap=tx=>{n++;$('gCap').innerHTML=`<span class="stp">שלב ${n} מתוך ${total}</span><span>${tx}</span>`;};
+  const ok=()=>tok===playTok&&$('guide').classList.contains('on');
+  G.playing=true;G.sel=null;G.topic=topic||null;$('gInfo').innerHTML='';
+  G.t=0;G.g=-1;G.hi=null;G.menuPress=true;cap('לוחצים על כפתור <b>MENU</b> במצלמה');gRender();await wait(1100);if(!ok())return;
+  G.menuPress=false;cap(`עוברים ללשונית <b dir="ltr">${esc(tab.en)}</b>${he[tab.en]?' ('+esc(he[tab.en])+')':''}`);
+  for(let i=0;i<=l.t;i++){G.t=i;G.g=-1;G.hi={lvl:'tab',idx:i};gRender();await wait(i===l.t?800:330);if(!ok())return;}
+  if(multi){cap(m.brand==='canon'?`עוברים לעמוד <b>${esc(grp.en)}</b>`:m.brand==='sony'?`יורדים לקבוצה <b dir="ltr">${l.g+1}. ${esc(grp.en)}</b>${he[grp.en]?' ('+esc(he[grp.en])+')':''}`:`נכנסים ל-<b dir="ltr">${esc(grp.en)}</b>${he[grp.en]?' ('+esc(he[grp.en])+')':''}`);
+    for(let i=0;i<=l.g;i++){G.g=m.brand==='nikon'?-1:i;G.hi={lvl:'grp',idx:i};gRender();await wait(i===l.g?800:260);if(!ok())return;}}
+  G.g=l.g;cap(`בוחרים בשורה <b dir="ltr">${esc(grp.items[l.i])}</b>`);
+  const d=l.i>12?90:170;
+  for(let i=0;i<=l.i;i++){G.hi={lvl:'item',idx:i};gRender();await wait(i===l.i?700:d);if(!ok())return;}
+  G.hi=null;G.playing=false;G.sel=l;G.topic=topic||topicAt(G.model,l.t,l.g,l.i)||null;gRender(true);
+  const r=$('cm').querySelector('.row.sel');if(r)r.classList.add('flash');
+}
+function stopPlay(){playTok++;G.playing=false;G.hi=null;G.menuPress=false;}
+goLoc=function(l,topic){play(l,topic);};
+$('gCap').addEventListener('click',e=>{if(e.target.id==='gReplay'&&G.sel)play(G.sel,G.topic);});
+$('cm').addEventListener('click',e=>{
+  if(G.playing){stopPlay();}
+  const tb=e.target.closest('.tab');if(tb){G.t=+tb.dataset.tab;G.g=-1;gRender();return;}
+  const pg=e.target.closest('.pg');if(pg){G.g=+pg.dataset.g;gRender();return;}
+  const gp=e.target.closest('.grp');if(gp){G.g=+gp.dataset.g;gRender();return;}
+  if(e.target.closest('.back')){G.g=-1;gRender(true);return;}
+  const r=e.target.closest('.row');if(!r)return;
+  if(r.dataset.g!==undefined){G.g=+r.dataset.g;gRender(true);}
+  else{const l={t:G.t,g:G.g,i:+r.dataset.i};G.sel=l;G.topic=topicAt(G.model,l.t,l.g,l.i)||null;gRender();}
+});
+$('gList').addEventListener('click',e=>{const b=e.target.closest('.g-r');if(!b)return;
+  if(b.dataset.t!==undefined)goTopic(TOPICS[+b.dataset.t]);else{const [t,g,i]=b.dataset.l.split(',').map(Number);goLoc({t,g,i});}
+  document.querySelector('.g-body').scrollTo({top:0,behavior:'smooth'});});
+const DEF_MODEL={sony:'a7iv',canon:'r5',nikon:'z6iii',lumix:'a7iv'};
+$('openGuide').onclick=()=>{let mm=null;try{mm=localStorage.getItem('photosimModel');}catch(e){}
+  if(!MODELS[mm]||MODELS[mm].brand!==(st.skin==='lumix'?MODELS[mm].brand:st.skin))mm=DEF_MODEL[st.skin||'sony'];
+  stopPlay();G.model=mm;G.t=0;G.g=-1;G.sel=null;G.topic=null;$('guide').classList.add('on');gRender();};
+$('closeGuide').onclick=()=>{stopPlay();$('guide').classList.remove('on');};
+$('gCams').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;G.model=b.dataset.m;try{localStorage.setItem('photosimModel',G.model);}catch(e){}
+  stopPlay();if(G.topic)goTopic(G.topic);else{G.t=0;G.g=-1;G.sel=null;gRender();}});
+$('gSearch').addEventListener('input',e=>{stopPlay();G.q=e.target.value;gRender();});
+renderCH();setSkin(st.skin);requestAnimationFrame(loop);
+setTimeout(()=>toast('שנה צמצם, מהירות ו-ISO, ולחץ על כפתור הצילום'),600);
+})();
+</script>
+</body>
+</html>
