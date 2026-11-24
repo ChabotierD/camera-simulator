@@ -202,7 +202,7 @@ async function toggleLvl(){
 }
 function fit(){if(v.videoWidth)$('stage').style.maxWidth=Math.round(innerHeight*.7*v.videoWidth/v.videoHeight)+'px';}
 v.addEventListener('loadedmetadata',fit);v.addEventListener('resize',fit);addEventListener('resize',fit);
-$('go').onclick=start;
+$('go').onclick=()=>{start();try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:'use-cam',title:'use-cam',event:true});}catch(_){}};
 $('tGrid').onclick=e=>{const on=e.currentTarget.classList.toggle('on');$('grid').style.display=on?'block':'none';};
 $('tHist').onclick=e=>{const on=e.currentTarget.classList.toggle('on');hc.style.display=on?'block':'none';};
 $('tLvl').onclick=toggleLvl;
@@ -211,5 +211,6 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnim
 window.addEventListener('pagehide',stop);
 })();
 </script>
+<script>if(location.hostname==='chabotierd.github.io'){const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://chabotierdaniel.goatcounter.com/count';document.head.appendChild(sc);}</script>
 </body>
 </html>
