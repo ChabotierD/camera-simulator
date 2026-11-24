@@ -739,6 +739,10 @@ header{padding-top:calc(8px + env(safe-area-inset-top))!important;background:rgb
   .panel .seg,.panel .seg.s4,.panel .seg.s5,#cWB .seg{grid-template-columns:repeat(auto-fit,minmax(72px,1fr))!important}.panel .lbl{font-size:12px}
   .toast{bottom:10px}
 }
+.updbar{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:80;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #D4AF37;background:#17140a;color:#fff;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.updbar button,.verbtn{border:0;border-radius:9px;min-height:40px;padding:0 14px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414}
+.verline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.verbtn{background:transparent;color:#D4AF37;border:1px solid rgba(212,175,55,.5);font-weight:600;min-height:38px}
 </style>
 </head>
 <body>
@@ -1056,7 +1060,7 @@ header{padding-top:calc(8px + env(safe-area-inset-top))!important;background:rgb
   </main>
   </div>
   <div class="langrow notr"></div>
-  <footer class="foot">© 2026 דניאל אורי שבוטיה · Daniel Ori Chabotier · Photo by Us<br>כל הזכויות שמורות · <a href="#terms">תנאי שימוש ורישיון</a> · <a href="cam/">מצלמה חיה (ניסיוני)</a></footer>
+  <footer class="foot">© 2026 דניאל אורי שבוטיה · Daniel Ori Chabotier · Photo by Us<br>כל הזכויות שמורות · <a href="#terms">תנאי שימוש ורישיון</a> · <a href="cam/">מצלמה חיה (ניסיוני)</a><div class="verline"><span>גרסה <b id="verNum"></b></span><button class="verbtn" id="verBtn">🔄 בדוק עדכון</button></div></footer>
 </div>
 
 <div class="review" id="review">
@@ -1091,6 +1095,7 @@ header{padding-top:calc(8px + env(safe-area-inset-top))!important;background:rgb
 </div>
 <div class="toast" id="toast"></div>
 
+<script>window.BUILD=10;</script>
 <script>
 // ===== languages: the page is written in Hebrew; other languages are swapped in text node by text node =====
 window.I18N=(function(){
@@ -1120,7 +1125,7 @@ window.I18N=(function(){
   function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==='he'?'rtl':'ltr';walk(document.body);
     const t=document.querySelector('title');if(t){t.dataset.he=t.dataset.he||t.textContent;t.textContent=lang==='he'?t.dataset.he:tr(t.dataset.he);}
     window.dispatchEvent(new Event('langchange'));}
-  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('lang/'+l+'.json');dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
+  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('lang/'+l+'.json?v='+window.BUILD);dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
     lang=l;if(l!=='he')anyNonHe=true;try{localStorage.setItem('photosimLang',l);}catch(_){ }apply();}
   function init(){mo.observe(document.body,{subtree:true,childList:true,characterData:true});let l='he';try{l=localStorage.getItem('photosimLang')||'he';}catch(_){ }if(l!=='he')set(l);}
   return{set,init,skel,miss,get lang(){return lang;},t:s=>lang==='he'?s:tr(s)};
@@ -2025,6 +2030,10 @@ const TOPICS=[
  L:{...S('5|DISP (Screen Disp) Set'),...N('3|d18 Custom monitor shooting display','3|d20 Custom monitor shooting display'),...C('0|Shooting info. disp.')}},
 {t:'בהירות המסך',k:'בהירות מסך תצוגה שמש monitor brightness screen',w:'מסך בהיר מדי מטעה: התמונה נראית טובה ויוצאת כהה. עדיף להשאיר על רגיל ולסמוך על ההיסטוגרמה.',
  L:{...S('5|Monitor Brightness'),...N('4|Monitor brightness'),...C('4|Screen brightness')}},
+{t:'ריצוד ופסים בתאורה מלאכותית (Flicker)',k:'ריצוד הבהוב מהבהב פסים פליקר לד פלורסנט נורות flicker banding anti-flicker 50hz',w:'נורות לד ופלורסנט מהבהבות בקצב החשמל, גם כשהעין לא רואה את זה. בתמונה זה יוצא כפסים כהים או כחשיפה שמשתנה מתמונה לתמונה. ההגדרה הזאת מזהה את ההבהוב ומתזמנת את הצילום לרגע שהאור בשיא. בנוסף עוזרים תריס של 1/50 או 1/100, ותריס מכני במקום צילום שקט.',
+ L:{...S('0|Anti-flicker Set.','0|Anti-flicker Shoot.'),...N('1|Photo flicker reduction'),...C('0|Anti-flicker shoot.')}},
+{t:'ריצוד בווידאו',k:'ריצוד הבהוב מהבהב פסים וידאו פליקר לד מסכים flicker video banding 50hz 25p',w:'בווידאו הריצוד נראה כהבהוב או כפסים שזזים על התמונה. הפתרון הראשון הוא התריס: בישראל ובאירופה החשמל הוא 50 הרץ, ולכן מצלמים בתריס 1/50 או 1/100 ובקצב של 25 או 50 פריימים. בתריס 1/60 או בקצב של 30 פריימים הריצוד כמעט בטוח יופיע. מול מסכי לד ושלטים צריך לפעמים כוונון עדין של התריס.',
+ L:{...S('!בדגם הזה פותרים דרך התריס: 1/50 או 1/100, בקצב של 25p או 50p. לכוונון עדין מול מסכי לד מחפשים את Var. Shutter בקבוצה Shutter/Silent, אם היא קיימת בגרסת הקושחה שלך.'),...N('2|Video flicker reduction'),...C('!בדגם הזה פותרים דרך התריס: 1/50 או 1/100, בקצב של 25p או 50p.')}},
 {t:'צילום שקט',k:'שקט תריס אלקטרוני חופה טקס silent electronic shutter',w:'מצלם בלי רעש של תריס. מצוין לחופה ולטקסים. שים לב: תחת תאורת לד או פלורסנט עלולים להופיע פסים.',
  n:{canon:'ב-Shutter mode בוחרים Electronic.'},
  L:{...S('0|Silent Mode Settings'),...N('4|Silent mode'),...C('0|Shutter mode','0|Shutter mode','0|Silent shutter function')}},
@@ -2169,6 +2178,7 @@ const LESSONS=[
 {t:'איך מצלמים פורטרט',p:['בפורטרט הנושא הוא האדם, והרקע רק תומך. עדשה של 50 עד 135 מ"מ, צמצם פתוח כדי לטשטש את הרקע, ופוקוס על העין הקרובה למצלמה.','מצלמים בגובה העיניים של המצולם. משאירים מעט מקום מעל הראש, וממקמים את העיניים בערך בשליש העליון של הפריים. מרחיקים את המצולם מהרקע כדי שיתמוסס.'],tip:'מהירות של 1/125 ומעלה. גם מי שעומד במקום זז קצת.',go:'נסה: סצנת פורטרט, וגרור את המצולם לקו השליש'},
 {t:'וידאו: צילום סינק',p:['סינק הוא קטע ראיון שבו רואים ושומעים אדם מדבר. המרואיין לא מסתכל למצלמה אלא למראיין שלידה, ולכן ממקמים אותו בשליש של הפריים ומשאירים מקום ריק בכיוון המבט שלו. לזה קוראים מרחב מבט.','בווידאו התריס קבוע: ב-25 פריימים בשנייה מצלמים ב-1/50. זה כלל ה-180 מעלות, והוא נותן תנועה טבעית. את החשיפה מתקנים בצמצם, ב-ISO, ובחוץ בעזרת פילטר ND.'],tip:'חצובה, פוקוס על העיניים, ובדיקת סאונד לפני שמתחילים. סינק עם סאונד גרוע לא שווה כלום.',go:'נסה: סצנת וידאו סינק'},
 {t:'סאונד: מיקרופונים ורמות',p:['המיקרופון הפנימי של המצלמה קולט את כל הסביבה מרחוק, ולכן לא מתאים לראיון. שוטגאן על המצלמה קולט בעיקר את מה שמולו. נק מייק (מיקרופון דש) צמוד לבגד וקרוב לפה, ונותן קול נקי בכל מרחק.','את הרמה קוראים בבר הסאונד, בדציבלים. השיאים של הדיבור צריכים להגיע בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi>. אם הבר מגיע ל-0 יש קליפינג: הקול נחתך ואי אפשר לתקן. אם הוא נמוך מדי, בהגברה בעריכה יעלה גם הרעש.'],tip:'בשטח עובדים עם שני ערוצים: נק מייק בערוץ 1 ושוטגאן בערוץ 2 כגיבוי. ותמיד עם אוזניות.',go:'נסה: הפעל נק מייק ושחק ברמת ההקלטה'},
+{t:'ריצוד: פסים והבהוב בתאורה מלאכותית',p:['נורות לד, פלורסנט ומסכים לא מאירים ברצף. הם נדלקים ונכבים עשרות פעמים בשנייה, בקצב החשמל. העין לא רואה את זה, אבל המצלמה כן: בתמונה מופיעים פסים כהים או חשיפה שמשתנה מתמונה לתמונה, ובווידאו הבהוב או פסים שזזים.','הטיפול מתחיל בתריס. בישראל ובאירופה החשמל הוא 50 הרץ, ולכן תריס של 1/50 או 1/100 תופס מחזור שלם של האור והריצוד נעלם. בווידאו מצלמים ב-25 או 50 פריימים בשנייה. תריס מהיר מאוד ותריס אלקטרוני שקט מחמירים את הבעיה.','ברוב המצלמות יש גם הגדרה נגד ריצוד, שמזהה את ההבהוב ומתזמנת את הצילום. היא נמצאת במדריך ההגדרות תחת "ריצוד".'],tip:'לפני אירוע באולם, צלם כמה תמונות בדיקה בתריס מהיר. אם רואים פסים, יש ריצוד וצריך לטפל בו לפני שמתחילים.'},
 {t:'RAW או JPEG',p:['JPEG הוא קובץ מוכן: המצלמה כבר עיבדה ודחסה אותו. הוא קטן ונוח לשליחה, אבל קשה לתקן בו טעויות.','RAW שומר את כל המידע מהחיישן. הקובץ גדול וחייב עריכה, אבל אפשר להציל בו חשיפה ואיזון לבן.'],tip:'באירוע שאי אפשר לחזור עליו, כמו חתונה, מצלמים RAW.'}
 ];
 function vizHtml(k){
@@ -2643,6 +2653,18 @@ $('homeGuide').onclick=()=>$('openGuide').click();
 renderCH();setSkin(st.skin);requestAnimationFrame(loop);
 
 })();
+</script>
+<div class="updbar" id="updBar" style="display:none"><span>יש גרסה חדשה של האתר</span><button id="updNow">עדכן עכשיו</button></div>
+<script>
+// ----- version check: a small file on the site says which build is current -----
+(function(){const R='',bar=document.getElementById('updBar');let latest=window.BUILD;
+  function go(){location.replace(location.pathname+'?b='+latest+'-'+Date.now().toString(36)+location.hash);}
+  function check(manual){return fetch(R+'version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{latest=j.build||latest;
+      if(latest>window.BUILD){bar.style.display='flex';if(manual)go();}else if(manual){const b=document.getElementById('verBtn');if(b){const t=b.dataset.t=b.dataset.t||b.textContent;b.textContent='✓ זו הגרסה העדכנית';setTimeout(()=>{b.textContent=t;},2500);}}})
+    .catch(()=>{if(manual)go();});}
+  document.getElementById('updNow').onclick=go;const vb=document.getElementById('verBtn');if(vb)vb.onclick=()=>check(true);
+  const vn=document.getElementById('verNum');if(vn)vn.textContent=window.BUILD;
+  check(false);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check(false);});})();
 </script>
 </body>
 </html>

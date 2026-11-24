@@ -99,6 +99,10 @@ body.ls #liveFb h3{display:none}body.ls #liveFb .ln{font-size:.72rem;line-height
 body.ls #rev{position:absolute;inset:0;z-index:5;margin:0;border-radius:0;overflow:auto;background:rgba(11,12,15,.97);padding:12px 14px}
 body.ls #rev img{max-height:46vh;width:auto;max-width:100%;margin:0 auto 10px}
 body:not(.ls) .side{display:contents}
+.updbar{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:80;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #D4AF37;background:#17140a;color:#fff;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.updbar button,.verbtn{border:0;border-radius:9px;min-height:40px;padding:0 14px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414}
+.verline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.verbtn{background:transparent;color:#D4AF37;border:1px solid rgba(212,175,55,.5);font-weight:600;min-height:38px}
 </style>
 </head>
 <body>
@@ -157,8 +161,10 @@ body:not(.ls) .side{display:contents}
       <div class="ln" id="fAud"><i></i><span>מודד סאונד…</span></div>
     </div>
     <div class="note">הביקורת היא על התוצאה שרואים ושומעים. הדפדפן לא חושף את הצמצם, התריס וה-ISO של הטלפון, ולכן הם לא מוצגים. הטלפון גם מכוון חשיפה ועוצמת קול בעצמו, כך שהמדידה מתארת את מה שהטלפון מפיק ולא את ההגדרות שלו.</div>
+    <div class="note" style="text-align:center"><div class="verline"><span>גרסה <b id="verNum"></b></span><button class="verbtn" id="verBtn">🔄 בדוק עדכון</button></div></div>
   </div>
 </div>
+<script>window.BUILD=10;</script>
 <script>
 // ===== languages: the page is written in Hebrew; other languages are swapped in text node by text node =====
 window.I18N=(function(){
@@ -188,7 +194,7 @@ window.I18N=(function(){
   function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==='he'?'rtl':'ltr';walk(document.body);
     const t=document.querySelector('title');if(t){t.dataset.he=t.dataset.he||t.textContent;t.textContent=lang==='he'?t.dataset.he:tr(t.dataset.he);}
     window.dispatchEvent(new Event('langchange'));}
-  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('../lang/'+l+'.json');dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
+  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('../lang/'+l+'.json?v='+window.BUILD);dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
     lang=l;if(l!=='he')anyNonHe=true;try{localStorage.setItem('photosimLang',l);}catch(_){ }apply();}
   function init(){mo.observe(document.body,{subtree:true,childList:true,characterData:true});let l='he';try{l=localStorage.getItem('photosimLang')||'he';}catch(_){ }if(l!=='he')set(l);}
   return{set,init,skel,miss,get lang(){return lang;},t:s=>lang==='he'?s:tr(s)};
@@ -405,5 +411,17 @@ window.addEventListener('pagehide',stop);
 })();
 </script>
 <script>if(location.hostname==='chabotierd.github.io'){const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://chabotierdaniel.goatcounter.com/count';document.head.appendChild(sc);}</script>
+<div class="updbar" id="updBar" style="display:none"><span>יש גרסה חדשה של האתר</span><button id="updNow">עדכן עכשיו</button></div>
+<script>
+// ----- version check: a small file on the site says which build is current -----
+(function(){const R='../',bar=document.getElementById('updBar');let latest=window.BUILD;
+  function go(){location.replace(location.pathname+'?b='+latest+'-'+Date.now().toString(36)+location.hash);}
+  function check(manual){return fetch(R+'version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{latest=j.build||latest;
+      if(latest>window.BUILD){bar.style.display='flex';if(manual)go();}else if(manual){const b=document.getElementById('verBtn');if(b){const t=b.dataset.t=b.dataset.t||b.textContent;b.textContent='✓ זו הגרסה העדכנית';setTimeout(()=>{b.textContent=t;},2500);}}})
+    .catch(()=>{if(manual)go();});}
+  document.getElementById('updNow').onclick=go;const vb=document.getElementById('verBtn');if(vb)vb.onclick=()=>check(true);
+  const vn=document.getElementById('verNum');if(vn)vn.textContent=window.BUILD;
+  check(false);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check(false);});})();
+</script>
 </body>
 </html>
