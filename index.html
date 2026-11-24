@@ -694,6 +694,18 @@ html[dir=ltr] .vf .ov [class*=d-]{direction:ltr}
   html[dir=ltr] .distbar button{padding:0 8px;font-size:12.5px}
   html[dir=ltr] .seg button{font-size:11.5px!important;padding-inline:2px!important;white-space:normal;line-height:1.15;text-overflow:clip}}
 #camsel{grid-template-columns:repeat(5,1fr)}#camPhone{color:var(--accent-gold,#D4AF37);border-color:var(--border-gold,#D4AF37)}
+.exbtn{width:100%;margin:10px 0 2px;min-height:44px;border-radius:10px;border:1px solid var(--border-gold,#D4AF37);background:rgba(212,175,55,.1);color:var(--accent-gold,#D4AF37);font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.excard{margin:8px 0 4px;padding:11px 12px;border:1px solid var(--border-gold,#D4AF37);border-radius:12px;background:rgba(212,175,55,.06)}
+.excard .ext{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.excard .ext b{color:var(--accent-gold,#D4AF37);font-size:15px}.excard .ext span{font-size:12px;color:var(--text-secondary,#9aa3b2);font-weight:400}
+.excard ul{margin:8px 0 10px;padding-inline-start:18px}.excard li{font-size:13px;font-weight:400;line-height:1.5;margin-bottom:3px}
+.excard .exb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.excard .exb button{min-height:42px;border-radius:9px;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:0 4px}
+.excard .exb .pri{background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414;border:0}
+/* iPhone status bar and notch: keep the header, the language button and full-screen panels below it */
+header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
+.guide,.review{padding-top:env(safe-area-inset-top)}
+@media (max-width:959px){.vfblock{top:calc(50px + env(safe-area-inset-top))!important}}
+.app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
 </style>
 </head>
 <body>
@@ -907,6 +919,9 @@ html[dir=ltr] .vf .ov [class*=d-]{direction:ltr}
       <div class="ctl scn" id="scnCard" data-g="scene">
         <div class="lbl">סצנה</div>
         <div class="seg" id="sceneSeg"><button data-v="runner" class="on">🏃 תנועה</button><button data-v="portrait">🧑 פורטרט</button><button data-v="video">🎬 וידאו סינק</button></div>
+        <button class="exbtn" id="exBtn">👁 איך זה צריך להיראות</button>
+        <div class="excard" id="exCard" style="display:none"><div class="ext"><b id="exT"></b><span id="exN"></span></div><ul id="exL"></ul><div class="hint" style="margin:0 0 10px">צלם עכשיו כדי לראות את התוצאה ואת המשוב. אחר כך שנה ערך אחד וצלם שוב, כדי לראות מה הוא עושה.</div>
+          <div class="exb"><button id="exNext">דוגמה נוספת ›</button><button id="exBack">חזרה להגדרות שלי</button><button id="exKeep" class="pri">המשך מכאן</button></div></div>
         <div class="lbl only-runner">מיקום</div>
         <div class="seg only-runner" id="rlocSeg"><button data-v="park" class="on">🌳 פארק</button><button data-v="track">🏟 מסלול ריצה</button><button data-v="street">🏙 רחוב</button></div>
         <div class="lbl">תאורה טבעית</div>
@@ -2450,6 +2465,7 @@ function videoFeedback(r){const L=[];
 function segBind(id,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
 function setSeg(id,v){[...$(id).children].forEach(x=>x.classList.toggle('on',x.dataset.v===String(v)));}
 function sceneUI(){
+  if(typeof exSave!=='undefined'&&exSave&&exSave.scene!==st.scene)exClose(false);
   if(st.scene!=='video'&&$('p-sim').dataset.mt==='snd')setMT('scene');wbUI();
   const simEl=$('p-sim');simEl.classList.remove('sim-runner','sim-portrait','sim-video');simEl.classList.add('sim-'+st.scene);
   $('lightHint').textContent=LIGHTS[st.light].hint;$('micInfo').textContent=micText();
@@ -2533,6 +2549,45 @@ $('chChip').onclick=()=>{st.challenge=0;renderCH();};
   ['gesturestart','gesturechange'].forEach(n=>document.addEventListener(n,e=>{if(e.target.closest&&e.target.closest('#vf'))e.preventDefault();},{passive:false}));
   const un=()=>{sndUnlock();};['touchend','pointerup','click'].forEach(n=>document.addEventListener(n,un,{passive:true}));})();
 $('camPhone').addEventListener('click',e=>{e.stopImmediatePropagation();trackOnce('open-cam');location.href='cam/';},true);
+// ----- worked examples: set the simulator to a correct result and explain why it is correct -----
+const EX={
+ runner:[
+  {t:'הקפאת תנועה',c:{mode:'M',light:'day',sh:'1/1000',ap:4,bal:'iso',tripod:false,rz:1.5},n:['תריס מהיר (1/1000) מקפיא את הרץ, כולל הידיים והרגליים.','צמצם f/4 מכניס מספיק אור ומרכך את הרקע.','ה-ISO עלה רק כמה שצריך כדי שמד האור יעמוד על אפס.','משאירים לרץ מקום בפריים בכיוון שאליו הוא רץ.']},
+  {t:'תחושת מהירות',c:{mode:'M',light:'day',sh:'1/15',ap:16,bal:'iso',tripod:true,rz:1.3},n:['תריס איטי (1/15) מורח את הרץ, וכך רואים תנועה.','המצלמה על חצובה, ולכן הרקע נשאר חד.','כדי לא לשרוף את התמונה בתריס איטי סוגרים צמצם ומורידים ISO.']}],
+ portrait:[
+  {t:'פורטרט קלאסי',c:{mode:'M',light:'day',ldir:'side',shot:'mcu',px:.5,ap:2,iso:100,bal:'sh',fill:false,tripod:false},n:['צמצם פתוח (f/2) מטשטש את הרקע ומבליט את המצולם.','הפוקוס על הפנים, והעיניים בערך בשליש העליון של הפריים.','מעט מרווח מעל הראש, והחיתוך בחזה ולא במפרק.','אור מהצד נותן לפנים נפח.','תריס מהיר מ-1/125, כדי שתזוזה קטנה לא תטשטש.']},
+  {t:'שעת הזהב עם מילוי',c:{mode:'M',light:'sunset',ldir:'back',shot:'med',px:.36,ap:2.8,sh:'1/250',bal:'iso',fill:true,fillPow:.5,tripod:false},n:['השמש מאחורי המצולם יוצרת הילה סביב השיער והכתפיים.','פנס מילוי עדין מחזיר אור לפנים, שאחרת היו יוצאות כהות.','המצולם על קו השליש, עם מקום לרקע.','בשקיעה יש פחות אור, ולכן ה-ISO עולה מעט.']}],
+ video:[
+  {t:'סינק נכון',c:{mode:'M',light:'day',ldir:'side',shot:'mcu',px:.64,flip:false,fps:25,sh:'1/50',ap:2.8,bal:'video',lav:true,gun:true,again:19,tripod:true,fill:false},n:['המרואיין בשליש הפריים ומסתכל אל הצד הריק: יש לו מרחב מבט.','מדיום קלוז-אפ: רואים היטב את הפנים.','ב-25p התריס הוא 1/50, ואת החשיפה מאזנים בפילטר ND ולא בתריס.','נק מייק בערוץ 1 ושוטגאן בערוץ 2 כגיבוי.','שיאי הדיבור בין ‎-12 ל-‎-6, בלי קליפינג.','המצלמה על חצובה.']},
+  {t:'סינק בלילה',c:{mode:'M',light:'night',ldir:'front',shot:'mcu',px:.64,flip:false,fps:25,sh:'1/50',ap:2,bal:'video',lav:true,gun:false,again:19,tripod:true,fill:true,fillPow:.7},n:['בלילה חסר אור: פנס על המצלמה מאיר את הפנים.','צמצם פתוח (f/2) ותריס 1/50. את השאר משלים ה-ISO.','חצובה, כי בלי אור כל רעידה מורגשת.','נק מייק נותן קול נקי גם כשהסביבה רועשת.']}]};
+var exSave=null,exI=-1;
+function exSl(id,v){const e=$(id);if(!e)return;e.value=v;e.dispatchEvent(new Event('input'));}
+function exSg(id,v){const b=$(id).querySelector('[data-v="'+v+'"]');if(b)b.click();}
+function exTg(id,key,on){if(on!=null&&!!st[key]!==!!on)$(id).click();}
+function exSnap(){return{mode:st.mode,light:st.light,ldir:st.ldir,pd:st.pd,tilt:st.tilt,px:st.px,flip:st.flip,fps:st.fps,nd:st.nd,fill:st.fill,fillPow:st.fillPow,lav:st.lav,gun:st.gun,again:st.again,tripod:st.tripod,rz:st.rz,rox:st.rox,roy:st.roy,ai:st.ai,si:st.si,ii:st.ii};}
+function exBest(key,n,ok){let b=st[key],bo=1e9;const keep=st[key];for(let i=0;i<n;i++){if(ok&&!ok(i))continue;st[key]=i;const o=Math.abs(offset());if(o<bo-.01){bo=o;b=i;}}st[key]=keep;return b;}
+function exApply(c){const P=st.scene!=='runner';
+  if(c.mode)$('modes').querySelector('[data-m="'+c.mode+'"]').click();
+  if(c.light)exSg('lightSeg',c.light);if(P&&c.ldir)exSg('ldirSeg',c.ldir);
+  if(P&&c.shot)exSg('shotSeg',c.shot);if(P&&c.pd!=null)exSl('rDist',c.pd);
+  if(st.scene==='video'){if(c.fps)exSg('fpsSeg',c.fps);if(c.nd!=null)exSg('ndSeg',c.nd);exTg('tgLav','lav',c.lav);exTg('tgGun','gun',c.gun);if(c.again!=null)exSl('rAud',c.again);}
+  exTg('tgFill','fill',c.fill);if(c.fillPow!=null&&st.fill)exSl('rFill',Math.round(c.fillPow*100));
+  exTg('tgTripod','tripod',c.tripod);
+  if(!P&&c.rz){st.rox=c.rox||0;st.roy=c.roy||0;exSl('rZoom',c.rz);}
+  if(P&&c.flip!=null&&st.flip!==c.flip)$('charSeg').querySelector('[data-v=flip]').click();
+  if(c.ap!=null)exSl('rA',AP.indexOf(c.ap));else if(c.ai!=null)exSl('rA',c.ai);
+  if(c.sh!=null)exSl('rS',SH.findIndex(x=>x[0]===c.sh));else if(c.si!=null)exSl('rS',c.si);
+  if(c.iso!=null)exSl('rI',ISO.indexOf(c.iso));else if(c.ii!=null)exSl('rI',c.ii);
+  if(c.bal==='iso')exSl('rI',exBest('ii',ISO.length));
+  if(c.bal==='sh')exSl('rS',exBest('si',SH.length,i=>SH[i][1]<=1/160));
+  if(c.bal==='video'){let best=[0,0,1e9];for(const nd of[0,2,4,6]){st.nd=nd;const ii=exBest('ii',ISO.length,i=>ISO[i]<=12800),k=st.ii;st.ii=ii;const o=Math.abs(offset())+ISO[ii]/1e6;st.ii=k;if(o<best[2]-.01)best=[nd,ii,o];}exSg('ndSeg',best[0]);exSl('rI',best[1]);}
+  if(P){if(c.px!=null)st.px=c.px;if(c.tilt!=null)st.tilt=c.tilt;frameHint();}
+  st.focusD=subjD();st.focusOn='subject';pCache.k='';dirty=true;updateUI();}
+function exShow(i){const L=EX[st.scene];if(!exSave)exSave={scene:st.scene,s:exSnap()};exI=(i+L.length)%L.length;const E=L[exI];exApply(E.c);
+  $('exT').textContent=E.t;$('exN').textContent=(exI+1)+' / '+L.length;$('exL').innerHTML=E.n.map(x=>'<li>'+x+'</li>').join('');$('exCard').style.display='block';$('exBtn').style.display='none';
+  $('exNext').style.display=L.length>1?'':'none';toast('דוגמה: '+E.t);trackOnce('use-example');}
+function exClose(restore){if(restore&&exSave&&exSave.scene===st.scene)exApply(exSave.s);exSave=null;exI=-1;$('exCard').style.display='none';$('exBtn').style.display='';}
+$('exBtn').onclick=()=>exShow(0);$('exNext').onclick=()=>exShow(exI+1);$('exBack').onclick=()=>{exClose(true);toast('חזרת להגדרות שלך');};$('exKeep').onclick=()=>exClose(false);
 const PAGES=['home','basics','sim','terms'];
 function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg))pg='home';st.page=pg;
   PAGES.forEach(x=>$('p-'+x).classList.toggle('on',x===pg));
