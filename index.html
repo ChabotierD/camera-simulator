@@ -603,9 +603,10 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 /* ===== scenes, light, video & audio ===== */
 .scn .lbl,.vid .lbl{font-size:12px;color:var(--text-secondary,#9aa3b2);margin:10px 0 5px;font-weight:500}
 .scn .lbl:first-child{margin-top:0}
-.seg.s4{grid-template-columns:repeat(4,1fr)}
+.seg.s4{grid-template-columns:repeat(4,1fr)}.seg.s5{grid-template-columns:repeat(5,1fr)}.seg.s5 button{font-size:11.5px!important;padding:8px 0!important}
+.scn .lbl b{color:var(--accent-gold,#ffb020)}
 .scn .seg button,.vid .seg button{font-size:12.5px;padding:8px 2px;white-space:nowrap}
-.sim-runner .only-person{display:none}
+.sim-runner .only-person{display:none}.sim-portrait .only-runner,.sim-video .only-runner{display:none}.sim-runner #charSeg{grid-template-columns:1fr 1fr!important}.sim-runner #charSeg [data-v=flip]{display:none}
 #scnCard{order:-3}.sim-video #vidCard{order:-2}
 #vidCard{display:none}.sim-video #vidCard{display:block;border-color:var(--border-gold,#d4af37)}
 .rec-ind,.vinfo,.ometer{display:none}
@@ -614,7 +615,7 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 .vf.recording .rec-ind i{background:#ff2d2d;box-shadow:0 0 1.5cqw #ff2d2d;animation:bl 1s steps(2) infinite}
 .vf.recording{box-shadow:0 0 0 3px #ff2d2d,0 24px 60px rgba(0,0,0,.75)!important}
 .sim-video .vinfo{display:block;position:absolute;top:12.5cqw;left:50%;transform:translateX(-50%);font-size:2.1cqw;font-weight:700;direction:ltr;background:rgba(0,0,0,.45);padding:.2cqw 1.2cqw;border-radius:.6cqw}
-.vinfo.bad{color:#ffb020}
+.vinfo b{font-size:2.9cqw;font-weight:800;margin-inline-end:1cqw;color:#fff}.vinfo.bad span{color:#ffb020}
 .sim-video .ometer{display:flex;flex-direction:column;gap:.5cqw;position:absolute;left:13cqw;bottom:10.5cqw;width:34cqw;background:rgba(0,0,0,.55);padding:.8cqw 1cqw;border-radius:.8cqw;direction:ltr}
 .vf[data-sk=canon] .ometer,.vf[data-sk=nikon] .ometer{left:3cqw;bottom:11cqw}
 .ometer div{display:flex;align-items:center;gap:.8cqw}.ometer b{font-size:1.9cqw;width:1.6cqw}
@@ -636,6 +637,42 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 .shutter.rec::after{background:radial-gradient(circle at 35% 35%,#ff6a5e,#c81e1e)!important}
 .shutter.rec.on::after{border-radius:22%!important;width:34px!important;height:34px!important}
 #vf.dragging{cursor:grabbing}
+/* ===== mobile comfort, tabs, distance bar, WB card, terms ===== */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.sim-portrait .vf,.sim-video .vf{touch-action:none}
+.distbar{display:flex;align-items:center;gap:8px;margin-top:8px;direction:rtl}
+.sim-runner .distbar{display:none}
+.distbar button{flex:none;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);border-radius:10px;min-height:40px;padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.distbar input{flex:1;min-width:0}
+.distbar b{flex:none;min-width:48px;text-align:center;color:var(--accent-gold,#D4AF37);font-size:14px}
+.mtabs{display:none}
+.chchip{align-items:center;gap:8px;margin-top:8px;padding:7px 10px;border:1px solid var(--border-gold,#D4AF37);border-radius:10px;background:rgba(212,175,55,.08);font-size:12.5px;line-height:1.35;cursor:pointer}
+.chchip b{flex:none;color:var(--accent-gold,#D4AF37)}.chchip span{flex:1;font-weight:400;color:var(--text-secondary,#9aa3b2)}.chchip i{flex:none;font-style:normal;opacity:.7;padding:0 4px}
+#cWB .seg{grid-template-columns:repeat(4,1fr)}
+#cWB .seg button small{display:block;font-size:10.5px;font-weight:500;opacity:.8}
+#kBox{display:none;margin-top:10px}
+.kgrad{height:8px;border-radius:4px;margin:2px 0 6px;background:linear-gradient(90deg,#4d8dff,#cfe0ff 38%,#fff 46%,#ffe2b8 60%,#ff9a3c)}
+.foot{margin:26px 0 4px;padding:14px 4px 0;border-top:1px solid var(--border-subtle,#222);text-align:center;font-size:12.5px;font-weight:400;color:var(--text-secondary,#9aa3b2);line-height:1.7}
+.foot a{color:var(--accent-gold,#D4AF37);text-decoration:none}
+.terms{max-width:780px;margin:0 auto;padding:6px 4px 20px}
+.terms h1{font-size:1.5rem;margin:10px 0 4px}.terms h2{font-size:1.05rem;margin:22px 0 6px;color:var(--accent-gold,#D4AF37)}
+.terms p,.terms li{font-weight:400;line-height:1.7;color:var(--text,#e9ecf1);margin:0 0 8px}.terms ul{padding-inline-start:20px;margin:0 0 8px}
+.terms .upd{color:var(--text-secondary,#9aa3b2);font-size:.85rem}
+@media (max-width:959px) and (orientation:portrait){
+  input,select,textarea{font-size:16px!important}
+  .mtabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px;margin-top:8px}
+  .mtabs button{border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text-secondary,#9aa3b2);border-radius:10px;min-height:42px;padding:0 4px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .mtabs button.on{color:var(--accent-gold,#D4AF37);border-color:var(--border-gold,#D4AF37);background:rgba(212,175,55,.1)}
+  .mtabs [data-t=snd]{display:none}.sim-video .mtabs [data-t=snd]{display:block}
+  #p-sim[data-mt=scene] .panel>[data-g]:not([data-g=scene]),#p-sim[data-mt=expo] .panel>[data-g]:not([data-g=expo]),
+  #p-sim[data-mt=snd] .panel>[data-g]:not([data-g=snd]),#p-sim[data-mt=more] .panel>[data-g]:not([data-g=more]){display:none!important}
+  .panel .dup-m,.vf-wrap>.tip,.camlbl{display:none!important}
+  .shootbar{padding-top:6px}.shootbar .shutter{width:60px!important;height:60px!important}.shootbar .shutter::after{width:44px!important;height:44px!important}
+  .distbar{margin-top:6px}
+  .seg button,.tg,.ctl .row button{min-height:42px}
+  .panel{gap:10px}
+  .vf .ov{inset:auto!important;left:0!important;top:0!important;width:76.93%;height:76.93%;transform:scale(1.3);transform-origin:0 0}
+}
 </style>
 </head>
 <body>
@@ -673,6 +710,49 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
       <h1>יסודות הצילום</h1>
       <p class="lead">פרקים קצרים. כדאי לקרוא לפי הסדר, ואחרי כל פרק לנסות בסימולטור.</p>
       <div id="lessonList"></div>
+    </div>
+  </section>
+
+  <section class="page" id="p-terms">
+    <div class="terms">
+      <h1>תנאי שימוש ורישיון</h1>
+      <p class="upd">עודכן לאחרונה: 24 בנובמבר 2026</p>
+      <p>האתר Camera Simulator ("האתר") נוצר ומופעל על ידי דניאל אורי שבוטיה (Daniel Ori Chabotier), הפועל תחת המותג Photo by Us ("בעל האתר"). השימוש באתר מהווה הסכמה לתנאים שלהלן. מי שאינו מסכים להם מתבקש שלא להשתמש באתר.</p>
+      <h2>1. בעלות וזכויות יוצרים</h2>
+      <p>כל הזכויות באתר שמורות לבעל האתר. הזכויות כוללות את הקוד, העיצוב, הסימולטור, הטקסטים, שיעורי יסודות הצילום, מדריך ההגדרות, התרגומים, הדמויות, התמונות, הקולות, הלוגו והשם Camera Simulator. © 2026 דניאל אורי שבוטיה (Daniel Ori Chabotier).</p>
+      <p>הקוד של האתר גלוי לצפייה מטבעו של אתר אינטרנט. הדבר אינו מעניק רישיון להשתמש בו, והאתר אינו תוכנת קוד פתוח.</p>
+      <h2>2. הרישיון שניתן למשתמש</h2>
+      <p>ניתנת למשתמש רשות אישית, מוגבלת, לא בלעדית, שאינה ניתנת להעברה וניתנת לביטול בכל עת, להשתמש באתר כמות שהוא, לצורך לימוד ותרגול צילום, באופן אישי או במסגרת הדרכה פנימית בארגון, ללא תשלום.</p>
+      <h2>3. מה אסור</h2>
+      <ul>
+        <li>להעתיק, לשכפל, להפיץ, לפרסם או להעמיד לרשות הציבור את האתר או חלקים ממנו, לרבות באתר אחר או באפליקציה.</li>
+        <li>לשנות, לתרגם, לעבד או ליצור יצירות נגזרות מהאתר או מתוכנו.</li>
+        <li>למכור, להשכיר או לעשות באתר או בתוכנו שימוש מסחרי כלשהו, לרבות שילובו בקורס בתשלום, בלי אישור מראש ובכתב מבעל האתר.</li>
+        <li>להסיר או לטשטש את הלוגו, את הקרדיט או את הודעת זכויות היוצרים.</li>
+        <li>להעתיק את התוכן באמצעים אוטומטיים, או להשתמש בו לאימון מערכות בינה מלאכותית.</li>
+      </ul>
+      <p>מותר לשתף קישור לאתר, ומותר לשתף צילום מסך בודד לצורך המלצה או הדרכה, כל עוד מצוין שם האתר.</p>
+      <h2>4. האתר הוא כלי לימודי</h2>
+      <p>הסימולטור מדמה באופן מפושט את התנהגות המצלמה, האור והסאונד. הערכים, המשוב והביקורת הם הערכה לימודית ואינם מדידה מקצועית. מדריך ההגדרות נכתב לפי המדריכים הרשמיים של היצרנים, אך תפריטים משתנים בין גרסאות קושחה ובין מדינות, ולכן ייתכנו הבדלים מהמצלמה שבידך.</p>
+      <h2>5. סימני מסחר של צד שלישי</h2>
+      <p>Sony, Canon, Nikon, Panasonic ו-Lumix, וכן שמות הדגמים, הם סימני מסחר של בעליהם. האתר אינו קשור ליצרנים אלה, אינו פועל מטעמם ואינו מאושר על ידם. השימוש בשמות נעשה לצורך זיהוי והסבר בלבד.</p>
+      <h2>6. פרטיות</h2>
+      <ul>
+        <li>אין באתר הרשמה, ולא נאספים פרטים מזהים.</li>
+        <li>בעמוד "מצלמה חיה" התמונה והקול מעובדים במכשיר שלך בלבד. הם אינם מוקלטים, אינם נשמרים ואינם נשלחים לשום מקום.</li>
+        <li>האתר עשוי לספור כניסות ושימוש באופן אנונימי, בלי קובצי Cookie ובלי זיהוי אישי, כדי לדעת כמה אנשים משתמשים בו.</li>
+        <li>האתר מתארח ב-GitHub Pages וטוען גופנים מ-Google Fonts. שירותים אלה עשויים לקבל נתונים טכניים כמו כתובת IP, בהתאם למדיניות שלהם.</li>
+      </ul>
+      <h2>7. אחריות</h2>
+      <p>האתר ניתן לשימוש כמות שהוא (AS IS), בלי התחייבות לדיוק, לזמינות או להתאמה לצורך מסוים. בעל האתר לא יישא באחריות לנזק כלשהו, ישיר או עקיף, שייגרם עקב השימוש באתר או ההסתמכות על תוכנו, לרבות נזק לציוד, אובדן צילומים או שינוי הגדרות במצלמה. האחריות לפעולות במצלמה, כמו פרמוט כרטיס זיכרון, היא על המשתמש בלבד.</p>
+      <h2>8. חומרים של צד שלישי</h2>
+      <p>סאונד הרקע של השוק: Outdoor Bazaar Market Ambience 01 מאת SFXMint, ברישיון CC0.</p>
+      <h2>9. שינויים והפסקת שירות</h2>
+      <p>בעל האתר רשאי לעדכן את האתר ואת התנאים, להגביל את הגישה או להפסיק את פעילות האתר בכל עת. המשך השימוש אחרי עדכון התנאים מהווה הסכמה להם.</p>
+      <h2>10. הדין החל</h2>
+      <p>על התנאים יחולו דיני מדינת ישראל, וסמכות השיפוט הבלעדית נתונה לבתי המשפט המוסמכים בישראל.</p>
+      <h2>11. יצירת קשר</h2>
+      <p>לבקשות רישיון, לשימוש מסחרי או לדיווח על הפרה: <a href="https://www.photobyus.com" target="_blank" rel="noopener" style="color:var(--accent-gold,#D4AF37)">www.photobyus.com</a></p>
     </div>
   </section>
 
@@ -778,7 +858,7 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
             </div>
           </div>
           <div class="rec-ind" id="recInd"><i></i><span id="recTc">STBY</span></div>
-          <div class="vinfo" id="vInfo">25p</div>
+          <div class="vinfo" id="vInfo"><b id="vFps">25p</b><span id="vSh"></span></div>
           <div class="ometer" id="oMeter"><div><b>1</b><span><u id="om0"></u></span></div><div><b>2</b><span><u id="om1"></u></span></div></div>
           <div class="icons" id="oIcons"></div>
           <div class="qd" id="qd"></div>
@@ -791,46 +871,62 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
         <button class="shutter" id="shutter" aria-label="צלם"></button>
         <div class="expo"><span>חשיפה</span><b id="expoTxt">±0.0</b></div>
       </div>
+      <div class="chchip" id="chChip" style="display:none"></div>
+      <div class="distbar"><button data-dd="-1" aria-label="קרב את המצולם">− קרוב</button><input type="range" id="rDist2" min="1000" max="9000" step="100" value="2500" dir="ltr" aria-label="מרחק מהמצולם"><button data-dd="1" aria-label="הרחק את המצולם">רחוק +</button><b id="tDist2">2.5 מ׳</b></div>
+      <div class="mtabs" id="mtabs"><button data-t="scene" class="on">סצנה</button><button data-t="expo">חשיפה</button><button data-t="snd">סאונד</button><button data-t="more">אתגרים</button><button data-t="guide">📖 מדריך</button></div>
       </div>
       <div class="tip">הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.</div>
     </section>
 
     <aside class="panel">
-      <button class="guide-btn" id="openGuide"><span>📖 מדריך הגדרות בעברית<br><small>איפה כל דבר בתפריט: שעון, פרמוט, RAW, פוקוס…</small></span><span>‹</span></button>
-      <div class="ctl scn" id="scnCard">
+      <button class="guide-btn dup-m" id="openGuide"><span>📖 מדריך הגדרות בעברית<br><small>איפה כל דבר בתפריט: שעון, פרמוט, RAW, פוקוס…</small></span><span>‹</span></button>
+      <div class="ctl scn" id="scnCard" data-g="scene">
         <div class="lbl">סצנה</div>
         <div class="seg" id="sceneSeg"><button data-v="runner" class="on">🏃 תנועה</button><button data-v="portrait">🧑 פורטרט</button><button data-v="video">🎬 וידאו סינק</button></div>
+        <div class="lbl only-runner">מיקום</div>
+        <div class="seg only-runner" id="rlocSeg"><button data-v="park" class="on">🌳 פארק</button><button data-v="track">🏟 מסלול ריצה</button><button data-v="street">🏙 רחוב</button></div>
         <div class="lbl">תאורה טבעית</div>
         <div class="seg s4" id="lightSeg"><button data-v="sunrise">🌅 זריחה</button><button data-v="day" class="on">☀️ יום</button><button data-v="sunset">🌇 שקיעה</button><button data-v="night">🌙 לילה</button></div>
         <div class="hint" id="lightHint"></div>
         <div class="lbl">מאיפה האור מגיע</div>
         <div class="seg" id="ldirSeg"><button data-v="front" class="on">מלפנים</button><button data-v="side">מהצד</button><button data-v="back">מאחור</button></div>
-        <div class="lbl only-person">מרחק מהמצולם</div>
-        <div class="seg only-person" id="distSeg"><button data-v="1800">קרוב · 1.8 מ׳</button><button data-v="2500" class="on">2.5 מ׳</button><button data-v="4000">רחוק · 4 מ׳</button></div>
-        <div class="toggles" style="margin-top:10px"><button class="tg" id="tgFill">🔦 פנס מילוי על המצלמה</button></div>
+        <div class="lbl">דמות</div>
+        <div class="seg" id="charSeg" style="grid-template-columns:1fr 1fr 1.3fr"><button data-v="man" class="on">גבר</button><button data-v="woman">אישה</button><button data-v="flip">⇄ הפוך כיוון מבט</button></div>
+        <div class="lbl only-person">גודל הפריים (מיקום המצולם)</div>
+        <div class="seg s5 only-person" id="shotSeg"><button data-v="full">גוף מלא</button><button data-v="amer">אמריקאי</button><button data-v="med">מדיום</button><button data-v="mcu" class="on">חזה</button><button data-v="cu">קלוז-אפ</button></div>
+        <div class="lbl only-person dup-m">מרחק מהמצולם: <b id="tDist">2.5 מ׳</b></div>
+        <div class="row only-person dup-m"><button data-dd="-1">‹</button><input type="range" id="rDist" min="1000" max="9000" step="100" value="2500" dir="ltr"><button data-dd="1">›</button></div>
+        <div class="ends only-person dup-m"><span>קרוב</span><span>רחוק</span></div>
+        <div class="hint only-person" id="frameHint"></div>
+        <div class="toggles" style="margin-top:10px"><button class="tg" id="tgFill">🔦 פנס על המצלמה</button></div>
+        <div id="fillBox" style="display:none">
+          <div class="lbl">עוצמת הפנס: <b id="tFill">60%</b></div>
+          <div class="row"><button data-fd="-1">‹</button><input type="range" id="rFill" min="5" max="100" step="5" value="60" dir="ltr"><button data-fd="1">›</button></div>
+          <div class="ends"><span>חלש</span><span>חזק</span></div>
+        </div>
       </div>
-      <div class="seg" id="modes">
+      <div class="seg" id="modes" data-g="expo">
         <button data-m="M" class="on">M ידני</button>
         <button data-m="A">A צמצם</button>
         <button data-m="S">S מהירות</button>
       </div>
-      <div class="mode-hint" id="modeHint"></div>
+      <div class="mode-hint" id="modeHint" data-g="expo"></div>
 
-      <div class="ctl" id="cA">
+      <div class="ctl" id="cA" data-g="expo">
         <div class="hd"><div><span class="name">צמצם</span><span class="def">כמה רחב הפתח שמכניס אור</span><span class="autotag">אוטומטי</span></div><span class="val" id="tA"></span></div>
         <div class="row"><button data-d="-1">‹</button><input type="range" id="rA" dir="ltr"><button data-d="1">›</button></div>
         <div class="ends"><span>פתוח · f/1.4</span><span>סגור · f/22</span></div>
         <div class="hint" id="hA"></div>
       </div>
 
-      <div class="ctl" id="cS">
+      <div class="ctl" id="cS" data-g="expo">
         <div class="hd"><div><span class="name">מהירות תריס</span><span class="def">כמה זמן החיישן חשוף</span><span class="autotag">אוטומטי</span></div><span class="val" id="tS"></span></div>
         <div class="row"><button data-d="-1">‹</button><input type="range" id="rS" dir="ltr"><button data-d="1">›</button></div>
         <div class="ends"><span>איטי · 4"</span><span>מהיר · 1/8000</span></div>
         <div class="hint" id="hS"></div>
       </div>
 
-      <div class="ctl" id="cI">
+      <div class="ctl" id="cI" data-g="expo">
         <div class="hd"><div><span class="name">ISO</span><span class="def">כמה החיישן רגיש לאור</span></div><span class="val" id="tI"></span></div>
         <div class="row"><button data-d="-1">‹</button><input type="range" id="rI" dir="ltr"><button data-d="1">›</button></div>
         <div class="ends"><span>100 · נקי</span><span>51200 · רועש</span></div>
@@ -838,7 +934,7 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
       </div>
 
 
-      <div class="ctl vid" id="vidCard">
+      <div class="ctl vid" id="vidCard" data-g="snd">
         <div class="hd"><div><span class="name">🎙 סאונד</span><span class="def">רמות ההקלטה בזמן אמת</span></div><span class="val" id="aStatDb">-∞</span></div>
         <div class="ameter" dir="ltr">
           <div class="arow"><span class="alab" id="al0">CH1</span><div class="abar"><div class="acov" id="am0"></div><i class="ahold" id="ah0"></i></div><span class="adb" id="ad0">-60</span></div>
@@ -847,29 +943,45 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
         </div>
         <div class="astat" id="aStat"></div>
         <div class="lbl">מיקרופונים</div>
-        <div class="toggles"><button class="tg" id="tgLav">🎤 נק מייק (דש)</button><button class="tg" id="tgGun">🎙 שוטגאן על המצלמה</button></div>
+        <div class="toggles"><button class="tg" id="tgLav">🎤 נק מייק (דש)</button><button class="tg" id="tgGun">🎙 שוטגאן על המצלמה</button><button class="tg" id="tgMon">🎧 האזן לסינק</button></div>
+        <div class="hint">בהקלטה ובהאזנה שומעים את המרואיין ואת רעש השוק כפי שהמיקרופון שבחרת קולט אותם. כדאי להשתמש באוזניות.</div>
         <div class="hint" id="micInfo"></div>
         <div class="lbl">רמת הקלטה (Audio Rec Level)</div>
         <div class="row"><button data-ad="-1">‹</button><input type="range" id="rAud" min="0" max="31" value="16" dir="ltr"><button data-ad="1">›</button></div>
         <div class="ends"><span>0 · חלש</span><span id="tAud">16</span><span>31 · חזק</span></div>
+        <div class="lbl">קצב פריימים (כמה תמונות מצולמות בכל שנייה)</div>
+        <div class="seg s4" id="fpsSeg"><button data-v="25" class="on">25p</button><button data-v="30">30p</button><button data-v="50">50p</button><button data-v="100">100p</button></div>
         <div class="lbl">פילטר ND (מחשיך את התמונה בלי לשנות תריס)</div>
         <div class="seg s4" id="ndSeg"><button data-v="0" class="on">בלי</button><button data-v="2">ND4</button><button data-v="4">ND16</button><button data-v="6">ND64</button></div>
         <div class="hint" id="vidHint">בווידאו ב-25 פריימים בשנייה שומרים על תריס 1/50. את החשיפה מתקנים בצמצם, ב-ISO או בפילטר ND.</div>
       </div>
-      <div class="toggles">
+      <div class="ctl" id="cWB" data-g="expo">
+        <div class="lbl">איזון לבן (WB): הצבע הכללי של התמונה</div>
+        <div class="seg" id="wbSeg"></div>
+        <div id="kBox">
+          <div class="lbl">טמפרטורת צבע: <b id="tK">5500K</b></div>
+          <div class="row"><button data-kd="-1">‹</button><input type="range" id="rK" min="2500" max="10000" step="100" value="5500" dir="ltr"><button data-kd="1">›</button></div>
+          <div class="kgrad"></div>
+          <div class="ends"><span>2500K · מקרר</span><span>10000K · מחמם</span></div>
+          <div class="hint" id="kHint"></div>
+        </div>
+      </div>
+      <div class="toggles" data-g="expo">
         <button class="tg on" id="tgGrid">רשת שלישים</button>
         <button class="tg on" id="tgHisto">היסטוגרמה</button>
         <button class="tg" id="tgTripod">חצובה</button>
       </div>
 
 
-      <div class="challenges">
+      <div class="challenges" data-g="more">
         <h3>אתגרים</h3>
+        <div class="hint" style="margin:0 0 8px">כל צילום נבדק מול כל האתגרים של הסצנה. לחיצה על אתגר מציגה אותו ליד המסך, והמשוב יסביר מה עוד חסר.</div>
         <div id="chList"></div>
       </div>
     </aside>
   </main>
   </div>
+  <footer class="foot">© 2026 דניאל אורי שבוטיה · Daniel Ori Chabotier · Photo by Us<br>כל הזכויות שמורות · <a href="#terms">תנאי שימוש ורישיון</a> · <a href="cam/">מצלמה חיה (ניסיוני)</a></footer>
 </div>
 
 <div class="review" id="review">
@@ -907,12 +1019,16 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 <script>
 (()=>{
 "use strict";
+const GC_CODE=location.hostname==='chabotierd.github.io'?'chabotierdaniel':'';const _tq=new Set();
+function track(path,ev){try{if(GC_CODE&&window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:ev?path:'/camera-simulator'+path,title:path,event:!!ev});else if(GC_CODE)setTimeout(()=>track(path,ev),1500);}catch(_){}}
+function trackOnce(n){if(_tq.has(n))return;_tq.add(n);track(n,true);}
+if(GC_CODE){window.goatcounter={no_onload:true};const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://'+GC_CODE+'.goatcounter.com/count';document.head.appendChild(sc);}
 // ================= Constants =================
 const W=1200,H=800;
 const FOCAL=85;          // mm
 const SCENE_EV=12;       // late-afternoon light in a park (EV at ISO 100)
 const SUBJ_D=5000;       // runner distance, mm
-const FEET_Y=0.795*H;
+let FEET_Y=0.795*H;
 const RUN_PERIOD=4.4;    // seconds for one pass incl. off-screen
 const RUN_SPEED=1.28*W/RUN_PERIOD; // px per second on sensor
 const AP=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
@@ -1067,8 +1183,102 @@ const LAYERS=[
   {id:'fg',d:1600,draw:drawFG}
 ];
 LAYERS.forEach(L=>{L.src=mk(W,H);L.draw(L.src.getContext('2d'));});
+// ===== background for the person scenes: one tall picture with a real horizon =====
+// The camera sits at eye height, so the horizon passes through the eyes and the ground
+// below it gets nearer row by row: distance(mm) = GROUND_K / (row - horizon).
+const PBM=80,PBW=W+2*PBM,PHZ=610,PBH=1642,GROUND_K=1640*2500;
+const PB=mk(PBW,PBH),PBI=mk(PBW,PBH);
+const PLAMPS=[{x:.2*W,d:15000},{x:.83*W,d:15000}];
+function pTree(g,r,x,base,h,cw,haze){
+  const tw=Math.max(3,cw*.09);g.fillStyle=haze?'#5d5347':'#4a3a2c';g.fillRect(x-tw/2,base-h*.55,tw,h*.55);
+  g.fillStyle='rgba(20,40,10,.22)';g.beginPath();g.ellipse(x,base,cw*.6,Math.max(2,cw*.05),0,0,7);g.fill();
+  const n=haze?10:26;
+  for(let k=0;k<n;k++){const cx=x+(r()-.5)*cw,cy=base-h*.45-r()*h*.5,rr=cw*(.2+r()*.2);
+    g.fillStyle=`hsl(${100+r()*25},${haze?24:32+r()*14}%,${(haze?34:22)+r()*10}%)`;g.beginPath();g.arc(cx,cy,rr,0,7);g.fill();
+    g.fillStyle=`hsla(${80+r()*20},45%,${48+r()*10}%,.4)`;g.beginPath();g.arc(cx-rr*.35,cy-rr*.3,rr*.5,0,7);g.fill();}
+  for(let k=0;k<(haze?3:9);k++){g.fillStyle='rgba(255,250,215,.9)';g.beginPath();g.arc(x+(r()-.5)*cw*.9,base-h*.45-r()*h*.5,haze?2:3+r()*3,0,7);g.fill();}
+}
+function drawPBG(){
+  const g=PB.getContext('2d'),r=rng(77),HZ=PHZ;
+  let gr=g.createLinearGradient(0,0,0,HZ);gr.addColorStop(0,'#6f9fd4');gr.addColorStop(.6,'#b3cbe2');gr.addColorStop(1,'#f1dcbc');
+  g.fillStyle=gr;g.fillRect(0,0,PBW,HZ+2);
+  gr=g.createRadialGradient(.2*PBW,HZ-330,10,.2*PBW,HZ-330,.55*PBW);gr.addColorStop(0,'rgba(255,246,220,.9)');gr.addColorStop(.25,'rgba(255,236,200,.3)');gr.addColorStop(1,'rgba(255,236,200,0)');
+  g.fillStyle=gr;g.fillRect(0,0,PBW,HZ);
+  for(let i=0;i<11;i++){const cx=r()*PBW,cy=40+r()*(HZ-200);for(let j=0;j<6;j++){g.fillStyle=`rgba(255,255,255,${.22+r()*.25})`;g.beginPath();g.ellipse(cx+(r()-.5)*170,cy+(r()-.5)*22,60+r()*80,13+r()*12,0,0,7);g.fill();}}
+  // far skyline
+  let x=-20;while(x<PBW){const bw=45+r()*90,bh=40+r()*120;g.fillStyle=`hsl(215,16%,${66+r()*9}%)`;g.fillRect(x,HZ-bh,bw,bh+4);
+    g.fillStyle='hsla(40,60%,92%,.5)';for(let wy=HZ-bh+8;wy<HZ-6;wy+=12)for(let wx=x+6;wx<x+bw-6;wx+=10)if(r()<.3)g.fillRect(wx,wy,4,5);x+=bw+r()*14;}
+  // ground
+  gr=g.createLinearGradient(0,HZ,0,PBH);gr.addColorStop(0,'#8fac69');gr.addColorStop(.12,'#7da257');gr.addColorStop(.45,'#689243');gr.addColorStop(1,'#4f7d31');
+  g.fillStyle=gr;g.fillRect(0,HZ,PBW,PBH-HZ);
+  // light and dark patches lying flat on the lawn
+  for(let i=0;i<150;i++){const yy=14+(PBH-HZ)*Math.pow(r(),1.5),k=yy/1640;g.fillStyle=r()<.5?'rgba(40,70,20,.10)':'rgba(190,215,120,.10)';
+    g.beginPath();g.ellipse(r()*PBW,HZ+yy,(500+r()*1300)*k,Math.max(1.5,(60+r()*110)*k*k*3),0,0,7);g.fill();}
+  // dirt path across the lawn, 10.5 to 13.5 m away
+  const py0=HZ+GROUND_K/13500,py1=HZ+GROUND_K/10500;
+  gr=g.createLinearGradient(0,py0,0,py1);gr.addColorStop(0,'#cdb791');gr.addColorStop(1,'#b89c74');g.fillStyle=gr;g.fillRect(0,py0,PBW,py1-py0);
+  for(let i=0;i<5200;i++){g.fillStyle=`hsla(35,${20+r()*20}%,${40+r()*40}%,.5)`;g.fillRect(r()*PBW,py0+r()*(py1-py0),1+r()*3,1+r()*2);}
+  g.fillStyle='rgba(80,60,40,.3)';g.fillRect(0,py0,PBW,2);g.fillRect(0,py1-3,PBW,3);
+  // grass blades, small far away and larger close to the camera
+  const bl=[];for(let i=0;i<22000;i++)bl.push([r()*PBW,10+(PBH-HZ-10)*Math.pow(r(),1.7),r(),r(),r()]);
+  bl.sort((a,b)=>a[1]-b[1]);g.lineCap='round';
+  for(const b of bl){const y=HZ+b[1];if(y>py0-2&&y<py1+1)continue;const k=b[1]/1640,l=Math.max(2,(40+b[2]*55)*k),a=(b[3]-.5)*.8;
+    g.strokeStyle=`hsla(${95+b[4]*30},${35+b[2]*18}%,${30+b[3]*14}%,.75)`;g.lineWidth=Math.max(1,6*k);
+    g.beginPath();g.moveTo(b[0],y);g.quadraticCurveTo(b[0]+Math.sin(a)*l*.5,y-l*.6,b[0]+Math.sin(a)*l,y-l);g.stroke();}
+  // far tree line (120 m) and two closer trees (35 m)
+  const fb=HZ+GROUND_K/120000;for(let tx=-30;tx<PBW+60;tx+=95+r()*120)pTree(g,r,tx,fb+r()*8,190+r()*90,130+r()*70,true);
+  const nb=HZ+GROUND_K/35000;pTree(g,r,PBM+.07*W,nb,640,400,false);pTree(g,r,PBM+.6*W,nb+6,560,350,false);
+  // lamp posts (15 m) and a bench (12 m)
+  for(const L of PLAMPS){const k=2500/L.d,lx=PBM+L.x,by=HZ+1640*k,ty=by-4000*k;g.strokeStyle='#2c3138';g.lineWidth=120*k;g.beginPath();g.moveTo(lx,by);g.lineTo(lx,ty);g.stroke();
+    g.fillStyle='#2c3138';g.fillRect(lx-190*k,ty-30*k,380*k,90*k);g.fillStyle='#f6eccc';g.fillRect(lx-130*k,ty+60*k,260*k,50*k);}
+  {const k=2500/12000,bx=PBM+.68*W,by=HZ+1640*k,u=v=>v*k;g.fillStyle='rgba(20,40,10,.25)';g.beginPath();g.ellipse(bx+u(800),by,u(950),u(70),0,0,7);g.fill();
+    g.fillStyle='#5b3f2a';for(let i=0;i<3;i++)g.fillRect(bx,by-u(850)+i*u(140),u(1600),u(90));g.fillRect(bx,by-u(450),u(1600),u(80));
+    g.fillStyle='#2b2f35';for(const o of[100,1440]){g.fillRect(bx+u(o),by-u(860),u(60),u(860));}}
+}
+// photo backgrounds: hz = horizon row inside the photo, sc = scale onto the tall canvas
+const BGS={park:{tmin:-.6*H,tmax:.35*H},market:{src:'bg/market.jpg',hz:367,sc:2040/1536,lamps:[[237,-204]]},
+  yard:{src:'bg/yard.jpg',hz:532,sc:1.9,wall:428}};
+let bgCur='';
+function bgFor(){return st.scene==='video'?'market':'yard';}
+function tiltLim(){const B=BGS[bgFor()];if(B.tmin==null){const dy=PHZ-B.hz*B.sc,dh=1024*B.sc;B.tmax=Math.min(.35*H,PHZ-dy-EYE_Y-6);B.tmin=Math.max(-.6*H,H-EYE_Y-(dy+dh-PHZ)+6);}return[B.tmin,B.tmax];}
+function ensureBG(){let id=bgFor();const B=BGS[id];
+  if(B.src&&!B.img){B.img=new Image();B.img.onload=()=>{B.ok=true;dirty=true;};B.img.src=B.src;}
+  if(B.src&&!B.ok)id='park';if(id===bgCur)return;bgCur=id;
+  if(id==='park'){drawPBG();return;}
+  const g=PB.getContext('2d'),im=B.img,dw=im.width*B.sc,dh=im.height*B.sc,dx=(PBW-dw)/2,dy=PHZ-B.hz*B.sc;
+  g.imageSmoothingQuality='high';g.drawImage(im,dx,dy,dw,dh);
+  if(dy>0)g.drawImage(im,0,0,im.width,2,dx,0,dw,dy+1);
+  if(dy+dh<PBH)g.drawImage(im,0,im.height-2,im.width,2,dx,dy+dh-1,dw,PBH-dy-dh+1);
+}
+const PBANDS=[[0,PHZ+150,60000]];
+{const e=[150,200,260,330,410,500,600,720,860,PBH-PHZ];for(let i=0;i<e.length-1;i++)PBANDS.push([PHZ+e[i],PHZ+e[i+1],GROUND_K/((e[i]+e[i+1])/2)]);}
+{const B=BGS.yard,w=Math.round((B.wall)*1),e=[w,w+70,w+150,w+250,w+390,PBH-PHZ];B.bands=[[0,PHZ+w,GROUND_K/w]];for(let i=0;i<e.length-1;i++)B.bands.push([PHZ+e[i],PHZ+e[i+1],GROUND_K/((e[i]+e[i+1])/2)]);}
+function rebuildP(){
+  const o=PBI.getContext('2d');
+  for(const [a,b,d] of (BGS[bgCur]&&BGS[bgCur].bands||PBANDS)){const r=cocPx(d);
+    if(r<0.6){o.drawImage(PB,0,a,PBW,b-a,0,a,PBW,b-a);continue;}
+    const m=Math.min(140,Math.ceil(r*1.4)+2),y0=Math.max(0,a-m),y1=Math.min(PBH,b+m),c=mk(PBW,y1-y0);
+    c.getContext('2d').drawImage(PB,0,-y0);const bi=blurInto(c,r);o.drawImage(bi,0,a-y0,PBW,b-a,0,a,PBW,b-a);}
+}
+// ----- photo backgrounds for the running scene: one photo per place and per light, blurred in depth bands -----
+const RBG={park:{feet:.905,bands:[[0,.6,25000],[.6,.7,14000],[.7,.79,9000],[.79,.86,6500],[.86,.94,5000],[.94,1,3600]]},
+  track:{feet:.87,bands:[[0,.5,40000],[.5,.58,22000],[.58,.66,12000],[.66,.72,8000],[.72,1,5000]]},
+  street:{feet:.925,bands:[[0,.86,8000],[.86,.96,5000],[.96,1,3600]]}};
+const RIM={},RBI=mk(W,H);let rbKey='';
+function rbImg(){const k=st.rloc+'-'+st.light;let o=RIM[k];if(!o){o=RIM[k]={img:new Image()};o.img.onload=()=>{o.ok=true;dirty=true;};o.img.src='bg/run-'+k+'.jpg';}
+  if(o.ok)return o;for(const l of['day','sunset','sunrise','night']){const f=RIM[st.rloc+'-'+l];if(f&&f.ok)return f;}return null;}
+function rbOn(){return st.scene==='runner'&&!!rbKey;}
+function rebuildR(){const o=rbImg();if(!o){rbKey='';FEET_Y=0.795*H;return false;}rbKey=st.rloc;FEET_Y=RBG[st.rloc].feet*H;
+  const g=RBI.getContext('2d');
+  for(const [a0,b0,d] of RBG[st.rloc].bands){const a=Math.round(a0*H),b=Math.round(b0*H),r=cocPx(d);
+    if(r<0.6){g.drawImage(o.img,0,a,W,b-a,0,a,W,b-a);continue;}
+    const m=Math.min(140,Math.ceil(r*1.4)+2),y0=Math.max(0,a-m),y1=Math.min(H,b+m),c=mk(W+2*m,y1-y0),cg=c.getContext('2d');
+    cg.drawImage(o.img,0,y0,W,y1-y0,m,0,W,y1-y0);cg.drawImage(o.img,0,y0,2,y1-y0,0,0,m,y1-y0);cg.drawImage(o.img,W-2,y0,2,y1-y0,W+m,0,m,y1-y0);
+    const bi=blurInto(c,r);g.drawImage(bi,m,a-y0,W,b-a,0,a,W,b-a);}
+  return true;}
+const RTINT={sunrise:'#f0cbb4',sunset:'#e9a878',night:'#4d5884'};
 let dirty=true;
-function rebuild(){LAYERS.forEach(L=>{const r=cocPx(L.d);L.r=r;L.img=blurInto(L.src,r);});dirty=false;}
+function rebuild(){if(st.scene!=='runner'){ensureBG();rebuildP();dirty=false;return;}if(rebuildR()){dirty=false;return;}LAYERS.forEach(L=>{const r=cocPx(L.d);L.r=r;L.img=blurInto(L.src,r);});dirty=false;}
 
 // ================= Runner =================
 const SPR=mk(320,420),SOX=160,SOY=405;
@@ -1107,7 +1317,8 @@ function drawRunner(g,ph){
 }
 function runnerX(t){const u=(t%RUN_PERIOD)/RUN_PERIOD;return -0.14*W+u*1.28*W;}
 function runnerSprite(t){
-  const g=SPR.getContext('2d');g.clearRect(0,0,SPR.width,SPR.height);g.save();g.translate(SOX,SOY);drawRunner(g,t*Math.PI*2*1.45);g.restore();
+  const g=SPR.getContext('2d');g.clearRect(0,0,SPR.width,SPR.height);const R=RUNS[st.char];if(R&&R.ok){const f=Math.floor(t*6.4)%4;g.drawImage(R.img,f*320,0,320,420,0,0,320,420);}else{g.save();g.translate(SOX,SOY);drawRunner(g,t*Math.PI*2*1.45);g.restore();}
+  if(rbOn()&&RTINT[st.light]&&R&&R.ok){const f=Math.floor(t*6.4)%4;g.save();g.fillStyle=RTINT[st.light];g.globalCompositeOperation='multiply';g.fillRect(0,0,SPR.width,SPR.height);g.globalCompositeOperation='destination-in';g.drawImage(R.img,f*320,0,320,420,0,0,320,420);g.restore();}
   shadeSprite(SPR,SUBJ_D);const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
 }
 function runnerBox(t){const x=runnerX(t);return{x0:x-70,x1:x+80,y0:FEET_Y-360,y1:FEET_Y,cx:x+5,cy:FEET_Y-230};}
@@ -1116,8 +1327,11 @@ function runnerBox(t){const x=runnerX(t);return{x0:x-70,x1:x+80,y0:FEET_Y-360,y1
 function compose(g,t,dx,dy,zoom){
   g.save();
   if(zoom){g.translate(W/2,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);}
-  g.translate(dx||0,dy||0);
+  const tl=st.scene==='runner'?0:st.tilt;
+  g.translate(dx||0,(dy||0)+tl);
   g.fillStyle='#b9cfe3';g.fillRect(-60,-60,W+120,H+120);
+  if(st.scene!=='runner'){g.drawImage(PBI,-PBM,EYE_Y-PHZ);drawSubject(g,t);g.restore();return;}
+  if(rbOn()){g.drawImage(RBI,-30,-20,W+60,H+40);drawSubject(g,t);g.restore();return;}
   let done=false;const sd=subjD();
   for(const L of LAYERS){if(!done&&L.d<sd){drawSubject(g,t);done=true;}g.drawImage(L.img,0,0);}
   if(!done)drawSubject(g,t);
@@ -1176,6 +1390,7 @@ function placeAF(){
 }
 function loop(now){
   animT=(now-t0)/1000;
+  if((SND.on||SND.want)&&(st.page!=='sim'||st.scene!=='video')){SND.mon=false;$('tgMon').classList.remove('on');sndStop();}
   if(!st.busy&&st.page==='sim'){
     if(dirty)rebuild();
     if(st.scene==='video')audioTick(animT);
@@ -1248,17 +1463,18 @@ tgl('tgTripod','tripod',()=>toast(st.tripod?'המצלמה על חצובה: אי�
 // focus by tap
 $('vf').addEventListener('pointerdown',e=>{
   if(st.busy)return;
-  const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,yR=(e.clientY-r.top)/r.height*H,y=yR-(st.scene==='runner'?0:st.tilt);
   const b=subjBox(animT);let d,on='spot',name;
-  if(x>b.x0-20&&x<b.x1+20&&y>b.y0-20&&y<b.y1+10){d=subjD();on='subject';name=st.scene==='runner'?'פוקוס על הרץ (5 מ׳)':'פוקוס על המצולם. אפשר לגרור אותו ימינה ושמאלה';
-    if(st.scene!=='runner'){drag={x0:x,px0:st.px};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}}}
+  if(x>b.x0-20&&x<b.x1+20&&yR>b.y0-20&&yR<b.y1+10){d=subjD();on='subject';name=st.scene==='runner'?'פוקוס על הרץ (5 מ׳)':'פוקוס על המצולם. אפשר לגרור אותו ימינה ושמאלה';
+    if(st.scene!=='runner'){drag={x0:x,y0:yR,px0:st.px,t0:st.tilt};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}}}
+  else if(st.scene!=='runner'){const yy=yR-(EYE_Y+st.tilt);if(yy<110){d=40000;name='פוקוס על הרקע (40 מ׳)';}else{d=clamp(Math.round(GROUND_K/yy/100)*100,1200,40000);name='פוקוס על הקרקע ('+(d/1000).toFixed(1)+' מ׳)';}}
   else if((x>0.72*W&&y<0.3*H)||(y>0.88*H&&(x<0.32*W||x>0.8*W))){d=1600;name='פוקוס על הצמחים בקדמה (1.6 מ׳)';}
   else if(y<0.58*H){d=40000;name='פוקוס על הרקע (40 מ׳)';}
   else if(y<0.66*H){d=15000;name='פוקוס על הדשא הרחוק (15 מ׳)';}
   else if(y<0.735*H){d=8000;name='פוקוס על הספסל (8 מ׳)';}
   else if(y<0.83*H){d=SUBJ_D;name='פוקוס על השביל (5 מ׳)';}
   else{d=3000;name='פוקוס על הדשא הקרוב (3 מ׳)';}
-  st.focusD=d;st.focusOn=on;st.focusPt={x:x/W,y:y/H};dirty=true;toast(name);
+  st.focusD=d;st.focusOn=on;st.focusPt={x:x/W,y:yR/H};dirty=true;toast(name);
 });
 
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800);}
@@ -1272,13 +1488,16 @@ const CH=[
   {s:'portrait',t:'פורטרט קלאסי',d:'המצולם חד ועל קו השליש, הרקע מטושטש מאוד, וחשיפה תקינה.',ok:r=>r.focusOK&&r.bgBlur>=14&&!r.shake&&Math.abs(r.o)<=0.7&&(Math.abs(r.px-1/3)<.1||Math.abs(r.px-2/3)<.1)},
   {s:'portrait',t:'שעת הזהב',d:'פורטרט בשקיעה עם אור מאחור ופנס מילוי, בחשיפה תקינה.',ok:r=>r.light==='sunset'&&r.ldir==='back'&&r.fill&&r.focusOK&&!r.shake&&Math.abs(r.o)<=0.7},
   {s:'portrait',t:'פורטרט בלילה',d:'המצולם חד ומואר בלילה, בלי רעידה ובלי לעבור ISO 6400.',ok:r=>r.light==='night'&&r.focusOK&&!r.shake&&r.iso<=6400&&Math.abs(r.o)<=0.7},
-  {s:'video',t:'סינק נקי',d:'תריס 1/50, חשיפה תקינה, המצולם חד ועם מרחב מבט, וסאונד בשיא בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi> בלי קליפינג.',ok:r=>r.video&&r.label==='1/50'&&Math.abs(r.o)<=0.7&&r.focusOK&&r.px>=.56&&r.amax>=-12.5&&r.amax<=-5.5&&!r.aclip&&r.mic!=='int'},
+  {s:'video',t:'סינק נקי',d:'תריס לפי קצב הפריימים (1/50 ב-25p), חשיפה תקינה, המצולם חד ועם מרחב מבט, וסאונד בשיא בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi> בלי קליפינג.',ok:r=>r.video&&r.label===r.vsh&&Math.abs(r.o)<=0.7&&r.focusOK&&(r.look<0?r.px>=.56:r.px<=.44)&&r.amax>=-12.5&&r.amax<=-5.5&&!r.aclip&&r.mic!=='int'},
   {s:'video',t:'סינק בלילה',d:'סינק בלילה עם פנס מילוי, חצובה, ונק מייק ברמה טובה.',ok:r=>r.video&&r.light==='night'&&r.fill&&r.tripod&&r.mic==='lav'&&Math.abs(r.o)<=0.7&&r.amax>=-14&&!r.aclip}
 ];
-function renderCH(){const L=$('chList');L.innerHTML='';let num=0;CH.forEach((c,i)=>{if((c.s||'runner')!==st.scene)return;num++;const el=document.createElement('div');
+function chCheck(shot){shot.wins=[];CH.forEach((c,i)=>{if((c.s||'runner')!==shot.res.scene)return;let ok=false;try{ok=!!c.ok(shot.res);}catch(_){}
+  if(ok){if(!st.done[i]||i===shot.ch)shot.wins.push(c.t);st.done[i]=true;if(i===shot.ch){shot.win=true;st.challenge=0;}}});saveProg();renderCH();}
+function chChip(){const c=$('chChip');if(!c)return;if(st.challenge){const C=CH[st.challenge-1];c.innerHTML='<b>🎯 '+C.t+'</b><span>'+C.d+'</span><i>✕</i>';c.style.display='flex';}else c.style.display='none';}
+function renderCH(){chChip();const L=$('chList');L.innerHTML='';let num=0;CH.forEach((c,i)=>{if((c.s||'runner')!==st.scene)return;num++;const el=document.createElement('div');
   el.className='ch'+(st.challenge===i+1?' on':'')+(st.done[i]?' done':'');
   el.innerHTML=`<div class="st">${st.done[i]?'✓':num}</div><div><div class="t">${c.t}</div><div class="d">${c.d}</div></div>`;
-  el.onclick=()=>{st.challenge=st.challenge===i+1?0:i+1;renderCH();if(st.challenge)toast('אתגר פעיל: '+c.t);};L.appendChild(el);});}
+  el.onclick=()=>{st.challenge=st.challenge===i+1?0:i+1;renderCH();if(st.challenge)toast('אתגר פעיל: '+c.t+'. עכשיו '+(st.scene==='video'?'הקלט':'צלם')+' כדי לנסות');};L.appendChild(el);});}
 
 // ================= Capture =================
 let AC;
@@ -1324,9 +1543,9 @@ async function capture(){
   // analysis
   const mid=tStart+t/2,rx=runnerX(mid);
   const res={o,t,N,iso,motion,shake,shakeAmp,inF:st.scene!=='runner'||(rx>0.06*W&&rx<0.92*W),focusOK:cocPx(subjD())<2.5,bgBlur:cocPx(40000),
-    label:SH[st.si][0],mode:st.mode,scene:st.scene,light:st.light,ldir:st.ldir,fill:st.fill,px:st.px,pd:st.pd};
+    label:SH[st.si][0],mode:st.mode,scene:st.scene,light:st.light,ldir:st.ldir,fill:st.fill,fillPow:st.fillPow,fa:fillAlpha(),look:lookDir(),px:st.px,pd:st.pd,fr:st.scene==='runner'?null:frameInfo()};
   const shot={url,res,ch:st.challenge?st.challenge-1:-1,win:false};
-  if(shot.ch>=0&&CH[shot.ch].ok(res)){shot.win=true;st.done[shot.ch]=true;saveProg();renderCH();}
+  chCheck(shot);
   shots.unshift(shot);if(shots.length>12)shots.pop();
   st.shots=Math.max(0,st.shots-1);renderThumbs();updateUI();
   openReview(shot);
@@ -1356,9 +1575,10 @@ function feedback(r){
 }
 function openReview(s){
   $('rvImg').src=s.url;curShot=s;
-  $('rvExif').textContent=(s.res.video?'25p  ·  ':'')+`${s.res.label}  ·  f/${s.res.N}  ·  ISO ${s.res.iso}  ·  85mm  ·  ${s.res.mode}`;
+  $('rvExif').textContent=(s.res.video?s.res.fps+'p  ·  ':'')+`${s.res.label}  ·  f/${s.res.N}  ·  ISO ${s.res.iso}  ·  85mm  ·  ${s.res.mode}`;
   const b=$('rvBanner');
-  if(s.ch>=0){b.className='banner '+(s.win?'win':'lose');b.textContent=s.win?`✓ אתגר הושלם: ${CH[s.ch].t}`:`עוד לא: ${CH[s.ch].t}. בדוק את ההערות למטה.`;b.style.display='';}
+  if(s.wins&&s.wins.length){b.className='banner win';b.textContent='✓ '+(s.wins.length>1?'אתגרים הושלמו: ':'אתגר הושלם: ')+s.wins.join(' · ');b.style.display='';}
+  else if(s.ch>=0){b.className='banner lose';b.textContent=`עוד לא: ${CH[s.ch].t}. בדוק את ההערות למטה.`;b.style.display='';}
   else b.style.display='none';
   $('rvList').innerHTML=feedback(s.res).map(([c,tx])=>`<li><span class="ic ${c}">${c==='g'?'✓':'!'}</span><span>${tx}</span></li>`).join('');
   $('review').classList.add('on');$('review').scrollTop=0;
@@ -1846,10 +2066,12 @@ $('lessonList').innerHTML=LESSONS.map((l,i)=>`<details class="lesson"${i===0?' o
 
 // ---------- touch controls on the camera screen ----------
 st.wb=0;st.look=0;
-const WBS=[['AWB','אוטומטי',null,0],['DAY','אור יום',null,0],['CLOUD','מעונן','#ffb25a',.28],['SHADE','צל','#ff9a3c',.42],['TUNG','נורה','#4d8dff',.5],['FLUO','פלורסנט','#c06bff',.3]];
+const WBS=[['AWB','אוטומטי',null,0],['DAY','אור יום',null,0],['CLOUD','מעונן','#ffb25a',.28],['SHADE','צל','#ff9a3c',.42],['TUNG','נורה','#4d8dff',.5],['FLUO','פלורסנט','#c06bff',.3],['K','קלווין',null,0]];
+const WB_K=6,LIGHT_K={sunrise:3800,day:5500,sunset:3300,night:4000};
+function kTint(){const d=1e6/5500-1e6/st.wbK;return d>4?['#ff9a3c',Math.min(.62,d*.009)]:d<-4?['#4d8dff',Math.min(.62,-d*.0042)]:[null,0];}
 const LOOKS=[['STD','רגיל'],['VIVID','חי'],['B&W','שחור-לבן']];
 function applyLook(g){
-  const w=WBS[st.wb];
+  let w=WBS[st.wb];if(st.wb===WB_K){const k=kTint();w=['K','',k[0],k[1]];}
   if(w[2]){g.save();g.globalCompositeOperation='soft-light';g.globalAlpha=w[3];g.fillStyle=w[2];g.fillRect(0,0,W,H);g.globalCompositeOperation='source-over';g.globalAlpha=w[3]*.18;g.fillRect(0,0,W,H);g.restore();}
   if(st.look===2){g.save();g.globalCompositeOperation='saturation';g.fillStyle='#808080';g.fillRect(0,0,W,H);g.restore();}
   else if(st.look===1){TG.clearRect(0,0,W,H);TG.drawImage(g.canvas,0,0);g.save();g.globalCompositeOperation='overlay';g.globalAlpha=.4;g.drawImage(TMP,0,0);g.restore();}
@@ -1864,7 +2086,7 @@ function applyLook(g){
   document.querySelectorAll('.lx-tabs.r').forEach(c=>['shoot','rec','face','disp','play'].forEach((a,i)=>{if(c.children[i])c.children[i].dataset.act=a;}));
 })();
 function syncTabs(){
-  document.querySelectorAll('[data-act=wb]').forEach(e=>{e.textContent=WBS[st.wb][0];e.classList.toggle('act',st.wb>0);});
+  document.querySelectorAll('[data-act=wb]').forEach(e=>{e.textContent=st.wb===WB_K?st.wbK+'K':WBS[st.wb][0];e.classList.toggle('act',st.wb>0);});wbUI();
   document.querySelectorAll('[data-act=look]').forEach(e=>{e.textContent=st.look?LOOKS[st.look][0]:(e.dataset.def||'▭');e.classList.toggle('act',st.look>0);});
   document.querySelectorAll('[data-act=fn]').forEach(e=>e.classList.toggle('act',st.tripod));
   document.querySelectorAll('[data-act=face]').forEach(e=>e.classList.toggle('act',st.focusOn==='subject'));
@@ -1891,7 +2113,7 @@ function screenAct(a){
   if(a==='ev')return toast(st.mode==='M'?'זה מד האור. במצב M משנים את החשיפה בצמצם, במהירות או ב-ISO':'המצלמה שומרת על חשיפה מאוזנת לפי מד האור');
   if(a==='wb')return qdOpen({title:'איזון לבן',labels:WBS.map(w=>`${w[0]}<small>${w[1]}</small>`),get:()=>st.wb,set:i=>{st.wb=i;syncTabs();}});
   if(a==='look')return qdOpen({title:'סגנון תמונה',labels:LOOKS.map(l=>`${l[0]}<small>${l[1]}</small>`),get:()=>st.look,set:i=>{st.look=i;syncTabs();}});
-  if(a==='af')return qdOpen({title:'נקודת פוקוס',labels:['הנושא<small>ראשי</small>','רקע<small>40 מ׳</small>','ספסל<small>8 מ׳</small>','קדמה<small>1.6 מ׳</small>'],get:()=>(st.focusD===subjD()?0:({40000:1,8000:2,1600:3}[st.focusD]??-1)),
+  if(a==='af')return qdOpen({title:'נקודת פוקוס',labels:['הנושא<small>ראשי</small>','רקע<small>40 מ׳</small>',(st.scene==='runner'?'ספסל':'קרקע')+'<small>8 מ׳</small>',(st.scene==='runner'?'קדמה':'קרוב')+'<small>1.6 מ׳</small>'],get:()=>(st.focusD===subjD()?0:({40000:1,8000:2,1600:3}[st.focusD]??-1)),
     set:i=>{const d=[subjD(),40000,8000,1600][i];st.focusD=d;st.focusOn=i===0?'subject':'spot';st.focusPt=[{x:.5,y:.5},{x:.5,y:.3},{x:.85,y:.68},{x:.15,y:.92}][i];dirty=true;syncTabs();}});
   if(a==='fn'){$('tgTripod').click();syncTabs();return;}
   if(a==='shoot')return capture();
@@ -1911,7 +2133,10 @@ $('vf').addEventListener('pointerdown',e=>{
 },true);
 syncTabs();
 // ---------- scenes, natural light, portrait, video & audio ----------
-Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,rec:false});
+Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,fillPow:.6,tilt:0,char:'man',flip:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,fps:25,wbK:5500,rloc:'park',rec:false});
+const FPS_SH={25:'1/50',30:'1/60',50:'1/100',100:'1/200'};function vSh(){return FPS_SH[st.fps];}
+function vInfoUpd(){if(!$('vFps'))return;const ok=SH[st.si][0]===vSh();$('vFps').textContent=st.fps+'p';$('vSh').textContent=SH[st.si][0]+(ok?' ✓':' · מומלץ '+vSh());$('vInfo').classList.toggle('bad',!ok);
+  $('vidHint').textContent='בווידאו ב-'+st.fps+' פריימים בשנייה שומרים על תריס '+vSh()+' (פי שניים מקצב הפריימים). את החשיפה מתקנים בצמצם, ב-ISO או בפילטר ND.';}
 const LIGHTS={
   sunrise:{ev:10,he:'זריחה',hint:'אור רך וחם שמגיע נמוך מהצד. זמן מצוין לפורטרט. יש פחות אור מאשר בצהריים, אז פותחים צמצם או מעלים ISO.'},
   day:{ev:12,he:'אור יום',hint:'הרבה אור, אבל שמש גבוהה יוצרת צללים קשים על הפנים. מחפשים צל פתוח, או מעמידים את המצולם עם הגב לשמש ומוסיפים מילוי.'},
@@ -1919,7 +2144,8 @@ const LIGHTS={
   night:{ev:4,he:'לילה',hint:'כמעט אין אור טבעי. צריך צמצם פתוח, ISO גבוה וחצובה, או פנס מילוי. שים לב לרעש ולרעידה.'}};
 function sceneEV(){return LIGHTS[st.light].ev;}
 function subjD(){return st.scene==='runner'?SUBJ_D:st.pd;}
-function fillAlpha(){return st.fill?clamp(Math.pow(2,7.5-sceneEV())*Math.pow(2500/subjD(),2)/1.5,0,.92):0;}
+const FILLK={day:.42,sunrise:.6,sunset:.7,night:.85};
+function fillAlpha(){return st.fill?clamp(st.fillPow*FILLK[st.light]*Math.pow(2500/Math.max(1200,subjD()),1.6),0,.97):0;}
 let _lt=0;
 const LTMP=mk(700,1200);
 function lighten(c,m){if(m<=1.02)return;const g=c.getContext('2d'),tg=LTMP.getContext('2d');let guard=0;
@@ -1930,62 +2156,142 @@ function lighten(c,m){if(m<=1.02)return;const g=c.getContext('2d'),tg=LTMP.getCo
 function shadeSprite(c,d){const g=c.getContext('2d'),w=c.width,h=c.height;g.save();g.globalCompositeOperation='source-atop';
   if(st.ldir==='side'){const gr=g.createLinearGradient(w*.28,0,w*.72,0);gr.addColorStop(0,'rgba(0,0,10,.62)');gr.addColorStop(.55,'rgba(0,0,10,.12)');gr.addColorStop(1,'rgba(255,240,210,.14)');g.fillStyle=gr;g.fillRect(0,0,w,h);}
   else if(st.ldir==='back'){g.fillStyle='rgba(0,0,12,.6)';g.fillRect(0,0,w,h);}
-  if(st.light==='day'&&st.ldir==='front'&&st.scene!=='runner'){const gr=g.createLinearGradient(0,h*.05,0,h*.2);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.45,'rgba(0,0,0,.34)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,w,h*.3);}
+  if(st.light==='day'&&st.ldir==='front'&&st.scene!=='runner'){const gr=g.createLinearGradient(0,h*.05,0,h*.2);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.45,'rgba(0,0,0,.16)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,w,h*.3);}
   g.restore();}
 // ----- person (portrait / interview) -----
-const PW=620,PH=1120,PAX=310,PAY=150,PSPR=mk(PW,PH),EYE_Y=0.36*H;
+const PW=620,PH=1800,PAX=310,PAY=150,PSPR=mk(PW,PH),EYE_Y=0.36*H,BODY_H=1750,HEAD_TOP=110;
 function drawPerson(g,mouth,look,video){
-  const skin='#d9a37c',shade='#b98561',hair='#3a2618',shirt=video?'#7a2f3a':'#2f6f9f';
+  const skin='#d9a37c',shade='#b98561',hair='#3a2618',shirt=video?'#7a2f3a':'#2f6f9f',pants='#2b3146',shoe='#1c1c1f';
   g.lineCap='round';g.lineJoin='round';
-  g.fillStyle=shirt;g.beginPath();g.moveTo(-212,340);g.quadraticCurveTo(-205,195,-92,165);g.lineTo(92,165);g.quadraticCurveTo(205,195,212,340);g.lineTo(232,960);g.lineTo(-232,960);g.closePath();g.fill();
-  g.fillStyle='rgba(0,0,0,.14)';g.fillRect(-232,345,58,615);g.fillRect(174,345,58,615);
+  // legs + shoes
+  g.fillStyle=pants;g.beginPath();g.moveTo(-150,610);g.lineTo(150,610);g.lineTo(138,1540);g.lineTo(28,1540);g.lineTo(8,820);g.lineTo(-8,820);g.lineTo(-28,1540);g.lineTo(-138,1540);g.closePath();g.fill();
+  g.fillStyle='rgba(0,0,0,.18)';g.fillRect(-10,820,20,720);
+  g.fillStyle=shoe;for(const sx of[-1,1]){g.beginPath();g.ellipse(sx*88,1570,70,34,0,0,7);g.fill();}
+  // arms
+  for(const sx of[-1,1]){g.strokeStyle=shirt;g.lineWidth=74;g.beginPath();g.moveTo(sx*190,235);g.lineTo(sx*212,470);g.stroke();
+    g.strokeStyle=skin;g.lineWidth=52;g.beginPath();g.moveTo(sx*214,500);g.lineTo(sx*220,715);g.stroke();
+    g.fillStyle=skin;g.beginPath();g.ellipse(sx*222,765,30,44,0,0,7);g.fill();}
+  // torso
+  g.fillStyle=shirt;g.beginPath();g.moveTo(-200,330);g.quadraticCurveTo(-200,195,-92,165);g.lineTo(92,165);g.quadraticCurveTo(200,195,200,330);g.lineTo(160,640);g.lineTo(-160,640);g.closePath();g.fill();
+  g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-158,612,316,26);
   g.fillStyle=shade;g.fillRect(-42,95,84,95);
   g.fillStyle=skin;g.beginPath();g.moveTo(-62,165);g.lineTo(0,240);g.lineTo(62,165);g.closePath();g.fill();
   g.beginPath();g.ellipse(-100,22,14,26,0,0,7);g.ellipse(100,22,14,26,0,0,7);g.fill();
   g.beginPath();g.ellipse(0,15,98,125,0,0,7);g.fill();
   g.fillStyle=hair;g.beginPath();g.ellipse(0,-72,106,50,0,0,7);g.fill();g.fillRect(-104,-78,20,62);g.fillRect(84,-78,20,62);
   g.strokeStyle='#2a1b12';g.lineWidth=6;g.beginPath();g.moveTo(-58,-24);g.lineTo(-20,-27);g.moveTo(20,-27);g.lineTo(58,-24);g.stroke();
-  for(const sx of[-38,38]){g.fillStyle='#fff';g.beginPath();g.ellipse(sx,0,17,10,0,0,7);g.fill();g.fillStyle='#2a1b12';g.beginPath();g.arc(sx+look*6,0,8,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(sx+look*6-3,-3,2.2,0,7);g.fill();}
+  for(const sx of[-38,38]){g.fillStyle='#fff';g.beginPath();g.ellipse(sx,0,17,10,0,0,7);g.fill();g.fillStyle='#2a1b12';g.beginPath();g.arc(sx+look*6,0,8,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(sx+look*6-3,-3,st.fill?3.4:2.2,0,7);g.fill();}
   g.strokeStyle=shade;g.lineWidth=5;g.beginPath();g.moveTo(look*5,12);g.lineTo(look*12,50);g.lineTo(look*2,54);g.stroke();
   if(mouth>.12){g.fillStyle='#5a1f1f';g.beginPath();g.ellipse(look*4,82,20,4+mouth*13,0,0,7);g.fill();}
   else{g.strokeStyle='#8a3b34';g.lineWidth=5;g.beginPath();g.arc(look*4,66,26,Math.PI*.2,Math.PI*.8);g.stroke();}
-  if(video&&st.lav){g.strokeStyle='#111';g.lineWidth=3;g.beginPath();g.moveTo(30,262);g.quadraticCurveTo(60,420,40,960);g.stroke();g.fillStyle='#111';g.beginPath();g.roundRect?g.roundRect(18,238,24,30,6):g.rect(18,238,24,30);g.fill();g.fillStyle='#555';g.fillRect(24,232,12,10);}
+  if(video&&st.lav){g.strokeStyle='#111';g.lineWidth=3;g.beginPath();g.moveTo(30,262);g.quadraticCurveTo(60,420,40,640);g.stroke();g.fillStyle='#111';g.beginPath();g.roundRect?g.roundRect(18,238,24,30,6):g.rect(18,238,24,30);g.fill();g.fillStyle='#555';g.fillRect(24,232,12,10);}
 }
+// where the frame cuts the body (fractions of body height) and how much headroom is left
+const SHOT_T={full:{f:1.06,hr:.08,he:'גוף מלא'},amer:{f:.65,hr:.07,he:'אמריקאי'},med:{f:.43,hr:.07,he:'מדיום'},mcu:{f:.28,hr:.07,he:'מדיום קלוז-אפ'},cu:{f:.2,hr:.05,he:'קלוז-אפ'}};
+function frameInfo(){const k=pScale(),top=EYE_Y+st.tilt-HEAD_TOP*k;return{f:(H-top)/(BODY_H*k),hr:top/H,foot:(H-(top+BODY_H*k))/H};}
+function cutVerdict(f){
+  if(f<.11)return['y','אקסטרים קלוז-אפ','הפריים חותך בתוך הפנים. זה פריים חזק, שמתאים רק כשמתכוונים אליו.'];
+  if(f<.165)return['r','חיתוך בסנטר או בצוואר','הפריים חותך בצוואר, והראש נראה מנותק. יורדים עד הכתפיים.'];
+  if(f<.23)return['g','קלוז-אפ','חיתוך בכתפיים. פריים נקי לרגש ולפנים.'];
+  if(f<.34)return['g','מדיום קלוז-אפ','חיתוך בחזה. זה הפריים הקלאסי לראיון.'];
+  if(f<.47)return['g','מדיום','חיתוך באזור המותניים. רואים גם את שפת הגוף.'];
+  if(f<.60)return['r','חיתוך בכפות הידיים','הפריים חותך בפרקי הידיים ובאגן, והידיים נראות קטועות. עולים למותניים או יורדים לאמצע הירך.'];
+  if(f<.70)return['g','אמריקאי','חיתוך באמצע הירך. פריים טוב לעמידה ולתנועת ידיים.'];
+  if(f<.79)return['r','חיתוך בברכיים','לא חותכים במפרק. עולים לאמצע הירך או יורדים לגוף מלא.'];
+  if(f<.90)return['y','חיתוך בשוק','חיתוך מתחת לברך אפשרי, אבל לא נקי. עדיף אמצע הירך או גוף מלא.'];
+  if(f<1.0)return['r','חיתוך בקרסוליים','כפות הרגליים חתוכות. מתרחקים או מטים את המצלמה מטה עד שרואים את כל הנעליים.'];
+  return['g','גוף מלא','רואים את כל הגוף, כולל כפות הרגליים.'];}
+function framingLines(r,L){const fr=r.fr;if(!fr)return;const v=cutVerdict(fr.f);L.push([v[0],`<b>${v[1]}.</b> ${v[2]}`]);
+  if(fr.f>=.17){
+    if(fr.hr<0)L.push(['r','החלק העליון של הראש חתוך. מטים את המצלמה מעט למעלה או מתרחקים.']);
+    else if(fr.hr<.025)L.push(['y','הראש צמוד לקצה העליון. משאירים מעט אוויר מעל הראש.']);
+    else if(fr.hr<=.15)L.push(['g','מרווח נכון מעל הראש.']);
+    else if(fr.hr<=.24)L.push(['y','יותר מדי אוויר מעל הראש. המצולם "שוקע" בפריים. מטים את המצלמה מטה.']);
+    else L.push(['r','הרבה מדי אוויר מעל הראש. העיניים צריכות להיות בערך בשליש העליון של הפריים.']);}
+  if(fr.f>=1&&fr.foot<.02)L.push(['y','כפות הרגליים צמודות לקצה התחתון. משאירים מעט רצפה מתחתיהן.']);
+  if(r.video&&fr.f>=.60)L.push(['y','לסינק מקובל פריים של מדיום או מדיום קלוז-אפ. בפריים רחב קשה לראות את הפנים.']);}
+const CHARS={man:{src:'chars/man.webp',w:460,h:1466,top:6,body:1454,lav:[279,332,707],he:'גבר'},woman:{src:'chars/woman.webp',w:443,h:1490,top:6,body:1478,lav:[258,352,720],he:'אישה'},
+  manP:{src:'chars/man-p.webp',w:460,h:1470,top:6,body:1458,front:true},womanP:{src:'chars/woman-p.webp',w:447,h:1497,top:6,body:1485,front:true}};
+function curChar(){return CHARS[st.char+(st.scene==='portrait'?'P':'')]||CHARS[st.char];}
+const RUNS={man:{src:'chars/man-run.webp'},woman:{src:'chars/woman-run.webp'}};
+Object.values(RUNS).forEach(c=>{c.img=new Image();c.img.onload=()=>{c.ok=true;};c.img.src=c.src;});
 let pCache={k:'',img:null};
+Object.values(CHARS).forEach(c=>{c.img=new Image();c.img.onload=()=>{c.ok=true;pCache.k='';};c.img.src=c.src;});
+function lookDir(){return st.flip?1:-1;}
 function personSprite(){
-  const video=st.scene==='video',mouth=video?Math.round(AUD.env*4)/4:0,r=Math.round(cocPx(st.pd)*2)/2;
-  const k=[st.scene,mouth,st.ldir,st.light,st.fill,st.pd,r,st.lav].join('|');
+  const video=st.scene==='video',C=curChar(),useImg=C&&C.ok,mouth=video&&!useImg?Math.round(AUD.env*4)/4:0,r=Math.round(cocPx(st.pd)*2)/2;
+  const k=[st.scene,mouth,st.ldir,st.light,st.fill,r,st.lav,st.char,st.flip,useImg].join('|');
   if(pCache.k===k)return pCache.img;
-  const g=PSPR.getContext('2d');g.clearRect(0,0,PW,PH);g.save();g.translate(PAX,PAY);drawPerson(g,mouth,video?-1:0,video);g.restore();
+  const g=PSPR.getContext('2d');g.clearRect(0,0,PW,PH);g.save();
+  if(useImg){const sc=BODY_H/C.body;g.translate(PAX,PAY-HEAD_TOP);if(st.flip)g.scale(-1,1);g.scale(sc,sc);g.translate(-C.w/2,-C.top);g.imageSmoothingQuality='high';g.drawImage(C.img,0,0);
+    if(video&&st.lav){const [lx,ly,hy]=C.lav;g.strokeStyle='#0c0c0c';g.lineWidth=2.5;g.beginPath();g.moveTo(lx+6,ly+18);g.quadraticCurveTo(lx+26,(ly+hy)/2,lx+12,hy);g.stroke();g.fillStyle='#0c0c0c';g.beginPath();g.roundRect?g.roundRect(lx,ly,13,20,4):g.rect(lx,ly,13,20);g.fill();g.fillStyle='#3a3a3a';g.fillRect(lx+3,ly-5,7,8);}}
+  else{g.translate(PAX,PAY);drawPerson(g,mouth,video?lookDir():0,video);}
+  g.restore();
   shadeSprite(PSPR,st.pd);const img=r>=0.6?blurInto(PSPR,r):(()=>{const c=mk(PW,PH);c.getContext('2d').drawImage(PSPR,0,0);return c;})();
   pCache={k,img};return img;}
 function pScale(){return 2500/st.pd;}
-function subjBox(t){if(st.scene==='runner')return runnerBox(t);const k=pScale(),x=st.px*W;return{x0:x-235*k,x1:x+235*k,y0:EYE_Y-135*k,y1:H,cx:x,cy:EYE_Y+12*k};}
+function subjBox(t){if(st.scene==='runner')return runnerBox(t);const k=pScale(),x=st.px*W,ey=EYE_Y+st.tilt;return{x0:x-250*k,x1:x+250*k,y0:ey-135*k,y1:Math.min(H,ey+1620*k),cx:x,cy:ey+12*k};}
 function drawSubject(g,t){_lt=t;
   if(st.scene==='runner'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(runnerSprite(t),x-SOX,FEET_Y-SOY);return;}
   const k=pScale(),x=st.px*W;
   if(st.ldir==='back'){const gr=g.createRadialGradient(x,EYE_Y-20*k,60*k,x,EYE_Y-20*k,330*k);gr.addColorStop(0,'rgba(255,236,190,.55)');gr.addColorStop(1,'rgba(255,236,190,0)');g.save();g.globalCompositeOperation='lighter';g.fillStyle=gr;g.fillRect(x-340*k,EYE_Y-360*k,680*k,700*k);g.restore();}
+  {const fy=EYE_Y+1640*k,sg=g.createRadialGradient(0,0,0,0,0,1);sg.addColorStop(0,'rgba(15,30,8,.42)');sg.addColorStop(1,'rgba(15,30,8,0)');g.save();g.translate(x,fy);g.scale(300*k,46*k);g.fillStyle=sg;g.beginPath();g.arc(0,0,1,0,7);g.fill();g.restore();}
   g.drawImage(personSprite(),x-PAX*k,EYE_Y-PAY*k,PW*k,PH*k);}
 // ----- natural light over the whole scene -----
 function glow(g,x,y,r,col,a){const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,col);gr.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=a;g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}
 function fillPass(g){const a=fillAlpha();if(a<.02)return;g.save();g.globalCompositeOperation='screen';g.globalAlpha=a;const t=_lt;
   if(st.scene==='runner'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(SPR,x-SOX,FEET_Y-SOY);}
-  else{const k=pScale(),x=st.px*W;g.drawImage(pCache.img||PSPR,x-PAX*k,EYE_Y-PAY*k,PW*k,PH*k);}
+  else{const k=pScale(),x=st.px*W,ey=EYE_Y+st.tilt;g.drawImage(pCache.img||PSPR,x-PAX*k,ey-PAY*k,PW*k,PH*k);}
   g.restore();}
 function applyLight(g){
-  const L=st.light;if(L==='day'){fillPass(g);return;}g.save();
-  if(L==='sunrise'){g.globalCompositeOperation='multiply';g.fillStyle='#ffd9c2';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.12*W,.5*H,.7*W,'#ff9d6a',.55);const gr=g.createLinearGradient(0,0,0,.55*H);gr.addColorStop(0,'rgba(140,120,200,.35)');gr.addColorStop(1,'rgba(255,170,120,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,.55*H);}
-  else if(L==='sunset'){g.globalCompositeOperation='multiply';g.fillStyle='#ffb27d';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.86*W,.5*H,.75*W,'#ff6a1f',.7);const gr=g.createLinearGradient(0,0,0,.5*H);gr.addColorStop(0,'rgba(90,60,160,.4)');gr.addColorStop(1,'rgba(255,120,60,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,.5*H);}
-  else{g.globalCompositeOperation='multiply';g.fillStyle='#53629a';g.fillRect(0,0,W,H);const gr=g.createLinearGradient(0,0,0,.62*H);gr.addColorStop(0,'#0b1030');gr.addColorStop(.75,'#3b4470');gr.addColorStop(1,'#ffffff');g.fillStyle=gr;g.fillRect(0,0,W,.62*H);
-    g.globalCompositeOperation='screen';for(const lx of[.3*W,.68*W]){glow(g,lx,.385*H,150,'#ffd98a',.95);glow(g,lx,.62*H,260,'#c98f3a',.4);}}
+  const L=st.light;if(L==='day'||rbOn()){fillPass(g);return;}g.save();
+  const P=st.scene!=='runner',hz=P?EYE_Y+st.tilt:0,sy=P?hz-.03*H:.5*H,gy=P?Math.max(40,hz+.04*H):0;
+  if(L==='sunrise'){g.globalCompositeOperation='multiply';g.fillStyle='#ffd9c2';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.12*W,sy,.7*W,'#ff9d6a',.55);const e=P?gy:.55*H,gr=g.createLinearGradient(0,P?e-.55*H:0,0,e);gr.addColorStop(0,'rgba(140,120,200,.35)');gr.addColorStop(1,'rgba(255,170,120,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,e);}
+  else if(L==='sunset'){g.globalCompositeOperation='multiply';g.fillStyle='#ffb27d';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.86*W,sy,.75*W,'#ff6a1f',.7);const e=P?gy:.5*H,gr=g.createLinearGradient(0,P?e-.5*H:0,0,e);gr.addColorStop(0,'rgba(90,60,160,.4)');gr.addColorStop(1,'rgba(255,120,60,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,e);}
+  else{g.globalCompositeOperation='multiply';g.fillStyle='#53629a';g.fillRect(0,0,W,H);const e=P?gy:.62*H,gr=g.createLinearGradient(0,P?e-.62*H:0,0,e);gr.addColorStop(0,'#0b1030');gr.addColorStop(.75,'#3b4470');gr.addColorStop(1,'#ffffff');g.fillStyle=gr;g.fillRect(0,0,W,e);
+    g.globalCompositeOperation='screen';
+    if(P&&bgCur==='market')for(const l of BGS.market.lamps){glow(g,l[0],hz+l[1],190,'#ffd98a',.95);glow(g,l[0],hz+l[1]+260,330,'#c98f3a',.35);}
+    else if(P&&bgCur==='park')for(const l of PLAMPS){const k=2500/l.d;glow(g,l.x,hz+1640*k-3900*k,170,'#ffd98a',.95);glow(g,l.x,hz+1640*k,300,'#c98f3a',.4);}
+    else for(const lx of[.3*W,.68*W]){glow(g,lx,.385*H,150,'#ffd98a',.95);glow(g,lx,.62*H,260,'#c98f3a',.4);}}
   g.restore();fillPass(g);}
+// ----- real sound for the interview: the voice and the market, mixed by the chosen microphone -----
+const SND={ctx:null,buf:{},env:{},on:false,want:false,mon:false,who:'',t0:0,n:null};
+async function sndLoad(name){if(SND.buf[name])return SND.buf[name];
+  const ab=await (await fetch('audio/'+name+'.mp3')).arrayBuffer();const b=await new Promise((ok,no)=>SND.ctx.decodeAudioData(ab,ok,no));
+  if(name!=='market'){const d=b.getChannelData(0),w=Math.round(b.sampleRate*.02),n=Math.floor(d.length/w),e=new Float32Array(n);let mx=.001;
+    for(let i=0;i<n;i++){let p=0;for(let j=i*w,z=j+w;j<z;j++){const a=d[j]<0?-d[j]:d[j];if(a>p)p=a;}e[i]=p;if(p>mx)mx=p;}
+    for(let i=0;i<n;i++)e[i]/=mx;SND.env[name]=e;}
+  SND.buf[name]=b;return b;}
+function sndKill(){const n=SND.n;if(n){try{n.vs.stop();n.as.stop();}catch(_){}try{n.out.disconnect();}catch(_){}}SND.n=null;SND.on=false;}
+function sndStop(){SND.want=false;sndKill();}
+async function sndStart(){
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  try{SND.ctx=SND.ctx||new AC();if(SND.ctx.state==='suspended')SND.ctx.resume();}catch(_){return;}
+  SND.want=true;const who=st.char,c=SND.ctx;let v,a;
+  try{[v,a]=await Promise.all([sndLoad(who),sndLoad('market')]);}catch(_){toast('לא הצלחתי לטעון את קובצי הסאונד');return;}
+  if(!SND.want||st.scene!=='video')return;if(st.char!==who)return sndStart();
+  sndKill();
+  const vs=c.createBufferSource(),as=c.createBufferSource(),vg=c.createGain(),ag=c.createGain(),sh=c.createWaveShaper(),out=c.createGain(),lim=c.createDynamicsCompressor();
+  vs.buffer=v;vs.loop=true;as.buffer=a;as.loop=true;as.loopStart=.08;as.loopEnd=a.duration-.08;
+  const cv=new Float32Array(1024);for(let i=0;i<1024;i++)cv[i]=clamp((i/511.5-1)*4,-1,1);sh.curve=cv; // input range is -4..4, flat above 1: hard clipping
+  const pre=c.createGain();pre.gain.value=.25;vg.gain.value=0;ag.gain.value=0;out.gain.value=1.5;
+  lim.threshold.value=-4;lim.ratio.value=20;lim.attack.value=.003;lim.release.value=.1;
+  vs.connect(vg);as.connect(ag);vg.connect(pre);ag.connect(pre);pre.connect(sh);sh.connect(out);out.connect(lim);lim.connect(c.destination);
+  vs.start();as.start(0,.08);SND.n={vs,as,vg,ag,out};SND.who=who;SND.t0=c.currentTime;SND.dur=v.duration;SND.on=true;sndGains();
+}
+function sndGains(){if(!SND.on)return;const M=MIC[mics()[0]],gain=(st.again-16)*1.5,dd=M.dist?20*Math.log10(st.pd/2500):0,t=SND.ctx.currentTime;
+  // 0 dB on the meter lands exactly on the clipping point; below it the differences are softened so every microphone stays audible
+  const lv=M.sp-dd+gain,la=M.amb+gain+12;
+  SND.n.vg.gain.setTargetAtTime(Math.pow(10,(lv>0?lv:lv*.6)/20),t,.04);SND.n.ag.gain.setTargetAtTime(Math.pow(10,(la>0?la:la*.6)/20),t,.04);}
+function sndEnv(){const e=SND.env[SND.who];if(!e)return 0;const tt=(SND.ctx.currentTime-SND.t0)%SND.dur;return e[Math.floor(tt/.02)]||0;}
 // ----- audio -----
 const AUD={pk:[-60,-60],hold:[-60,-60],holdT:[0,0],clipT:[-9,-9],env:0,target:0,nextT:0,stats:null};
 const MIC={int:{sp:-34,amb:-44,he:'פנימי',dist:1},gun:{sp:-23,amb:-51,he:'שוטגאן',dist:1},lav:{sp:-13,amb:-60,he:'נק מייק',dist:0}};
 function mics(){return st.lav&&st.gun?['lav','gun']:st.lav?['lav','int']:st.gun?['gun','int']:['int','int'];}
 function audioTick(now){
-  if(now>AUD.nextT){AUD.target=Math.random()<.2?0.03:(.5+Math.random()*.5);AUD.nextT=now+.08+Math.random()*.17;}
-  AUD.env+=(AUD.target-AUD.env)*.35;
+  if(SND.on){AUD.env=Math.max(sndEnv(),AUD.env*.6);sndGains();}
+  else{if(now>AUD.nextT){AUD.target=Math.random()<.2?0.03:(.5+Math.random()*.5);AUD.nextT=now+.08+Math.random()*.17;}
+  AUD.env+=(AUD.target-AUD.env)*.35;}
   const gain=(st.again-16)*1.5,dd=20*Math.log10(st.pd/2500),mm=mics();
   mm.forEach((m,i)=>{const M=MIC[m];const sp=M.sp-(M.dist?dd:0)+20*Math.log10(Math.max(AUD.env,.001));const amb=M.amb+(st.light==='night'?-4:0)+(Math.random()*3-1.5);
     let lv=10*Math.log10(Math.pow(10,sp/10)+Math.pow(10,amb/10))+gain;const clip=lv>=-0.2;lv=clamp(lv,-60,0);
@@ -2003,18 +2309,18 @@ function audioTick(now){
   else if(h>=-20){c='y';tx='קצת חלש. הגבר מעט את הרמה';}
   else{c='r';tx='חלש מדי. הגבר רמה או קרב מיקרופון לפה';}
   S.className='astat '+c;if(S._t!==tx){S._t=tx;S.innerHTML=tx;}$('aStatDb').textContent=(h<=-59?'-∞':h.toFixed(0))+' dB';
-  if(st.rec){const f=Math.floor((now-AUD.stats.t0)*25);const p=n=>String(n).padStart(2,'0');$('recTc').textContent='REC 00:'+p(Math.floor(f/1500))+':'+p(Math.floor(f/25)%60)+':'+p(f%25);if(now-AUD.stats.t0>12)toggleRec();}
+  if(st.rec){const F=st.fps,f=Math.floor((now-AUD.stats.t0)*F);const p=n=>String(n).padStart(2,'0');$('recTc').textContent='REC 00:'+p(Math.floor(f/F/60))+':'+p(Math.floor(f/F)%60)+':'+p(f%F)+'  ·  '+f+' פריימים';if(now-AUD.stats.t0>50)toggleRec();}
 }
 function micText(){return st.lav&&st.gun?'נק מייק בערוץ 1 ושוטגאן בערוץ 2 כגיבוי. כך עובדים בשטח: אם אחד נכשל, יש את השני.':st.lav?'נק מייק צמוד לבגד, קרוב לפה. הקול חזק ונקי בכל מרחק מהמצלמה. זו הבחירה הראשונה לסינק. ערוץ 2 נשאר על המיקרופון הפנימי.':st.gun?'שוטגאן קולט בעיקר את מה שמולו ומחליש את הצדדים. טוב בהרבה מהמיקרופון הפנימי, אבל ככל שמתרחקים מהמצולם הקול נחלש.':'בלי מיקרופון חיצוני, המצלמה קולטת את כל הסביבה מרחוק. הדיבור חלש ויש הרבה רעש רקע. לא מתאים לסינק.';}
 function toggleRec(){
   if(st.scene!=='video')return;
-  if(!st.rec){st.rec=true;AUD.stats={max:[-60,-60],clip:[0,0],t0:animT};$('vf').classList.add('recording');$('shutter').classList.add('on');toast('מקליט. לחץ שוב כדי לעצור');return;}
-  st.rec=false;$('vf').classList.remove('recording');$('shutter').classList.remove('on');$('recTc').textContent='STBY';
+  if(!st.rec){st.rec=true;AUD.stats={max:[-60,-60],clip:[0,0],t0:animT};$('vf').classList.add('recording');$('shutter').classList.add('on');sndStart();toast('מקליט. לחץ שוב כדי לעצור');return;}
+  st.rec=false;$('vf').classList.remove('recording');$('shutter').classList.remove('on');$('recTc').textContent='STBY';if(!SND.mon)sndStop();
   const S=AUD.stats,dur=animT-S.t0;if(dur<1.2){toast('הקלטה קצרה מדי. הקלט לפחות שתי שניות');return;}
-  const res={video:true,o:offset(),t:T_(),N:N_(),iso:I_(),label:SH[st.si][0],mode:st.mode,scene:'video',light:st.light,ldir:st.ldir,fill:st.fill,px:st.px,pd:st.pd,tripod:st.tripod,
-    focusOK:cocPx(st.pd)<2.5,bgBlur:cocPx(40000),amax:S.max[0],aclip:S.clip[0]>2,mic:mics()[0],mic2:mics()[1],amax2:S.max[1],dur,nd:st.nd,motion:0,shake:false,inF:true};
+  const res={video:true,fps:st.fps,vsh:vSh(),frames:Math.round(dur*st.fps),dur,o:offset(),t:T_(),N:N_(),iso:I_(),label:SH[st.si][0],mode:st.mode,scene:'video',light:st.light,ldir:st.ldir,fill:st.fill,fillPow:st.fillPow,fa:fillAlpha(),fr:frameInfo(),px:st.px,pd:st.pd,tripod:st.tripod,
+    look:lookDir(),focusOK:cocPx(st.pd)<2.5,bgBlur:cocPx(40000),amax:S.max[0],aclip:S.clip[0]>2,mic:mics()[0],mic2:mics()[1],amax2:S.max[1],dur,nd:st.nd,motion:0,shake:false,inF:true};
   const shot={url:cv.toDataURL('image/jpeg',.9),res,ch:st.challenge?st.challenge-1:-1,win:false};
-  if(shot.ch>=0&&CH[shot.ch].ok(res)){shot.win=true;st.done[shot.ch]=true;saveProg();renderCH();}
+  chCheck(shot);
   shots.unshift(shot);if(shots.length>12)shots.pop();renderThumbs();openReview(shot);}
 function expLines(r,L){const a=Math.abs(r.o);
   if(a<=0.34)L.push(['g','חשיפה מדויקת.']);
@@ -2027,8 +2333,10 @@ function lightFeedback(r,L){
   if(r.ldir==='side')L.push(['g','אור מהצד נותן נפח ועומק לפנים. צד אחד מואר וצד אחד בצל.']);
   if(r.light==='day'&&r.ldir==='front'&&r.scene!=='runner')L.push(['y','שמש ישירה בצהריים יוצרת צללים קשים מתחת לעיניים. עדיף צל פתוח, אור מהצד, או אור מאחור עם מילוי.']);
   if(r.light==='night'&&!r.fill&&r.scene!=='runner')L.push(['y','בלילה בלי מקור אור המצולם מואר רק מהפנסים ברקע. פנס מילוי יאפשר ISO נמוך יותר ופנים נקיות.']);
-  if(r.light==='night'&&r.fill)L.push(['g','פנס המילוי מאיר את המצולם, והרקע נשאר לילי.']);
-  if(r.fill&&r.light==='day'&&r.ldir!=='back')L.push(['y','באור יום חזק פנס קטן על המצלמה כמעט לא משפיע. הוא מועיל בעיקר בלילה, בשקיעה או מול אור אחורי.']);
+  if(r.fill&&r.fa>.9)L.push(['y','הפנס חזק מדי ביחס לאור שמסביב: הפנים נשטפות והרקע נשאר כהה. מורידים עוצמה או מתרחקים מעט.']);
+  else if(r.light==='night'&&r.fill&&r.fa<.3)L.push(['y','הפנס חלש מדי למרחק הזה. מגבירים עוצמה או מתקרבים.']);
+  else if(r.light==='night'&&r.fill)L.push(['g','פנס המילוי מאיר את המצולם, והרקע נשאר לילי.']);
+  if(r.fill&&r.light==='day'&&r.ldir!=='back'&&r.fa<.3)L.push(['y','באור יום חזק פנס על המצלמה משפיע מעט. הוא מועיל בעיקר מקרוב, בלילה, בשקיעה או מול אור אחורי.']);
   if(r.light==='sunrise'||r.light==='sunset')L.push(['g','אור '+(r.light==='sunset'?'שקיעה':'זריחה')+' חם ורך. שים לב שהוא משתנה מהר, אז בודקים חשיפה כל כמה דקות.']);}
 function portraitFeedback(r,L){
   if(!r.focusOK)L.push(['r','הפוקוס לא על המצולם. בפורטרט הפוקוס חייב להיות על העין. גע בפנים כדי למקד.']);
@@ -2037,18 +2345,22 @@ function portraitFeedback(r,L){
   if(third)L.push(['g','המצולם על קו השליש. קומפוזיציה נעימה עם מקום לרקע.']);
   else if(center)L.push(['g','המצולם במרכז: קומפוזיציה סימטרית וישירה. נסה גם להזיז אותו לקו השליש.']);
   else L.push(['y','המצולם קרוב מדי לקצה הפריים. גרור אותו לקו השליש או למרכז.']);
-  if(r.pd<=1800)L.push(['g','קרוב למצולם: פריים הדוק של פנים. עומק השדה צר מאוד, אז הפוקוס חייב לשבת בדיוק.']);
-  if(r.pd>=4000)L.push(['g','רחוק מהמצולם: רואים יותר מהגוף ומהסביבה, והרקע פחות מטושטש.']);
+  if(third&&!curChar().front){const lr=(r.look<0?r.px:1-r.px);L.push(lr>.5?['g','המצולם מסתכל אל תוך הפריים, ויש לו מרחב מבט.']:['y','המצולם מסתכל החוצה מהפריים. העבר אותו לשליש השני, או הפוך את כיוון המבט.']);}
+  framingLines(r,L);
   if(!r.shake&&r.t>1/100)L.push(['y','גם כשהמצולם עומד, אנשים זזים קצת. לפורטרט עדיף 1/125 ומעלה.']);}
+function T_V(l){return SH.find(x=>x[0]===l)[1];}
 function videoFeedback(r){const L=[];
-  if(r.label==='1/50')L.push(['g','תריס 1/50 ב-25 פריימים: כלל ה-180 מעלות. התנועה תיראה טבעית.']);
-  else if(r.t<1/50)L.push(['y',`תריס ${r.label} מהיר מדי לווידאו. התנועה תיראה קופצנית. חוזרים ל-1/50 ומתקנים חשיפה בצמצם, ב-ISO או ב-ND.`]);
-  else L.push(['y',`תריס ${r.label} איטי מדי. כל תנועה תימרח. חוזרים ל-1/50.`]);
+  L.push(['g',`צולמו ${r.frames} פריימים: ${r.dur.toFixed(1)} שניות ב-${r.fps} פריימים בשנייה.`+(r.fps>=50?` בעריכה של 25p אפשר להאט את זה פי ${r.fps/25} להילוך איטי חלק.`:'')]);
+  if(r.label===r.vsh)L.push(['g',`תריס ${r.vsh} ב-${r.fps} פריימים: כלל ה-180 מעלות. התנועה תיראה טבעית.`]);
+  else if(r.t<T_V(r.vsh))L.push(['y',`תריס ${r.label} מהיר מדי ל-${r.fps}p. התנועה תיראה קופצנית. חוזרים ל-${r.vsh} ומתקנים חשיפה בצמצם, ב-ISO או ב-ND.`]);
+  else L.push(['y',`תריס ${r.label} איטי מדי ל-${r.fps}p. כל תנועה תימרח. חוזרים ל-${r.vsh}.`]);
   expLines(r,L);
   L.push(r.focusOK?['g','הפוקוס על המרואיין.']:['r','הפוקוס לא על המרואיין. גע בפנים שלו.']);
-  if(r.px>=.56)L.push(['g','מרחב מבט נכון: המרואיין מסתכל שמאלה, ויש לו מקום ריק בכיוון המבט.']);
-  else if(r.px>.44)L.push(['y','המרואיין במרכז. בסינק מזיזים אותו לשליש, כך שיהיה מקום ריק בכיוון שאליו הוא מסתכל.']);
-  else L.push(['r','המרואיין מסתכל אל קצה הפריים ואין לו מרחב מבט. גרור אותו לצד ימין.']);
+  const lr=(r.look<0?r.px:1-r.px),side=r.look<0?'שמאלה':'ימינה',to=r.look<0?'ימין':'שמאל';
+  if(lr>=.56)L.push(['g',`מרחב מבט נכון: המרואיין מסתכל ${side}, ויש לו מקום ריק בכיוון המבט.`]);
+  else if(lr>.44)L.push(['y','המרואיין במרכז. בסינק מזיזים אותו לשליש, כך שיהיה מקום ריק בכיוון שאליו הוא מסתכל.']);
+  else L.push(['r',`המרואיין מסתכל אל קצה הפריים ואין לו מרחב מבט. גרור אותו לצד ${to}.`]);
+  framingLines(r,L);
   L.push(r.tripod?['g','המצלמה על חצובה: פריים יציב לאורך כל הראיון.']:['y','צילום מהיד. בסינק עדיף חצובה, כדי שהפריים לא יזוז.']);
   lightFeedback(r,L);
   const m=r.mic;
@@ -2066,46 +2378,82 @@ function videoFeedback(r){const L=[];
 function segBind(id,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
 function setSeg(id,v){[...$(id).children].forEach(x=>x.classList.toggle('on',x.dataset.v===String(v)));}
 function sceneUI(){
+  if(st.scene!=='video'&&$('p-sim').dataset.mt==='snd')setMT('scene');wbUI();
   const simEl=$('p-sim');simEl.classList.remove('sim-runner','sim-portrait','sim-video');simEl.classList.add('sim-'+st.scene);
   $('lightHint').textContent=LIGHTS[st.light].hint;$('micInfo').textContent=micText();
   $('shutter').classList.toggle('rec',st.scene==='video');
-  document.querySelector('.tip').textContent=st.scene==='runner'?'הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.':st.scene==='portrait'?'גרור את המצולם ימינה ושמאלה כדי לבנות את הפריים. נגיעה בפנים ממקדת.':'גרור את המרואיין לשליש הנכון, בדוק את בר הסאונד, ולחץ על הכפתור האדום כדי להקליט.';
-  const ic=[];if(st.fill)ic.push('🔦');if(st.scene==='video'){if(st.lav)ic.push('🎤 LAV');if(st.gun)ic.push('🎙 GUN');if(st.nd)ic.push('ND'+Math.pow(2,st.nd));}
+  document.querySelector('.tip').textContent=st.scene==='runner'?'הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.':st.scene==='portrait'?'גרור את הדמות לכל כיוון כדי לבנות את הפריים. את המרחק משנים בסליידר או בכפתורי גודל הפריים.':'גרור את המרואיין לשליש הנכון, בדוק את בר הסאונד, ולחץ על הכפתור האדום כדי להקליט.';
+  const ic=[];if(st.fill)ic.push('🔦 '+Math.round(st.fillPow*100)+'%');if(st.scene==='video'){if(st.lav)ic.push('🎤 LAV');if(st.gun)ic.push('🎙 GUN');if(st.nd)ic.push('ND'+Math.pow(2,st.nd));}
   $('oIcons').innerHTML=ic.map(x=>`<span>${x}</span>`).join('');
-  const v=$('vInfo');v.textContent='25p · '+SH[st.si][0]+(SH[st.si][0]==='1/50'?' ✓':' · מומלץ 1/50');v.classList.toggle('bad',SH[st.si][0]!=='1/50');
+  vInfoUpd();
   pCache.k='';dirty=true;}
 function setScene(sc){if(st.rec){st.rec=false;$('vf').classList.remove('recording');$('shutter').classList.remove('on');$('recTc').textContent='STBY';}
-  st.scene=sc;st.challenge=0;if(sc==='video'){st.px=.64;}else if(sc==='portrait'){st.px=.5;}
+  st.scene=sc;st.challenge=0;st.tilt=0;dirty=true;if(sc==='video'){st.px=.64;setShot('mcu');setSeg('shotSeg','mcu');}else if(sc==='portrait'){st.px=.5;setShot('mcu');setSeg('shotSeg','mcu');}
   st.focusD=subjD();st.focusOn='subject';setSeg('sceneSeg',sc);renderCH();sceneUI();updateUI();syncTabs();
   toast(sc==='runner'?'סצנת תנועה: רץ בפארק':sc==='portrait'?'סצנת פורטרט: אפשר לגרור את המצולם':'סצנת וידאו: צילום סינק עם סאונד');}
 segBind('sceneSeg',v=>setScene(v));
+segBind('rlocSeg',v=>{st.rloc=v;dirty=true;toast({park:'פארק: שביל עפר בין העצים',track:'מסלול ריצה באצטדיון',street:'מדרכה ברחוב עירוני'}[v]);});
 segBind('lightSeg',v=>{st.light=v;sceneUI();updateUI();const o=offset();toast(LIGHTS[v].he+(Math.abs(o)>1?(o<0?': חשוך מדי עכשיו. פתח צמצם, האט תריס או העלה ISO':': בהיר מדי עכשיו. סגור צמצם, הגבר תריס או הורד ISO'):': החשיפה מתאימה'));});
 segBind('ldirSeg',v=>{st.ldir=v;sceneUI();});
-segBind('distSeg',v=>{const was=st.focusD===st.pd;st.pd=+v;if(was||st.focusOn==='subject')st.focusD=st.pd;sceneUI();});
+function frameHint(){if(st.scene==='runner')return;const fr=frameInfo(),v=cutVerdict(fr.f);const el=$('frameHint');el.innerHTML=`<span style="color:${v[0]==='g'?'#2ecc71':v[0]==='y'?'#f1c40f':'#ff5a5a'}">●</span> ${v[1]}`+(fr.f>=.17&&fr.hr<0?' · הראש חתוך':fr.f>=.17&&fr.hr>.15?' · הרבה אוויר מעל הראש':'');}
+function setDist(d,keepSeg){const was=st.focusD===st.pd;st.pd=clamp(Math.round(d/50)*50,1000,9000);if(was||st.focusOn==='subject')st.focusD=st.pd;$('rDist').value=st.pd;$('rDist2').value=st.pd;$('tDist').textContent=$('tDist2').textContent=(st.pd/1000).toFixed(1)+' מ׳';if(!keepSeg)setSeg('shotSeg','');pCache.k='';dirty=true;frameHint();}
+function setShot(key){const S=SHOT_T[key],k=(1-S.hr)*H/(S.f*BODY_H);setDist(2500/k,true);{const tl=tiltLim();st.tilt=clamp(S.hr*H-(EYE_Y-HEAD_TOP*pScale()),tl[0],tl[1]);}frameHint();}
+$('charSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.v==='flip'){st.flip=!st.flip;b.classList.toggle('on',st.flip);}else{st.char=b.dataset.v;[...$('charSeg').children].forEach(x=>{if(x.dataset.v!=='flip')x.classList.toggle('on',x===b);});}pCache.k='';dirty=true;if(SND.on&&SND.who!==st.char)sndStart();});
+segBind('shotSeg',v=>setShot(v));
+$('rDist').addEventListener('input',()=>setDist(+$('rDist').value));
+$('scnCard').querySelectorAll('[data-dd]').forEach(b=>b.onclick=()=>setDist(st.pd+(+b.dataset.dd)*200));
+$('rFill').addEventListener('input',()=>{st.fillPow=+$('rFill').value/100;$('tFill').textContent=$('rFill').value+'%';sceneUI();});
+$('scnCard').querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>{$('rFill').value=clamp(+$('rFill').value+(+b.dataset.fd)*5,5,100);$('rFill').dispatchEvent(new Event('input'));});
+$('vf').addEventListener('wheel',e=>{if(st.scene==='runner')return;e.preventDefault();setDist(st.pd*(e.deltaY>0?1.07:.93));},{passive:false});
+segBind('fpsSeg',v=>{st.fps=+v;updateUI();toast(v+'p: '+({25:'הקצב הרגיל בארץ לטלוויזיה ולרשת',30:'נפוץ ברשתות חברתיות ובארה״ב',50:'תנועה חלקה, או הילוך איטי פי 2',100:'הילוך איטי פי 4'})[v]+'. תריס מומלץ '+vSh());});
 segBind('ndSeg',v=>{st.nd=+v;sceneUI();updateUI();});
-$('tgFill').onclick=()=>{st.fill=!st.fill;$('tgFill').classList.toggle('on',st.fill);sceneUI();toast(st.fill?'פנס מילוי דולק: מאיר את המצולם מקרוב':'פנס מילוי כבוי');};
+$('tgFill').onclick=()=>{st.fill=!st.fill;$('tgFill').classList.toggle('on',st.fill);$('fillBox').style.display=st.fill?'':'none';sceneUI();toast(st.fill?'הפנס על המצלמה דולק. אפשר לשנות את העוצמה':'הפנס כבוי');};
+function monSet(on){SND.mon=on;$('tgMon').classList.toggle('on',on);if(on)sndStart();else if(!st.rec)sndStop();}
+$('tgMon').onclick=()=>monSet(!SND.mon);
 $('tgLav').onclick=()=>{st.lav=!st.lav;$('tgLav').classList.toggle('on',st.lav);sceneUI();};
 $('tgGun').onclick=()=>{st.gun=!st.gun;$('tgGun').classList.toggle('on',st.gun);sceneUI();};
 $('rAud').addEventListener('input',()=>{st.again=+$('rAud').value;$('tAud').textContent=st.again;});
 $('vidCard').querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{st.again=clamp(st.again+(+b.dataset.ad),0,31);$('rAud').value=st.again;$('tAud').textContent=st.again;});
 let drag=null;
-$('vf').addEventListener('pointermove',e=>{if(!drag)return;const r=$('vf').getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W;st.px=clamp(drag.px0+(x-drag.x0)/W,.14,.86);$('vf').classList.add('dragging');});
+$('vf').addEventListener('pointermove',e=>{if(!drag)return;const r=$('vf').getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;st.px=clamp(drag.px0+(x-drag.x0)/W,.1,.9);{const tl=tiltLim();st.tilt=clamp(drag.t0+(y-drag.y0),tl[0],tl[1]);}$('vf').classList.add('dragging');frameHint();});
 const endDrag=()=>{if(drag){drag=null;$('vf').classList.remove('dragging');}};
 $('vf').addEventListener('pointerup',endDrag);$('vf').addEventListener('pointercancel',endDrag);
-const _uu=updateUI;updateUI=function(){_uu();if($('vInfo')){const v=$('vInfo');v.textContent='25p · '+SH[st.si][0]+(SH[st.si][0]==='1/50'?' ✓':' · מומלץ 1/50');v.classList.toggle('bad',SH[st.si][0]!=='1/50');}};
+const _uu=updateUI;updateUI=function(){_uu();vInfoUpd();};
 sceneUI();
 
-const PAGES=['home','basics','sim'];
+// ----- white balance card with a Kelvin mode -----
+$('wbSeg').innerHTML=WBS.map((w,i)=>`<button data-v="${i}">${w[0]}<small>${w[1]}</small></button>`).join('');
+function wbUI(){if(!$('wbSeg').firstChild)return;[...$('wbSeg').children].forEach((b,i)=>b.classList.toggle('on',i===st.wb));const k=st.wb===WB_K;$('kBox').style.display=k?'block':'none';if(!k)return;
+  $('rK').value=st.wbK;$('tK').textContent=st.wbK+'K';const lk=LIGHT_K[st.light],d=st.wbK-lk;
+  $('kHint').textContent='האור בסצנה עכשיו ('+LIGHTS[st.light].he+') הוא בערך '+lk+'K. '+(Math.abs(d)<=300?'כיוונת קרוב לזה, ולכן הצבעים יוצאים טבעיים, ולבן נראה לבן.':d>0?'כיוונת מספר גבוה יותר. המצלמה חושבת שהאור כחלחל ומוסיפה כתום, ולכן התמונה חמה.':'כיוונת מספר נמוך יותר. המצלמה חושבת שהאור כתום ומוסיפה כחול, ולכן התמונה קרה.')+' הכלל: כדי לקבל צבע טבעי מכוונים את ה-K לצבע של האור.';}
+$('wbSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.wb=+b.dataset.v;syncTabs();});
+$('rK').addEventListener('input',e=>{st.wbK=+e.target.value;syncTabs();});
+$('kBox').querySelectorAll('[data-kd]').forEach(b=>b.onclick=()=>{st.wbK=clamp(st.wbK+(+b.dataset.kd)*100,2500,10000);syncTabs();});
+// ----- mobile tabs -----
+function setMT(t){if(t==='guide'){$('openGuide').click();return;}$('p-sim').dataset.mt=t;[...$('mtabs').children].forEach(b=>b.classList.toggle('on',b.dataset.t===t));}
+$('mtabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMT(b.dataset.t);});setMT('scene');
+// ----- distance: bar under the screen, and pinch with two fingers on the picture -----
+document.querySelectorAll('.distbar [data-dd]').forEach(b=>b.onclick=()=>setDist(st.pd+(+b.dataset.dd)*250));
+$('rDist2').addEventListener('input',e=>setDist(+e.target.value));
+const PIN={p:new Map(),d0:0,pd0:0};
+function pinD(){const a=[...PIN.p.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}
+$('vf').addEventListener('pointerdown',e=>{if(st.scene==='runner'||e.pointerType==='mouse')return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2){PIN.d0=pinD();PIN.pd0=st.pd;drag=null;$('vf').classList.remove('dragging');}},true);
+$('vf').addEventListener('pointermove',e=>{if(!PIN.p.has(e.pointerId))return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2&&PIN.d0>20){drag=null;setDist(PIN.pd0*PIN.d0/Math.max(20,pinD()));}},true);
+['pointerup','pointercancel','pointerleave'].forEach(n=>$('vf').addEventListener(n,e=>{PIN.p.delete(e.pointerId);PIN.d0=0;},true));
+// ----- anonymous visit counter (GoatCounter). Stays off until GC_CODE holds the site code -----
+$('shutter').addEventListener('click',()=>trackOnce(st.scene==='video'?'use-video':'use-photo'));
+$('openGuide').addEventListener('click',()=>trackOnce('use-guide'));
+$('chChip').onclick=()=>{st.challenge=0;renderCH();};
+const PAGES=['home','basics','sim','terms'];
 function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg))pg='home';st.page=pg;
   PAGES.forEach(x=>$('p-'+x).classList.toggle('on',x===pg));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===pg));
-  window.scrollTo(0,0);if(pg==='sim')dirty=true;}
+  window.scrollTo(0,0);if(pg==='sim')dirty=true;track('/'+pg);}
 window.addEventListener('hashchange',route);route();
 $('homeGuide').onclick=()=>$('openGuide').click();
 renderCH();setSkin(st.skin);requestAnimationFrame(loop);
 
 })();
 </script>
-<script data-goatcounter="https://chabotierdaniel.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
