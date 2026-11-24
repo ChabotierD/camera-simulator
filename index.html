@@ -641,7 +641,7 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sim-portrait .vf,.sim-video .vf{touch-action:none}
 .distbar{display:flex;align-items:center;gap:8px;margin-top:8px;direction:rtl}
-.sim-runner .distbar{display:none}
+.sim-runner .distbar:not(.zoombar){display:none}.sim-runner .vf{touch-action:none}
 .distbar button{flex:none;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);border-radius:10px;min-height:40px;padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .distbar input{flex:1;min-width:0}
 .distbar b{flex:none;min-width:48px;text-align:center;color:var(--accent-gold,#D4AF37);font-size:14px}
@@ -874,6 +874,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
         <div class="expo"><span>חשיפה</span><b id="expoTxt">±0.0</b></div>
       </div>
       <div class="chchip" id="chChip" style="display:none"></div>
+      <div class="distbar zoombar only-runner"><button data-zd="-1" aria-label="הרחק את הרץ">− רחוק</button><input type="range" id="rZoom" min="1" max="2.2" step="0.05" value="1" dir="ltr" aria-label="זום"><button data-zd="1" aria-label="קרב את הרץ">קרוב +</button><b id="tZoom">×1</b></div>
       <div class="distbar"><button data-dd="-1" aria-label="קרב את המצולם">− קרוב</button><input type="range" id="rDist2" min="1000" max="9000" step="100" value="2500" dir="ltr" aria-label="מרחק מהמצולם"><button data-dd="1" aria-label="הרחק את המצולם">רחוק +</button><b id="tDist2">2.5 מ׳</b></div>
       <div class="mtabs" id="mtabs"><button data-t="scene" class="on">סצנה</button><button data-t="expo">חשיפה</button><button data-t="snd">סאונד</button><button data-t="more">אתגרים</button><button data-t="guide">📖 מדריך</button></div>
       </div>
@@ -1323,7 +1324,7 @@ function runnerSprite(t){
   if(rbOn()&&RTINT[st.light]&&R&&R.ok){const f=Math.floor(t*6.4)%4;g.save();g.fillStyle=RTINT[st.light];g.globalCompositeOperation='multiply';g.fillRect(0,0,SPR.width,SPR.height);g.globalCompositeOperation='destination-in';g.drawImage(R.img,f*320,0,320,420,0,0,320,420);g.restore();}
   shadeSprite(SPR,SUBJ_D);const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
 }
-function runnerBox(t){const x=runnerX(t);return{x0:x-70,x1:x+80,y0:FEET_Y-360,y1:FEET_Y,cx:x+5,cy:FEET_Y-230};}
+function runnerBox(t){const x=runnerX(t),T=rzT(),X=v=>W/2+(v-W/2)*T.z,Y=v=>T.Ft+(v-T.F)*T.z;return{x0:X(x-70),x1:X(x+80),y0:Y(FEET_Y-360),y1:Y(FEET_Y),cx:X(x+5),cy:Y(FEET_Y-230)};}
 
 // ================= Compose =================
 function compose(g,t,dx,dy,zoom){
@@ -1333,6 +1334,7 @@ function compose(g,t,dx,dy,zoom){
   g.translate(dx||0,(dy||0)+tl);
   g.fillStyle='#b9cfe3';g.fillRect(-60,-60,W+120,H+120);
   if(st.scene!=='runner'){g.drawImage(PBI,-PBM,EYE_Y-PHZ);drawSubject(g,t);g.restore();return;}
+  if(st.scene==='runner'&&st.rz>1){const T=rzT();g.translate(W/2,T.Ft);g.scale(T.z,T.z);g.translate(-W/2,-T.F);}
   if(rbOn()){g.drawImage(RBI,-30,-20,W+60,H+40);drawSubject(g,t);g.restore();return;}
   let done=false;const sd=subjD();
   for(const L of LAYERS){if(!done&&L.d<sd){drawSubject(g,t);done=true;}g.drawImage(L.img,0,0);}
@@ -1465,7 +1467,7 @@ tgl('tgTripod','tripod',()=>toast(st.tripod?'המצלמה על חצובה: אי�
 // focus by tap
 $('vf').addEventListener('pointerdown',e=>{
   if(st.busy)return;
-  const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,yR=(e.clientY-r.top)/r.height*H,y=yR-(st.scene==='runner'?0:st.tilt);
+  const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,yR=(e.clientY-r.top)/r.height*H,y=st.scene==='runner'?(yR-rzT().Ft)/st.rz+rzT().F:yR-st.tilt;
   const b=subjBox(animT);let d,on='spot',name;
   if(x>b.x0-20&&x<b.x1+20&&yR>b.y0-20&&yR<b.y1+10){d=subjD();on='subject';name=st.scene==='runner'?'פוקוס על הרץ (5 מ׳)':'פוקוס על המצולם. אפשר לגרור אותו ימינה ושמאלה';
     if(st.scene!=='runner'){drag={x0:x,y0:yR,px0:st.px,t0:st.tilt};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}}}
@@ -1519,7 +1521,7 @@ async function capture(){
   shutterSound(t);
   const shake=!st.tripod&&t>1/FOCAL*1.01;
   const shakeAmp=shake?Math.min(30,(t*FOCAL-1)*2.4+2):0;
-  const motion=st.scene==='runner'?RUN_SPEED*t:0;
+  const motion=st.scene==='runner'?RUN_SPEED*t*st.rz:0;
   const n=clamp(Math.ceil(Math.max(motion,shakeAmp*2)/2.2),1,64);
   // hand-shake path
   const r=rng((Math.random()*1e9)|0);const sx=[],sy=[];let x=0,y=0,vx=0,vy=0;
@@ -1543,7 +1545,7 @@ async function capture(){
   await new Promise(res=>setTimeout(res,Math.max(90,wait)));
   $('exposing').classList.remove('on');$('blackout').classList.remove('on');
   // analysis
-  const mid=tStart+t/2,rx=runnerX(mid);
+  const mid=tStart+t/2,rx=W/2+(runnerX(mid)-W/2)*(st.scene==='runner'?st.rz:1);
   const res={o,t,N,iso,motion,shake,shakeAmp,inF:st.scene!=='runner'||(rx>0.06*W&&rx<0.92*W),focusOK:cocPx(subjD())<2.5,bgBlur:cocPx(40000),
     label:SH[st.si][0],mode:st.mode,scene:st.scene,light:st.light,ldir:st.ldir,fill:st.fill,fillPow:st.fillPow,fa:fillAlpha(),look:lookDir(),px:st.px,pd:st.pd,fr:st.scene==='runner'?null:frameInfo()};
   const shot={url,res,ch:st.challenge?st.challenge-1:-1,win:false};
@@ -2135,7 +2137,9 @@ $('vf').addEventListener('pointerdown',e=>{
 },true);
 syncTabs();
 // ---------- scenes, natural light, portrait, video & audio ----------
-Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,fillPow:.6,tilt:0,char:'man',flip:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,fps:25,wbK:5500,rloc:'park',rec:false});
+Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,fillPow:.6,tilt:0,char:'man',flip:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,fps:25,wbK:5500,rloc:'park',rz:1,rec:false});
+function rzT(){const z=st.rz,F=FEET_Y;return{z,F,Ft:F+(H*.975-F)*(z-1)/1.2};}
+function setRZ(z){st.rz=clamp(Math.round(z*20)/20,1,2.2);$('rZoom').value=st.rz;$('tZoom').textContent='×'+st.rz.toFixed(st.rz%1?2:1).replace(/0$/,'');}
 const FPS_SH={25:'1/50',30:'1/60',50:'1/100',100:'1/200'};function vSh(){return FPS_SH[st.fps];}
 function vInfoUpd(){if(!$('vFps'))return;const ok=SH[st.si][0]===vSh();$('vFps').textContent=st.fps+'p';$('vSh').textContent=SH[st.si][0]+(ok?' ✓':' · מומלץ '+vSh());$('vInfo').classList.toggle('bad',!ok);
   $('vidHint').textContent='בווידאו ב-'+st.fps+' פריימים בשנייה שומרים על תריס '+vSh()+' (פי שניים מקצב הפריימים). את החשיפה מתקנים בצמצם, ב-ISO או בפילטר ND.';}
@@ -2445,10 +2449,12 @@ $('mtabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)
 // ----- distance: bar under the screen, and pinch with two fingers on the picture -----
 document.querySelectorAll('.distbar [data-dd]').forEach(b=>b.onclick=()=>setDist(st.pd+(+b.dataset.dd)*250));
 $('rDist2').addEventListener('input',e=>setDist(+e.target.value));
+document.querySelectorAll('.zoombar [data-zd]').forEach(b=>b.onclick=()=>setRZ(st.rz+(+b.dataset.zd)*.1));
+$('rZoom').addEventListener('input',e=>setRZ(+e.target.value));
 const PIN={p:new Map(),d0:0,pd0:0};
 function pinD(){const a=[...PIN.p.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}
-$('vf').addEventListener('pointerdown',e=>{if(st.scene==='runner'||e.pointerType==='mouse')return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2){PIN.d0=pinD();PIN.pd0=st.pd;drag=null;$('vf').classList.remove('dragging');}},true);
-$('vf').addEventListener('pointermove',e=>{if(!PIN.p.has(e.pointerId))return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2&&PIN.d0>20){drag=null;setDist(PIN.pd0*PIN.d0/Math.max(20,pinD()));}},true);
+$('vf').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2){PIN.d0=pinD();PIN.pd0=st.pd;PIN.z0=st.rz;drag=null;$('vf').classList.remove('dragging');}},true);
+$('vf').addEventListener('pointermove',e=>{if(!PIN.p.has(e.pointerId))return;PIN.p.set(e.pointerId,{x:e.clientX,y:e.clientY});if(PIN.p.size===2&&PIN.d0>20){drag=null;if(st.scene==='runner')setRZ(PIN.z0*pinD()/PIN.d0);else setDist(PIN.pd0*PIN.d0/Math.max(20,pinD()));}},true);
 ['pointerup','pointercancel','pointerleave'].forEach(n=>$('vf').addEventListener(n,e=>{PIN.p.delete(e.pointerId);PIN.d0=0;},true));
 // ----- anonymous visit counter (GoatCounter). Stays off until GC_CODE holds the site code -----
 $('shutter').addEventListener('click',()=>trackOnce(st.scene==='video'?'use-video':'use-photo'));

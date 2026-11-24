@@ -57,6 +57,19 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 .fb .g i{background:var(--ok)}.fb .y i{background:var(--warn)}.fb .r i{background:var(--bad)}
 .fb h3{margin:0 0 2px;font-size:.8rem;color:var(--muted);font-weight:600}
 .note{font-weight:400;color:var(--muted);font-size:.82rem;line-height:1.5}
+.shoot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--panel2);border-radius:12px;padding:4px;flex:1;max-width:230px}
+.seg2 button{border:0;background:transparent;color:var(--muted);border-radius:9px;min-height:42px;font-size:.88rem;font-weight:600}
+.seg2 button.on{background:#262a33;color:var(--gold);box-shadow:inset 0 0 0 1px var(--goldline)}
+.shut{flex:none;width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#f3d77a,#B8942A);box-shadow:0 0 0 3px rgba(0,0,0,.5)}
+.shut.vid{background:radial-gradient(circle at 35% 30%,#ff7a7a,#d11f1f)}.shut.rec{border-radius:22px;animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,77,77,.35)}}
+.rtime{flex:1;max-width:230px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem;direction:ltr}
+#rev{display:none;flex-direction:column}#rev img{width:100%;border-radius:10px;display:block;margin-bottom:10px}
+#rev h3{margin:0 0 8px;font-size:1rem;color:var(--gold)}
+.rbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.rbtn button,.rbtn a{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;min-height:46px;font:inherit;font-weight:600;font-size:.92rem;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.rbtn .pri{background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414;border:0}
 </style>
 </head>
 <body>
@@ -75,6 +88,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
       <li><b>אופק:</b> פלס שמראה אם המצלמה ישרה.</li>
       <li><b>סאונד:</b> בר סאונד אמיתי מהמיקרופון, עם התראת קליפינג.</li>
     </ul>
+    <p>אפשר גם לצלם תמונה או להקליט סינק קצר, ולקבל משוב מסכם: חשיפה, חדות, יציבות, סאונד ואופק. בדפדפנים שתומכים בזיהוי פנים מתקבלת גם ביקורת על החיתוך והמיקום בפריים.</p>
     <p class="priv">התמונה והקול נשארים בטלפון שלך. שום דבר לא מוקלט, לא נשמר ולא נשלח לשום מקום.</p>
     <p>בלחיצה על הכפתור הדפדפן יבקש רשות למצלמה ולמיקרופון. צריך לאשר.</p>
     <button class="go" id="go">הפעל מצלמה</button>
@@ -91,6 +105,13 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
       <canvas class="ov" id="hist" width="264" height="132"></canvas>
       <div class="ov ameter" id="ameter"><span>🎤</span><div class="bar"><div class="mask" id="am"></div><div class="hold" id="ah"></div></div><span class="db" id="adb">-∞ dB</span></div>
     </div>
+    <div class="shoot">
+      <div class="seg2" id="modeSeg"><button data-m="photo" class="on">📷 תמונה</button><button data-m="video">🎬 סינק</button></div>
+      <button class="shut" id="shut" aria-label="צלם"></button>
+      <div class="rtime" id="rtime">לחץ לצילום וקבל משוב</div>
+    </div>
+    <div class="card fb" id="rev"><h3 id="revT">משוב על התמונה</h3><img id="revImg" alt=""><div id="revL" class="fb"></div>
+      <div class="rbtn"><a id="revSave" download="camera-simulator.jpg">שמור תמונה</a><button class="pri" id="revBack">צילום נוסף</button></div></div>
     <div class="tools">
       <button id="tGrid" class="on">רשת</button>
       <button id="tHist" class="on">היסטוגרמה</button>
@@ -153,6 +174,7 @@ let lastH=0;
 function loop(now){
   raf=requestAnimationFrame(loop);
   if(an)audio(now/1000);
+  if(recS)recTick(now);
   if(now-lastH>160&&v.videoWidth){lastH=now;exposure();}
 }
 function audio(t){
@@ -214,6 +236,59 @@ async function toggleLvl(){
 function fit(){if(v.videoWidth)$('stage').style.maxWidth=Math.round(innerHeight*.7*v.videoWidth/v.videoHeight)+'px';}
 v.addEventListener('loadedmetadata',fit);v.addEventListener('resize',fit);addEventListener('resize',fit);
 $('go').onclick=()=>{start();try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:'use-cam',title:'use-cam',event:true});}catch(_){}};
+// ----- capture and feedback -----
+let mode='photo',recS=null;
+const big=document.createElement('canvas'),bgx=big.getContext('2d',{willReadFrequently:true});
+function grab(maxW){const w=Math.min(maxW,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);big.width=w;big.height=h;bgx.drawImage(v,0,0,w,h);return bgx.getImageData(0,0,w,h);}
+function stats(im){const d=im.data,n=d.length/4,W=im.width,Hh=im.height,g=new Float32Array(n);let hi=0,lo=0,sum=0,r=0,gg=0,b=0;
+  for(let i=0,j=0;i<d.length;i+=4,j++){const y=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];g[j]=y;sum+=y;r+=d[i];gg+=d[i+1];b+=d[i+2];if(y>=250)hi++;else if(y<=6)lo++;}
+  let lap=0,ls=0,c=0;for(let y=1;y<Hh-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x,v2=4*g[i]-g[i-1]-g[i+1]-g[i-W]-g[i+W];lap+=v2;ls+=v2*v2;c++;}
+  const mean=sum/n;return{hi:hi/n,lo:lo/n,mean,sharp:ls/c-(lap/c)*(lap/c),cast:(r-b)/(r+gg+b+1)};}
+function expoLines(s,L){if(s.hi>.06)L.push(['r','חלק גדול מהתמונה שרוף ('+Math.round(s.hi*100)+'%). באזורים האלה אין פרטים. שנה זווית או הרחק מהשמיים או מהחלון.']);
+  else if(s.hi>.01)L.push(['y','יש אזורים שרופים ('+Math.round(s.hi*100)+'%). בדוק שהם לא על הפנים.']);
+  else if(s.mean<45)L.push(['r','התמונה חשוכה מדי. חסר אור על המצולם.']);
+  else if(s.lo>.25)L.push(['y','הרבה שחור בלי פרטים ('+Math.round(s.lo*100)+'%). אם זה המצולם, חסר עליו אור.']);
+  else if(s.mean>205)L.push(['y','התמונה בהירה מאוד, ייתכן שהיא שטופה באור.']);
+  else L.push(['g','חשיפה תקינה: אין אזורים שרופים, והבהירות מאוזנת.']);}
+function lvlLine(L){if(!L.on||L.ang==null||L.flat)return null;const a=Math.abs(L.ang);return a<1?['g','האופק ישר.']:a<3?['y','האופק נוטה מעט ('+a.toFixed(1)+' מעלות).']:['r','האופק עקום ('+a.toFixed(0)+' מעלות).'];}
+async function faceLines(Lo,w,h){if(!('FaceDetector' in window)){Lo.push(['','ביקורת חיתוך וקומפוזיציה לפי פנים עדיין לא זמינה בדפדפן הזה. היא תגיע בשלב הבא.']);return;}
+  try{const fs=await new FaceDetector({fastMode:true,maxDetectedFaces:3}).detect(big);if(!fs.length){Lo.push(['y','לא זוהו פנים בתמונה. אם צילמת אדם, קרב את המצלמה או הוסף אור.']);return;}
+    const f=fs.sort((a,b)=>b.boundingBox.width-a.boundingBox.width)[0].boundingBox,cx=(f.x+f.width/2)/w,top=f.y/h,fh=f.height/h,eye=(f.y+f.height*.4)/h;
+    Lo.push(fh>.55?['y','פריים צמוד מאוד (אקסטרים קלוז-אפ). מתאים לרגע דרמטי, לא לראיון רגיל.']:fh>.3?['g','קלוז-אפ: הפנים ממלאות את הפריים.']:fh>.16?['g','מדיום קלוז-אפ: מתאים לראיון.']:fh>.09?['g','מדיום: רואים גם את פלג הגוף העליון.']:['y','המצולם קטן בפריים. אם זה פורטרט או ראיון, התקרב.']);
+    const head=top-fh*.25;Lo.push(head<.02?['r','הראש נחתך או צמוד לקצה העליון. השאר מעט מרווח מעל הראש.']:head>.22&&fh>.12?['y','יש יותר מדי מרווח ריק מעל הראש. הטה את המצלמה מעט למטה.']:['g','מרווח נכון מעל הראש.']);
+    const third=Math.abs(cx-1/3)<.09||Math.abs(cx-2/3)<.09,mid=Math.abs(cx-.5)<.08;
+    Lo.push(third?['g','המצולם על קו השליש. לראיון, ודא שהוא מסתכל לכיוון הצד הריק.']:mid?['g','המצולם במרכז: מתאים לפורטרט שמסתכל למצלמה. לראיון עדיף קו השליש.']:['y','המצולם לא במרכז ולא על קו השליש. הזז אותו לאחד מהם.']);
+    if(Math.abs(eye-1/3)<.1)Lo.push(['g','העיניים קרובות לקו השליש העליון.']);
+  }catch(_){Lo.push(['','זיהוי הפנים לא הצליח הפעם.']);}}
+function showRev(title,lines,withImg){$('revT').textContent=title;$('revL').innerHTML=lines.map(l=>'<div class="ln '+l[0]+'"><i></i><span>'+l[1]+'</span></div>').join('');
+  const im=$('revImg');im.style.display=withImg?'block':'none';$('revSave').style.display=withImg?'flex':'none';if(withImg){const u=big.toDataURL('image/jpeg',.9);im.src=u;$('revSave').href=u;}
+  $('rev').style.display='flex';$('rev').scrollIntoView({behavior:'smooth',block:'start'});}
+async function takePhoto(){if(!v.videoWidth)return;const im=grab(960),s=stats(im),Lo=[];expoLines(s,Lo);
+  const sh=s.sharp;Lo.push(sh<35?['r','התמונה מטושטשת. החזק את הטלפון יציב, גע במסך על המצולם כדי למקד, ונקה את העדשה.']:sh<110?['y','החדות בינונית. ייתכן שהפוקוס לא על המצולם או שהייתה תזוזה קלה.']:['g','התמונה חדה.']);
+  if(s.cast>.07)Lo.push(['y','גוון חם (צהוב-כתום). אם זה לא מכוון, זה איזון הלבן של התאורה במקום.']);else if(s.cast<-.05)Lo.push(['y','גוון קר (כחלחל). מתאים לצל או לערב, ואם זה לא מכוון זה איזון הלבן.']);
+  const lv=lvlLine(L);if(lv)Lo.push(lv);else Lo.push(['','הפלס כבוי, ולכן לא נבדק האופק. הפעל "פלס" לפני הצילום.']);
+  await faceLines(Lo,big.width,big.height);showRev('משוב על התמונה',Lo,true);try{window.goatcounter&&window.goatcounter.count({path:'cam-photo',title:'cam-photo',event:true});}catch(_){}}
+function recTick(now){if(!recS)return;const S=recS,t=(now-S.t0)/1000;$('rtime').textContent='REC '+String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t)%60).padStart(2,'0');
+  if(an){S.amax=Math.max(S.amax,A.pk);S.db.push(A.pk);if(performance.now()/1000-A.clipT<.05)S.clip++;}
+  if(now-S.lf>200&&v.videoWidth){S.lf=now;sg.drawImage(v,0,0,sm.width,sm.height);const d=sg.getImageData(0,0,sm.width,sm.height).data;let diff=0,sum=0,hi=0;const n=d.length/4;
+    for(let i=0,j=0;i<d.length;i+=4,j++){const y=(d[i]+2*d[i+1]+d[i+2])>>2;if(S.prev)diff+=Math.abs(y-S.prev[j]);S.cur[j]=y;sum+=y;if(y>=250)hi++;}
+    if(S.prev)S.diff.push(diff/n);const tp=S.prev||new Uint8Array(n);S.prev=S.cur;S.cur=tp;S.mean.push(sum/n);S.hi.push(hi/n);if(L.on&&L.ang!=null)S.ang.push(L.ang);}
+  if(t>60)toggleRec();}
+function toggleRec(){if(!recS){recS={t0:performance.now(),amax:-60,db:[],clip:0,lf:0,prev:null,cur:new Uint8Array(sm.width*sm.height),diff:[],mean:[],hi:[],ang:[]};$('shut').classList.add('rec');$('rev').style.display='none';return;}
+  const S=recS;recS=null;$('shut').classList.remove('rec');const dur=(performance.now()-S.t0)/1000;$('rtime').textContent='לחץ להקלטת סינק וקבל משוב';
+  if(dur<2){$('rtime').textContent='קצר מדי. הקלט לפחות שתי שניות';return;}
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0,Lo=[['','משך: '+dur.toFixed(1)+' שניות. הווידאו לא נשמר, רק נמדד.']];
+  if(!an)Lo.push(['y','אין גישה למיקרופון, ולכן הסאונד לא נבדק.']);
+  else{if(S.clip>2)Lo.push(['r','קליפינג: הקול נחתך בשיאים. התרחק מעט מהמקור.']);else if(S.amax>-6)Lo.push(['y','הסאונד חזק מדי, קרוב לקליפינג (שיא '+S.amax.toFixed(0)+' dB).']);else if(S.amax>=-13)Lo.push(['g','רמת סאונד מצוינת: שיא של '+S.amax.toFixed(0)+' dB.']);else if(S.amax>=-24)Lo.push(['y','הסאונד קצת חלש (שיא '+S.amax.toFixed(0)+' dB). קרב את הטלפון למי שמדבר.']);else Lo.push(['r','הסאונד חלש מדי (שיא '+S.amax.toFixed(0)+' dB). קרב את הטלפון לפה של המדבר.']);
+    const sd=S.db.slice().sort((a,b)=>a-b),rng=sd.length>20?sd[Math.floor(sd.length*.95)]-sd[Math.floor(sd.length*.1)]:99;
+    if(rng<10)Lo.push(['y','הפער בין הדיבור לרעש הרקע קטן. הסביבה רועשת או שהמיקרופון רחוק מדי מהפה.']);else if(rng<90)Lo.push(['g','הדיבור בולט היטב מעל רעש הרקע.']);}
+  const m=avg(S.mean),h=avg(S.hi);expoLines({hi:h,lo:0,mean:m},Lo);
+  const mv=avg(S.diff);Lo.push(mv>9?['r','המצלמה זזה הרבה. לסינק משתמשים בחצובה או נשענים על משהו יציב.']:mv>4?['y','יש תזוזה קלה בפריים. נסה להחזיק בשתי ידיים עם מרפקים צמודים לגוף.']:['g','הפריים יציב.']);
+  if(S.ang.length>3){const a=Math.abs(avg(S.ang));Lo.push(a<1.2?['g','האופק ישר לאורך ההקלטה.']:['y','האופק נטה בממוצע '+a.toFixed(1)+' מעלות.']);}
+  grab(960);faceLines(Lo,big.width,big.height).then(()=>showRev('משוב על הסינק',Lo,false));try{window.goatcounter&&window.goatcounter.count({path:'cam-video',title:'cam-video',event:true});}catch(_){}}
+$('modeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||recS)return;mode=b.dataset.m;[...$('modeSeg').children].forEach(x=>x.classList.toggle('on',x===b));$('shut').classList.toggle('vid',mode==='video');$('rtime').textContent=mode==='video'?'לחץ להקלטת סינק וקבל משוב':'לחץ לצילום וקבל משוב';});
+$('shut').onclick=()=>{if(mode==='photo')takePhoto();else toggleRec();};
+$('revBack').onclick=()=>{$('rev').style.display='none';$('stage').scrollIntoView({behavior:'smooth',block:'start'});};
 $('tGrid').onclick=e=>{const on=e.currentTarget.classList.toggle('on');$('grid').style.display=on?'block':'none';};
 $('tHist').onclick=e=>{const on=e.currentTarget.classList.toggle('on');hc.style.display=on?'block':'none';};
 $('tLvl').onclick=toggleLvl;
