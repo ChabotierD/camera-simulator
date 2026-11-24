@@ -164,7 +164,7 @@ body:not(.ls) .side{display:contents}
     <div class="note" style="text-align:center"><div class="verline"><span>גרסה <b id="verNum"></b></span><button class="verbtn" id="verBtn">🔄 בדוק עדכון</button></div></div>
   </div>
 </div>
-<script>window.BUILD=10;</script>
+<script>window.BUILD=11;</script>
 <script>
 // ===== languages: the page is written in Hebrew; other languages are swapped in text node by text node =====
 window.I18N=(function(){
@@ -308,7 +308,8 @@ async function toggleLvl(){
   setTimeout(()=>{if(L.on&&L.ang==null)setLn('fLvl','y','אין נתונים מחיישן התנועה במכשיר הזה (במחשב אין חיישן כזה).');},1500);
 }
 let rot=0; // 0 = follow the screen, 90 / -90 = picture turned by hand for a phone with rotation lock
-function fit(){if(!v.videoWidth)return;const B=document.body,st=$('stage'),sd=$('side'),lv=$('live'),real=innerWidth>innerHeight&&innerHeight<620&&$('live').style.display!=='none';
+function fit(){if(!v.videoWidth)return;if(rot&&innerWidth>innerHeight)rot=0; // the screen itself turned: drop the manual turn, or the page would be turned twice
+  const B=document.body,st=$('stage'),sd=$('side'),lv=$('live'),real=innerWidth>innerHeight&&innerHeight<620&&$('live').style.display!=='none';
   const ls=!!rot||real;B.classList.toggle('ls',ls);B.classList.toggle('rot',!!rot);$('tLand').classList.toggle('on',ls);
   if(!ls){lv.style.cssText='display:'+(lv.style.display==='none'?'none':'flex');st.style.cssText='';sd.style.cssText='';v.style.cssText='';$('liveFb').style.cssText='';st.style.maxWidth=Math.round(innerHeight*.7*v.videoWidth/v.videoHeight)+'px';return;}
   const cw=rot?innerHeight:innerWidth,ch=rot?innerWidth:innerHeight,sideW=96;
@@ -319,6 +320,7 @@ function fit(){if(!v.videoWidth)return;const B=document.body,st=$('stage'),sd=$(
   v.style.cssText=rot?'width:'+h+'px;height:'+w+'px;transform:translate(-50%,-50%) rotate('+(-rot)+'deg)':'';
   $('liveFb').style.cssText='left:'+(left+150)+'px';}
 async function toggleLand(){
+  if(innerWidth>innerHeight){rot=0;fit();return;} // already sideways for real: nothing to turn
   if(!rot&&!document.body.classList.contains('ls')){ // first try the real thing: full screen and a locked landscape screen (Android)
     try{if(document.documentElement.requestFullscreen&&screen.orientation&&screen.orientation.lock){await document.documentElement.requestFullscreen();await screen.orientation.lock('landscape');setTimeout(fit,300);return;}}catch(_){try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
     rot=90;}
