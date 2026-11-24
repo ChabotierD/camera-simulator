@@ -2262,14 +2262,22 @@ async function sndLoad(name){if(SND.buf[name])return SND.buf[name];
     for(let i=0;i<n;i++){let p=0;for(let j=i*w,z=j+w;j<z;j++){const a=d[j]<0?-d[j]:d[j];if(a>p)p=a;}e[i]=p;if(p>mx)mx=p;}
     for(let i=0;i<n;i++)e[i]/=mx;SND.env[name]=e;}
   SND.buf[name]=b;return b;}
+// phones start with sound locked: it has to be opened from inside a tap, and an iPhone on silent mutes it unless the page asks for playback
+const SIL='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+function sndUnlock(){if(st.page!=='sim'||st.scene!=='video')return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(_){}
+  try{if(!SND.ctx){SND.ctx=new AC();const b=SND.ctx.createBuffer(1,1,22050),s=SND.ctx.createBufferSource();s.buffer=b;s.connect(SND.ctx.destination);s.start(0);}
+    if(SND.ctx.state!=='running')SND.ctx.resume();}catch(_){}
+  try{if(!SND.el){SND.el=new Audio(SIL);SND.el.loop=true;SND.el.setAttribute('playsinline','');}if((SND.on||SND.want)&&SND.el.paused)SND.el.play().catch(()=>{});}catch(_){}}
 function sndKill(){const n=SND.n;if(n){try{n.vs.stop();n.as.stop();}catch(_){}try{n.out.disconnect();}catch(_){}}SND.n=null;SND.on=false;}
-function sndStop(){SND.want=false;sndKill();}
+function sndStop(){SND.want=false;sndKill();try{SND.el&&SND.el.pause();}catch(_){}}
 async function sndStart(){
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  try{SND.ctx=SND.ctx||new AC();if(SND.ctx.state==='suspended')SND.ctx.resume();}catch(_){return;}
-  SND.want=true;const who=st.char,c=SND.ctx;let v,a;
+  SND.want=true;sndUnlock();if(!SND.ctx)return;try{if(SND.ctx.state!=='running')SND.ctx.resume();}catch(_){}
+ const who=st.char,c=SND.ctx;let v,a;
   try{[v,a]=await Promise.all([sndLoad(who),sndLoad('market')]);}catch(_){toast('לא הצלחתי לטעון את קובצי הסאונד');return;}
   if(!SND.want||st.scene!=='video')return;if(st.char!==who)return sndStart();
+  if(c.state!=='running'){try{await c.resume();}catch(_){}if(c.state!=='running')toast('הדפדפן חסם את הסאונד. לחץ שוב על "האזן לסינק"');}
   sndKill();
   const vs=c.createBufferSource(),as=c.createBufferSource(),vg=c.createGain(),ag=c.createGain(),sh=c.createWaveShaper(),out=c.createGain(),lim=c.createDynamicsCompressor();
   vs.buffer=v;vs.loop=true;as.buffer=a;as.loop=true;as.loopStart=.08;as.loopEnd=a.duration-.08;
@@ -2444,6 +2452,15 @@ $('vf').addEventListener('pointermove',e=>{if(!PIN.p.has(e.pointerId))return;PIN
 $('shutter').addEventListener('click',()=>trackOnce(st.scene==='video'?'use-video':'use-photo'));
 $('openGuide').addEventListener('click',()=>trackOnce('use-guide'));
 $('chChip').onclick=()=>{st.challenge=0;renderCH();};
+// ----- phones: no zoom on a double tap, no page pinch on the camera screen -----
+(function(){let lt=0,lx=0,ly=0;
+  document.addEventListener('touchend',e=>{if(e.touches.length||e.changedTouches.length!==1)return;const t=e.changedTouches[0],n=Date.now(),el=e.target;
+    const dbl=n-lt<400&&Math.abs(t.clientX-lx)<40&&Math.abs(t.clientY-ly)<40;lt=n;lx=t.clientX;ly=t.clientY;if(!dbl)return;
+    if(el.closest&&el.closest('input,textarea,select'))return;e.preventDefault();
+    const c=el.closest&&el.closest('button,a,summary,[data-act],.ch,.g-r,label');if(c&&!c.closest('#vf'))c.click();},{passive:false});
+  document.addEventListener('dblclick',e=>{if(!(e.target.closest&&e.target.closest('input,textarea')))e.preventDefault();},{passive:false});
+  ['gesturestart','gesturechange'].forEach(n=>document.addEventListener(n,e=>{if(e.target.closest&&e.target.closest('#vf'))e.preventDefault();},{passive:false}));
+  const un=()=>{sndUnlock();};['touchend','pointerup','click'].forEach(n=>document.addEventListener(n,un,{passive:true}));})();
 const PAGES=['home','basics','sim','terms'];
 function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg))pg='home';st.page=pg;
   PAGES.forEach(x=>$('p-'+x).classList.toggle('on',x===pg));

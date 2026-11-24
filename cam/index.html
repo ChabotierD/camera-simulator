@@ -27,7 +27,8 @@ a.back{color:var(--gold);text-decoration:none;font-size:.9rem;border:1px solid v
 .priv{border:1px solid var(--goldline);border-radius:10px;padding:9px 11px;color:var(--text)!important;font-weight:500!important;background:rgba(212,175,55,.08)}
 button{font:inherit;cursor:pointer}
 .go{width:100%;border:0;border-radius:12px;padding:14px;font-size:1.05rem;font-weight:700;color:#141414;background:linear-gradient(180deg,#E6C352,#B8942A)}
-.err{color:var(--bad);font-weight:500;margin-top:10px;display:none;line-height:1.5}
+.err{color:#ffb4b4;font-weight:500;margin-top:12px;display:none;line-height:1.6;border:1px solid var(--bad);border-radius:10px;padding:10px 12px;background:rgba(255,77,77,.08);overflow-wrap:anywhere}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 #live{display:none;flex-direction:column;gap:12px}
 .stage{position:relative;background:#000;border-radius:14px;overflow:hidden;border:1px solid var(--line);line-height:0}
 .stage{margin:0 auto;width:100%}.stage video{width:100%;height:auto;display:block;background:#000}
@@ -116,15 +117,25 @@ const hc=$('hist'),hg=hc.getContext('2d');
 function showErr(m){const e=$('err');e.textContent=m;e.style.display='block';}
 function setLn(id,c,t){const e=$(id);if(e._t===c+t)return;e._t=c+t;e.className='ln '+c;e.lastElementChild.textContent=t;}
 
+function why(e){const n=e&&e.name||'';let inFrame=false;try{inFrame=window.top!==window.self;}catch(_){inFrame=true;}
+  const tail=' (קוד: '+(n||'לא ידוע')+(e&&e.message?' · '+e.message:'')+')';
+  if(inFrame)return 'העמוד נפתח בתוך חלון מוטמע, ושם המצלמה חסומה. פתח את הכתובת ישירות בדפדפן: chabotierd.github.io/camera-simulator/cam'+tail;
+  if(!window.isSecureContext)return 'המצלמה פועלת רק בכתובת מאובטחת (https).'+tail;
+  if(n==='NotAllowedError'||n==='SecurityError')return 'הדפדפן לא קיבל הרשאה למצלמה. אם לא הופיעה שאלה, כנראה שהעמוד נפתח בתוך אפליקציה (וואטסאפ, אינסטגרם וכדומה): פתח אותו ב-Safari או ב-Chrome. אם סירבת בעבר: באייפון הגדרות > Safari > מצלמה > אפשר, ובאנדרואיד לחיצה על המנעול ליד הכתובת > הרשאות > מצלמה.'+tail;
+  if(n==='NotFoundError'||n==='OverconstrainedError')return 'לא נמצאה מצלמה מתאימה במכשיר.'+tail;
+  if(n==='NotReadableError'||n==='AbortError')return 'המצלמה תפוסה על ידי אפליקציה אחרת. סגור אפליקציות שמשתמשות במצלמה ונסה שוב.'+tail;
+  return 'לא הצלחתי לפתוח את המצלמה.'+tail;}
 async function start(){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showErr('הדפדפן הזה לא מאפשר גישה למצלמה. נסה ב-Chrome או ב-Safari מעודכן.');return;}
+  $('err').style.display='none';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showErr(why({name:window.isSecureContext?'NoMediaDevices':'InsecureContext'}));return;}
+  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){actx=actx||new AC();if(actx.state!=='running')actx.resume();}}catch(_){}
   stop();
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080}},
       audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
   }catch(e){
     try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false});}
-    catch(e2){showErr(e2&&e2.name==='NotAllowedError'?'לא ניתנה הרשאה למצלמה. אפשר לאשר אותה בהגדרות האתר בדפדפן, ואז לרענן את העמוד.':'לא הצלחתי לפתוח את המצלמה ('+(e2&&e2.name||'שגיאה')+').');return;}
+    catch(e2){try{stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}catch(e3){showErr(why(e3));return;}}
   }
   v.srcObject=stream;try{await v.play();}catch(_){}
   $('intro').style.display='none';$('live').style.display='flex';
@@ -207,6 +218,7 @@ $('tGrid').onclick=e=>{const on=e.currentTarget.classList.toggle('on');$('grid')
 $('tHist').onclick=e=>{const on=e.currentTarget.classList.toggle('on');hc.style.display=on?'block':'none';};
 $('tLvl').onclick=toggleLvl;
 $('tFlip').onclick=()=>{facing=facing==='environment'?'user':'environment';start();};
+(function(){let lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<400&&!e.touches.length){e.preventDefault();const c=e.target.closest&&e.target.closest('button,a');if(c)c.click();}lt=n;},{passive:false});})();
 document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);}else if(stream){raf=requestAnimationFrame(loop);}});
 window.addEventListener('pagehide',stop);
 })();
