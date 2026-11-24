@@ -18,3 +18,5 @@ project is not affiliated with or endorsed by them.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
 Contact: https://www.photobyus.com
+
+The Live camera page uses face-api by Vladimir Mandic (MIT licence), see cam/vendor/LICENSE-face-api.txt.

@@ -70,13 +70,21 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 .rbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .rbtn button,.rbtn a{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;min-height:46px;font:inherit;font-weight:600;font-size:.92rem;text-decoration:none;display:flex;align-items:center;justify-content:center}
 .rbtn .pri{background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414;border:0}
+.langsel{position:relative;flex:none;direction:ltr}
+.langsel svg{width:22px;height:16px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.25);flex:none;display:block}
+.langbtn{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.14);background:#1c1f26;color:var(--text,#fff);border-radius:10px;min-height:38px;padding:0 9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.langmenu{display:none;position:absolute;top:calc(100% + 6px);inset-inline-end:0;z-index:60;min-width:168px;padding:6px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:#14161b;box-shadow:0 14px 30px rgba(0,0,0,.6)}
+.langmenu.on{display:block}
+.langmenu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:var(--text,#fff);font:inherit;font-size:14.5px;font-weight:500;padding:10px 10px;border-radius:8px;cursor:pointer;min-height:44px}
+.langmenu button.on{background:rgba(212,175,55,.12);color:var(--accent-gold,#D4AF37)}
+html[dir=ltr] .intro ul{padding-left:20px}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <h1><img src="../icons/favicon-96.png" alt="">מצלמה חיה</h1>
-    <a class="back" href="../#sim">חזרה לסימולטור</a>
+    <div style="display:flex;gap:8px;align-items:center"><div class="langsel notr" id="langsel"><button class="langbtn" id="langBtn" aria-label="Language"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg><span id="langCode">HE</span></button><div class="langmenu" id="langMenu"><button data-l="he"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg><span>עברית</span></button><button data-l="en"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#012169"/><path d="M0 0l22 16M22 0L0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0l22 16M22 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M11 0v16M0 8h22" stroke="#fff" stroke-width="5.2"/><path d="M11 0v16M0 8h22" stroke="#C8102E" stroke-width="3"/></svg><span>English</span></button><button data-l="fr"><svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#0055A4"/><rect x="7.3" width="7.4" height="16" fill="#fff"/><rect x="14.6" width="7.4" height="16" fill="#EF4135"/></svg><span>Français</span></button><button data-l="ru"><svg viewBox="0 0 22 16"><rect width="22" height="5.4" fill="#fff"/><rect y="5.3" width="22" height="5.4" fill="#0039A6"/><rect y="10.6" width="22" height="5.4" fill="#D52B1E"/></svg><span>Русский</span></button><button data-l="ro"><svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#002B7F"/><rect x="7.3" width="7.4" height="16" fill="#FCD116"/><rect x="14.6" width="7.4" height="16" fill="#CE1126"/></svg><span>Română</span></button></div></div><a class="back" href="../#sim">חזרה לסימולטור</a></div>
   </header>
 
   <div class="card intro" id="intro">
@@ -88,7 +96,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
       <li><b>אופק:</b> פלס שמראה אם המצלמה ישרה.</li>
       <li><b>סאונד:</b> בר סאונד אמיתי מהמיקרופון, עם התראת קליפינג.</li>
     </ul>
-    <p>אפשר גם לצלם תמונה או להקליט סינק קצר, ולקבל משוב מסכם: חשיפה, חדות, יציבות, סאונד ואופק. בדפדפנים שתומכים בזיהוי פנים מתקבלת גם ביקורת על החיתוך והמיקום בפריים.</p>
+    <p>אפשר גם לצלם תמונה או להקליט סינק קצר, ולקבל משוב מסכם: חשיפה, חדות, יציבות, סאונד ואופק. כשמצלמים אדם מתקבלת גם ביקורת על החיתוך, על המרווח מעל הראש ועל מרחב המבט.</p>
     <p class="priv">התמונה והקול נשארים בטלפון שלך. שום דבר לא מוקלט, לא נשמר ולא נשלח לשום מקום.</p>
     <p>בלחיצה על הכפתור הדפדפן יבקש רשות למצלמה ולמיקרופון. צריך לאשר.</p>
     <button class="go" id="go">הפעל מצלמה</button>
@@ -128,6 +136,41 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%}
   </div>
 </div>
 <script>
+// ===== languages: the page is written in Hebrew; other languages are swapped in text node by text node =====
+window.I18N=(function(){
+  const HE=/[\u0590-\u05FF]/,T1="[A-Za-z0-9\u03b1]+(?:[.,:\\/'\\-][A-Za-z0-9\u03b1]+)*",TOK=new RegExp(T1+"(?: "+T1+")*","g");
+  const LANGS=['he','en','fr','ru','ro'],ATTRS=['placeholder','aria-label','title'];
+  let lang='he',dict={};const src=new WeakMap(),miss=new Set();
+  function skel(s){const v=[];const k=s.replace(/\s+/g,' ').trim().replace(TOK,m=>{v.push(m);return'{'+(v.length-1)+'}';});return[k,v];}
+  function one(s){const[k,v]=skel(s);const t=dict[k];if(t==null)return null;return t.replace(/\{(\d+)\}/g,(m,i)=>v[+i]!=null?v[+i]:m);}
+  function core1(c){let t=one(c);if(t!=null)return t;const m=c.match(/^([^֐-׿A-Za-z{(]*)([\s\S]*?)([\s.:!?…]*)$/);
+    if(m&&(m[1]||m[3])&&m[2]){t=one(m[2]);if(t!=null)return m[1]+t+m[3];}
+    if(/^\(.*\)$/.test(c)){t=one(c.slice(1,-1));if(t!=null)return'('+t+')';}return null;}
+  function tr(s){if(!HE.test(s))return s;const a=s.match(/^\s*/)[0],z=s.match(/\s*$/)[0],core=s.trim();let t=core1(core);
+    if(t==null)for(const re of[/(: )/,/(: |\. )/,/( · )/,/(: |\. | · )/]){const ps=core.split(re);if(ps.length<2)continue;let ok=true;
+      const o=ps.map((p,i)=>{if(i%2||!HE.test(p))return p;const x=core1(p);if(x==null)ok=false;return x;});if(ok){t=o.join('');break;}}
+    if(t==null){miss.add(skel(core)[0]);return s;}
+    return a+t+z;}
+  function doText(n){const cur=n.nodeValue,rec=src.get(n);let he=cur;if(rec&&rec.out===cur){if(rec.lang===lang)return;he=rec.he;}
+    if(!HE.test(he))return;const out=lang==='he'?he:tr(he);src.set(n,{he,out,lang});if(out!==cur)n.nodeValue=out;}
+  function doEl(e){for(const a of ATTRS){if(!e.hasAttribute||!e.hasAttribute(a))continue;const key='i18n'+a.replace('-','');let he=e.dataset[key];const cur=e.getAttribute(a);
+      if(he==null||(e.dataset[key+'o']!==cur)){he=cur;}if(!HE.test(he))continue;const out=lang==='he'?he:tr(he);e.dataset[key]=he;e.dataset[key+'o']=out;if(out!==cur)e.setAttribute(a,out);}}
+  function walk(root){if(root.nodeType===3){doText(root);return;}if(root.nodeType!==1||root.closest&&root.closest('.notr,script,style'))return;
+    doEl(root);root.querySelectorAll&&root.querySelectorAll('[placeholder],[aria-label],[title]').forEach(doEl);
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;return p&&!p.closest('.notr,script,style')?1:2;}});let n;while((n=w.nextNode()))doText(n);}
+  let busy=false;
+  const mo=new MutationObserver(ms=>{if(lang==='he'&&!anyNonHe)return;if(busy)return;busy=true;for(const m of ms){if(m.type==='characterData'){const p=m.target.parentElement;if(p&&!p.closest('.notr,script,style'))doText(m.target);}else m.addedNodes.forEach(walk);}busy=false;mo.takeRecords();});
+  let anyNonHe=false;
+  function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==='he'?'rtl':'ltr';walk(document.body);
+    const t=document.querySelector('title');if(t){t.dataset.he=t.dataset.he||t.textContent;t.textContent=lang==='he'?t.dataset.he:tr(t.dataset.he);}
+    window.dispatchEvent(new Event('langchange'));}
+  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('../lang/'+l+'.json');dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
+    lang=l;if(l!=='he')anyNonHe=true;try{localStorage.setItem('photosimLang',l);}catch(_){ }apply();}
+  function init(){mo.observe(document.body,{subtree:true,childList:true,characterData:true});let l='he';try{l=localStorage.getItem('photosimLang')||'he';}catch(_){ }if(l!=='he')set(l);}
+  return{set,init,skel,miss,get lang(){return lang;},t:s=>lang==='he'?s:tr(s)};
+})();
+</script>
+<script>
 (()=>{
 const $=id=>document.getElementById(id),v=$('v');
 let stream=null,facing='environment',actx=null,an=null,buf=null,raf=0;
@@ -135,17 +178,17 @@ const A={pk:-60,hold:-60,holdT:0,clipT:-9};
 const L={on:false,ang:null,flat:false};
 const sm=document.createElement('canvas');sm.width=96;sm.height=54;const sg=sm.getContext('2d',{willReadFrequently:true});
 const hc=$('hist'),hg=hc.getContext('2d');
-function showErr(m){const e=$('err');e.textContent=m;e.style.display='block';}
+function showErr(m){const e=$('err');e.innerHTML='';const a=document.createElement('span');a.textContent=m[0];const b=document.createElement('bdi');b.dir='ltr';b.className='notr';b.style.cssText='display:block;opacity:.7;font-size:.8em;margin-top:6px';b.textContent=m[1];e.append(a,b);e.style.display='block';}
 function setLn(id,c,t){const e=$(id);if(e._t===c+t)return;e._t=c+t;e.className='ln '+c;e.lastElementChild.textContent=t;}
 
 function why(e){const n=e&&e.name||'';let inFrame=false;try{inFrame=window.top!==window.self;}catch(_){inFrame=true;}
-  const tail=' (קוד: '+(n||'לא ידוע')+(e&&e.message?' · '+e.message:'')+')';
-  if(inFrame)return 'העמוד נפתח בתוך חלון מוטמע, ושם המצלמה חסומה. פתח את הכתובת ישירות בדפדפן: chabotierd.github.io/camera-simulator/cam'+tail;
-  if(!window.isSecureContext)return 'המצלמה פועלת רק בכתובת מאובטחת (https).'+tail;
-  if(n==='NotAllowedError'||n==='SecurityError')return 'הדפדפן לא קיבל הרשאה למצלמה. אם לא הופיעה שאלה, כנראה שהעמוד נפתח בתוך אפליקציה (וואטסאפ, אינסטגרם וכדומה): פתח אותו ב-Safari או ב-Chrome. אם סירבת בעבר: באייפון הגדרות > Safari > מצלמה > אפשר, ובאנדרואיד לחיצה על המנעול ליד הכתובת > הרשאות > מצלמה.'+tail;
-  if(n==='NotFoundError'||n==='OverconstrainedError')return 'לא נמצאה מצלמה מתאימה במכשיר.'+tail;
-  if(n==='NotReadableError'||n==='AbortError')return 'המצלמה תפוסה על ידי אפליקציה אחרת. סגור אפליקציות שמשתמשות במצלמה ונסה שוב.'+tail;
-  return 'לא הצלחתי לפתוח את המצלמה.'+tail;}
+  const tail='code: '+(n||'unknown')+(e&&e.message?' · '+e.message:'');const R=m=>[m,tail];
+  if(inFrame)return R('העמוד נפתח בתוך חלון מוטמע, ושם המצלמה חסומה. פתח את הכתובת ישירות בדפדפן: chabotierd.github.io/camera-simulator/cam');
+  if(!window.isSecureContext)return R('המצלמה פועלת רק בכתובת מאובטחת (https).');
+  if(n==='NotAllowedError'||n==='SecurityError')return R('הדפדפן לא קיבל הרשאה למצלמה. אם לא הופיעה שאלה, כנראה שהעמוד נפתח בתוך אפליקציה (וואטסאפ, אינסטגרם וכדומה): פתח אותו ב-Safari או ב-Chrome. אם סירבת בעבר: באייפון הגדרות > Safari > מצלמה > אפשר, ובאנדרואיד לחיצה על המנעול ליד הכתובת > הרשאות > מצלמה.');
+  if(n==='NotFoundError'||n==='OverconstrainedError')return R('לא נמצאה מצלמה מתאימה במכשיר.');
+  if(n==='NotReadableError'||n==='AbortError')return R('המצלמה תפוסה על ידי אפליקציה אחרת. סגור אפליקציות שמשתמשות במצלמה ונסה שוב.');
+  return R('לא הצלחתי לפתוח את המצלמה.');}
 async function start(){
   $('err').style.display='none';
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showErr(why({name:window.isSecureContext?'NoMediaDevices':'InsecureContext'}));return;}
@@ -167,6 +210,7 @@ async function start(){
   if(!an){$('ameter').style.display='none';setLn('fAud','y','אין גישה למיקרופון, ולכן אין מדידת סאונד. אפשר לאשר מיקרופון בהגדרות האתר ולרענן.');}
   else $('ameter').style.display='flex';
   cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+  setTimeout(()=>{loadFA().catch(()=>{});},1500);
 }
 function stop(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
 
@@ -235,6 +279,12 @@ async function toggleLvl(){
 }
 function fit(){if(v.videoWidth)$('stage').style.maxWidth=Math.round(innerHeight*.7*v.videoWidth/v.videoHeight)+'px';}
 v.addEventListener('loadedmetadata',fit);v.addEventListener('resize',fit);addEventListener('resize',fit);
+// ----- language picker -----
+(function(){const FL={'he': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg>', 'en': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#012169"/><path d="M0 0l22 16M22 0L0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0l22 16M22 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M11 0v16M0 8h22" stroke="#fff" stroke-width="5.2"/><path d="M11 0v16M0 8h22" stroke="#C8102E" stroke-width="3"/></svg>', 'fr': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#0055A4"/><rect x="7.3" width="7.4" height="16" fill="#fff"/><rect x="14.6" width="7.4" height="16" fill="#EF4135"/></svg>', 'ru': '<svg viewBox="0 0 22 16"><rect width="22" height="5.4" fill="#fff"/><rect y="5.3" width="22" height="5.4" fill="#0039A6"/><rect y="10.6" width="22" height="5.4" fill="#D52B1E"/></svg>', 'ro': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#002B7F"/><rect x="7.3" width="7.4" height="16" fill="#FCD116"/><rect x="14.6" width="7.4" height="16" fill="#CE1126"/></svg>'};const b=$('langBtn'),m=$('langMenu');
+  function mark(){const l=I18N.lang;b.innerHTML=FL[l]+'<span>'+l.toUpperCase()+'</span>';[...m.children].forEach(x=>x.classList.toggle('on',x.dataset.l===l));}
+  b.onclick=e=>{e.stopPropagation();m.classList.toggle('on');};document.addEventListener('click',()=>m.classList.remove('on'));
+  m.addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;I18N.set(x.dataset.l).then(mark);});
+  window.addEventListener('langchange',mark);I18N.init();mark();})();
 $('go').onclick=()=>{start();try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:'use-cam',title:'use-cam',event:true});}catch(_){}};
 // ----- capture and feedback -----
 let mode='photo',recS=null;
@@ -251,15 +301,26 @@ function expoLines(s,L){if(s.hi>.06)L.push(['r','חלק גדול מהתמונה 
   else if(s.mean>205)L.push(['y','התמונה בהירה מאוד, ייתכן שהיא שטופה באור.']);
   else L.push(['g','חשיפה תקינה: אין אזורים שרופים, והבהירות מאוזנת.']);}
 function lvlLine(L){if(!L.on||L.ang==null||L.flat)return null;const a=Math.abs(L.ang);return a<1?['g','האופק ישר.']:a<3?['y','האופק נוטה מעט ('+a.toFixed(1)+' מעלות).']:['r','האופק עקום ('+a.toFixed(0)+' מעלות).'];}
-async function faceLines(Lo,w,h){if(!('FaceDetector' in window)){Lo.push(['','ביקורת חיתוך וקומפוזיציה לפי פנים עדיין לא זמינה בדפדפן הזה. היא תגיע בשלב הבא.']);return;}
-  try{const fs=await new FaceDetector({fastMode:true,maxDetectedFaces:3}).detect(big);if(!fs.length){Lo.push(['y','לא זוהו פנים בתמונה. אם צילמת אדם, קרב את המצלמה או הוסף אור.']);return;}
-    const f=fs.sort((a,b)=>b.boundingBox.width-a.boundingBox.width)[0].boundingBox,cx=(f.x+f.width/2)/w,top=f.y/h,fh=f.height/h,eye=(f.y+f.height*.4)/h;
-    Lo.push(fh>.55?['y','פריים צמוד מאוד (אקסטרים קלוז-אפ). מתאים לרגע דרמטי, לא לראיון רגיל.']:fh>.3?['g','קלוז-אפ: הפנים ממלאות את הפריים.']:fh>.16?['g','מדיום קלוז-אפ: מתאים לראיון.']:fh>.09?['g','מדיום: רואים גם את פלג הגוף העליון.']:['y','המצולם קטן בפריים. אם זה פורטרט או ראיון, התקרב.']);
-    const head=top-fh*.25;Lo.push(head<.02?['r','הראש נחתך או צמוד לקצה העליון. השאר מעט מרווח מעל הראש.']:head>.22&&fh>.12?['y','יש יותר מדי מרווח ריק מעל הראש. הטה את המצלמה מעט למטה.']:['g','מרווח נכון מעל הראש.']);
-    const third=Math.abs(cx-1/3)<.09||Math.abs(cx-2/3)<.09,mid=Math.abs(cx-.5)<.08;
-    Lo.push(third?['g','המצולם על קו השליש. לראיון, ודא שהוא מסתכל לכיוון הצד הריק.']:mid?['g','המצולם במרכז: מתאים לפורטרט שמסתכל למצלמה. לראיון עדיף קו השליש.']:['y','המצולם לא במרכז ולא על קו השליש. הזז אותו לאחד מהם.']);
-    if(Math.abs(eye-1/3)<.1)Lo.push(['g','העיניים קרובות לקו השליש העליון.']);
-  }catch(_){Lo.push(['','זיהוי הפנים לא הצליח הפעם.']);}}
+// ----- face detection (runs on the device; the library and its models are served from this site) -----
+let faP=null;
+function loadFA(){if(faP)return faP;faP=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='vendor/face-api.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc);})
+  .then(()=>Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri('vendor/model'),faceapi.nets.faceLandmark68TinyNet.loadFromUri('vendor/model')])).catch(e=>{faP=null;throw e;});return faP;}
+function cutLine(f){return f<.11?['y','אקסטרים קלוז-אפ: הפריים חותך בתוך הפנים. חזק מאוד, מתאים רק כשזה מכוון.']:f<.165?['r','החיתוך יוצא בערך בצוואר, והראש נראה מנותק. רד עד הכתפיים.']:f<.23?['g','קלוז-אפ: החיתוך בכתפיים.']:f<.34?['g','מדיום קלוז-אפ: החיתוך בחזה. זה הפריים הקלאסי לראיון.']:f<.47?['g','מדיום: החיתוך באזור המותניים.']:f<.6?['r','החיתוך יוצא בערך בכפות הידיים ובאגן. עלה למותניים או רד לאמצע הירך.']:f<.7?['g','אמריקאי: החיתוך באמצע הירך.']:f<.79?['r','החיתוך יוצא בערך בברכיים. לא חותכים במפרק: עלה לאמצע הירך או רד לגוף מלא.']:f<.88?['y','החיתוך יוצא בערך בשוק. עדיף אמצע הירך או גוף מלא.']:f<.94?['r','החיתוך יוצא בערך בקרסוליים וכפות הרגליים נחתכות. התרחק עד שרואים את הנעליים.']:['g','גוף מלא: רואים את כל הגוף.'];}
+async function faceLines(Lo,w,h){
+  let det;try{await loadFA();det=await faceapi.detectAllFaces(big,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.35})).withFaceLandmarks(true);}
+  catch(_){Lo.push(['','זיהוי הפנים לא נטען הפעם, ולכן אין ביקורת על החיתוך והמיקום. בדוק את החיבור לרשת ונסה שוב.']);return;}
+  if(!det.length){Lo.push(['y','לא זוהו פנים בתמונה, ולכן אין ביקורת על החיתוך והמיקום. אם צילמת אדם, התקרב, הוסף אור או בקש ממנו לפנות אל המצלמה.']);return;}
+  const d=det.sort((a,b)=>b.detection.box.width-a.detection.box.width)[0],bx=d.detection.box,P=d.landmarks.positions;
+  const chin=P[8].y,brow=(P[19].y+P[24].y)/2,fh=Math.max(8,chin-brow)*1.55,top=chin-fh,cx=(P[0].x+P[16].x)/2/w,eye=(P[37].y+P[44].y)/2/h;
+  const f=(h-top)/(fh*7.3);Lo.push(cutLine(f));
+  const hr=top/h;Lo.push(hr<.015?['r','הראש נחתך או צמוד לקצה העליון. השאר מעט אוויר מעל הראש.']:hr>.2&&f<.6?['y','יש יותר מדי אוויר מעל הראש. הטה את המצלמה מעט למטה.']:['g','מרווח נכון מעל הראש.']);
+  const yaw=(P[30].x-P[0].x)/Math.max(1,P[16].x-P[0].x),dir=yaw<.36?-1:yaw>.64?1:0,third=Math.abs(cx-1/3)<.1||Math.abs(cx-2/3)<.1,mid=Math.abs(cx-.5)<.09;
+  if(dir===0)Lo.push(mid?['g','המצולם מסתכל למצלמה ונמצא במרכז: קומפוזיציה ישירה שמתאימה לפורטרט.']:third?['g','המצולם מסתכל למצלמה ונמצא על קו השליש.']:['y','המצולם לא במרכז ולא על קו השליש. הזז את הפריים לאחד מהם.']);
+  else{const room=dir<0?cx:1-cx;Lo.push(room>.56?['g','מרחב מבט נכון: יש מקום ריק בכיוון שאליו המצולם מסתכל.']:room<.44?['r','המצולם מסתכל אל קצה הפריים ואין לו מרחב מבט. הזז את הפריים כך שהמקום הריק יהיה בכיוון המבט.']:['y','המצולם מסתכל הצידה אבל נמצא במרכז. לראיון הזז אותו לשליש, עם מקום ריק בכיוון המבט.']);}
+  if(f<.6)Lo.push(Math.abs(eye-1/3)<.11?['g','העיניים קרובות לקו השליש העליון.']:eye>.5?['y','העיניים נמוכות בפריים. הטה את המצלמה למטה כדי להעלות אותן לשליש העליון.']:['','העיניים לא על קו השליש העליון. זה לא חובה, אבל בדרך כלל זה נראה טוב יותר.']);
+  if(det.length>1)Lo.push(['','זוהו '+det.length+' פנים. הביקורת מתייחסת לפנים הגדולות ביותר.']);
+  Lo.push(['','ביקורת החיתוך היא הערכה לפי גודל הפנים, ומניחה שהמצולם עומד זקוף.']);}
+window.__camTest={big,bgx,faceLines};
 function showRev(title,lines,withImg){$('revT').textContent=title;$('revL').innerHTML=lines.map(l=>'<div class="ln '+l[0]+'"><i></i><span>'+l[1]+'</span></div>').join('');
   const im=$('revImg');im.style.display=withImg?'block':'none';$('revSave').style.display=withImg?'flex':'none';if(withImg){const u=big.toDataURL('image/jpeg',.9);im.src=u;$('revSave').href=u;}
   $('rev').style.display='flex';$('rev').scrollIntoView({behavior:'smooth',block:'start'});}
