@@ -640,7 +640,7 @@ header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backd
 /* ===== mobile comfort, tabs, distance bar, WB card, terms ===== */
 html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sim-portrait .vf,.sim-video .vf{touch-action:none}
-.distbar{display:flex;align-items:center;gap:8px;margin-top:8px;direction:rtl}
+.distbar{display:flex;align-items:center;gap:8px;margin-top:8px;direction:ltr}
 .sim-runner .distbar:not(.zoombar){display:none}.sim-runner .vf{touch-action:none}
 .distbar button{flex:none;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);border-radius:10px;min-height:40px;padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .distbar input{flex:1;min-width:0}
@@ -874,8 +874,8 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
         <div class="expo"><span>חשיפה</span><b id="expoTxt">±0.0</b></div>
       </div>
       <div class="chchip" id="chChip" style="display:none"></div>
-      <div class="distbar zoombar only-runner"><button data-zd="-1" aria-label="הרחק את הרץ">− רחוק</button><input type="range" id="rZoom" min="1" max="2.2" step="0.05" value="1" dir="ltr" aria-label="זום"><button data-zd="1" aria-label="קרב את הרץ">קרוב +</button><b id="tZoom">×1</b></div>
-      <div class="distbar"><button data-dd="-1" aria-label="קרב את המצולם">− קרוב</button><input type="range" id="rDist2" min="1000" max="9000" step="100" value="2500" dir="ltr" aria-label="מרחק מהמצולם"><button data-dd="1" aria-label="הרחק את המצולם">רחוק +</button><b id="tDist2">2.5 מ׳</b></div>
+      <div class="distbar zoombar only-runner"><button data-zd="-1" aria-label="זום אאוט">− Zoom out</button><input type="range" id="rZoom" min="1" max="2.2" step="0.05" value="1.3" dir="ltr" aria-label="זום"><button data-zd="1" aria-label="זום אין">Zoom in +</button><b id="tZoom">×1.3</b></div>
+      <div class="distbar"><button data-dd="-1" aria-label="קרב את המצולם">קרוב −</button><input type="range" id="rDist2" min="1000" max="9000" step="100" value="2500" dir="ltr" aria-label="מרחק מהמצולם"><button data-dd="1" aria-label="הרחק את המצולם">רחוק +</button><b id="tDist2">2.5 מ׳</b></div>
       <div class="mtabs" id="mtabs"><button data-t="scene" class="on">סצנה</button><button data-t="expo">חשיפה</button><button data-t="snd">סאונד</button><button data-t="more">אתגרים</button><button data-t="guide">📖 מדריך</button></div>
       </div>
       <div class="tip">הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.</div>
@@ -1324,7 +1324,7 @@ function runnerSprite(t){
   if(rbOn()&&RTINT[st.light]&&R&&R.ok){const f=Math.floor(t*6.4)%4;g.save();g.fillStyle=RTINT[st.light];g.globalCompositeOperation='multiply';g.fillRect(0,0,SPR.width,SPR.height);g.globalCompositeOperation='destination-in';g.drawImage(R.img,f*320,0,320,420,0,0,320,420);g.restore();}
   shadeSprite(SPR,SUBJ_D);const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
 }
-function runnerBox(t){const x=runnerX(t),T=rzT(),X=v=>W/2+(v-W/2)*T.z,Y=v=>T.Ft+(v-T.F)*T.z;return{x0:X(x-70),x1:X(x+80),y0:Y(FEET_Y-360),y1:Y(FEET_Y),cx:X(x+5),cy:Y(FEET_Y-230)};}
+function runnerBox(t){const x=runnerX(t),T=rzT(),X=v=>T.cx+(v-W/2)*T.z,Y=v=>T.Ft+(v-T.F)*T.z;return{x0:X(x-70),x1:X(x+80),y0:Y(FEET_Y-360),y1:Y(FEET_Y),cx:X(x+5),cy:Y(FEET_Y-230)};}
 
 // ================= Compose =================
 function compose(g,t,dx,dy,zoom){
@@ -1334,7 +1334,7 @@ function compose(g,t,dx,dy,zoom){
   g.translate(dx||0,(dy||0)+tl);
   g.fillStyle='#b9cfe3';g.fillRect(-60,-60,W+120,H+120);
   if(st.scene!=='runner'){g.drawImage(PBI,-PBM,EYE_Y-PHZ);drawSubject(g,t);g.restore();return;}
-  if(st.scene==='runner'&&st.rz>1){const T=rzT();g.translate(W/2,T.Ft);g.scale(T.z,T.z);g.translate(-W/2,-T.F);}
+  if(st.scene==='runner'){const T=rzT();g.translate(T.cx,T.Ft);g.scale(T.z,T.z);g.translate(-W/2,-T.F);}
   if(rbOn()){g.drawImage(RBI,-30,-20,W+60,H+40);drawSubject(g,t);g.restore();return;}
   let done=false;const sd=subjD();
   for(const L of LAYERS){if(!done&&L.d<sd){drawSubject(g,t);done=true;}g.drawImage(L.img,0,0);}
@@ -1465,8 +1465,10 @@ tgl('tgHisto','histo',()=>$('histoBox').style.display=st.histo?'':'none');
 tgl('tgTripod','tripod',()=>toast(st.tripod?'המצלמה על חצובה: אין רעידת יד גם בחשיפה ארוכה':'צילום ביד חופשית: במהירות איטית מ-1/85 התמונה עלולה לרעוד'));
 
 // focus by tap
+let rpan=null;
 $('vf').addEventListener('pointerdown',e=>{
   if(st.busy)return;
+  if(st.scene==='runner'&&!e._tap){rpan={x:e.clientX,y:e.clientY,ox:st.rox,oy:st.roy,moved:false,id:e.pointerId};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}return;}
   const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,yR=(e.clientY-r.top)/r.height*H,y=st.scene==='runner'?(yR-rzT().Ft)/st.rz+rzT().F:yR-st.tilt;
   const b=subjBox(animT);let d,on='spot',name;
   if(x>b.x0-20&&x<b.x1+20&&yR>b.y0-20&&yR<b.y1+10){d=subjD();on='subject';name=st.scene==='runner'?'פוקוס על הרץ (5 מ׳)':'פוקוס על המצולם. אפשר לגרור אותו ימינה ושמאלה';
@@ -1545,7 +1547,7 @@ async function capture(){
   await new Promise(res=>setTimeout(res,Math.max(90,wait)));
   $('exposing').classList.remove('on');$('blackout').classList.remove('on');
   // analysis
-  const mid=tStart+t/2,rx=W/2+(runnerX(mid)-W/2)*(st.scene==='runner'?st.rz:1);
+  const mid=tStart+t/2,rx=st.scene==='runner'?rzT().cx+(runnerX(mid)-W/2)*st.rz:runnerX(mid);
   const res={o,t,N,iso,motion,shake,shakeAmp,inF:st.scene!=='runner'||(rx>0.06*W&&rx<0.92*W),focusOK:cocPx(subjD())<2.5,bgBlur:cocPx(40000),
     label:SH[st.si][0],mode:st.mode,scene:st.scene,light:st.light,ldir:st.ldir,fill:st.fill,fillPow:st.fillPow,fa:fillAlpha(),look:lookDir(),px:st.px,pd:st.pd,fr:st.scene==='runner'?null:frameInfo()};
   const shot={url,res,ch:st.challenge?st.challenge-1:-1,win:false};
@@ -2137,8 +2139,8 @@ $('vf').addEventListener('pointerdown',e=>{
 },true);
 syncTabs();
 // ---------- scenes, natural light, portrait, video & audio ----------
-Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,fillPow:.6,tilt:0,char:'man',flip:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,fps:25,wbK:5500,rloc:'park',rz:1,rec:false});
-function rzT(){const z=st.rz,F=FEET_Y;return{z,F,Ft:F+(H*.975-F)*(z-1)/1.2};}
+Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,fillPow:.6,tilt:0,char:'man',flip:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,fps:25,wbK:5500,rloc:'park',rz:1.3,rox:0,roy:0,rec:false});
+function rzT(){const z=st.rz,F=FEET_Y,Ft=F+(H*.975-F)*(z-1)/1.2;const mx=W/2*(z-1);st.rox=clamp(st.rox,-mx,mx);st.roy=clamp(st.roy,H-Ft-z*(H-F),z*F-Ft);return{z,F,Ft:Ft+st.roy,cx:W/2+st.rox};}
 function setRZ(z){st.rz=clamp(Math.round(z*20)/20,1,2.2);$('rZoom').value=st.rz;$('tZoom').textContent='×'+st.rz.toFixed(st.rz%1?2:1).replace(/0$/,'');}
 const FPS_SH={25:'1/50',30:'1/60',50:'1/100',100:'1/200'};function vSh(){return FPS_SH[st.fps];}
 function vInfoUpd(){if(!$('vFps'))return;const ok=SH[st.si][0]===vSh();$('vFps').textContent=st.fps+'p';$('vSh').textContent=SH[st.si][0]+(ok?' ✓':' · מומלץ '+vSh());$('vInfo').classList.toggle('bad',!ok);
@@ -2396,7 +2398,7 @@ function sceneUI(){
   const simEl=$('p-sim');simEl.classList.remove('sim-runner','sim-portrait','sim-video');simEl.classList.add('sim-'+st.scene);
   $('lightHint').textContent=LIGHTS[st.light].hint;$('micInfo').textContent=micText();
   $('shutter').classList.toggle('rec',st.scene==='video');
-  document.querySelector('.tip').textContent=st.scene==='runner'?'הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.':st.scene==='portrait'?'גרור את הדמות לכל כיוון כדי לבנות את הפריים. את המרחק משנים בסליידר או בכפתורי גודל הפריים.':'גרור את המרואיין לשליש הנכון, בדוק את בר הסאונד, ולחץ על הכפתור האדום כדי להקליט.';
+  document.querySelector('.tip').textContent=st.scene==='runner'?'גרור את התמונה כדי למקם את הרץ בפריים, ושנה זום בפס שמתחת למסך. נגיעה בתמונה בוחרת פוקוס, והערכים שעל המסך פעילים.':st.scene==='portrait'?'גרור את הדמות לכל כיוון כדי לבנות את הפריים. את המרחק משנים בסליידר או בכפתורי גודל הפריים.':'גרור את המרואיין לשליש הנכון, בדוק את בר הסאונד, ולחץ על הכפתור האדום כדי להקליט.';
   const ic=[];if(st.fill)ic.push('🔦 '+Math.round(st.fillPow*100)+'%');if(st.scene==='video'){if(st.lav)ic.push('🎤 LAV');if(st.gun)ic.push('🎙 GUN');if(st.nd)ic.push('ND'+Math.pow(2,st.nd));}
   $('oIcons').innerHTML=ic.map(x=>`<span>${x}</span>`).join('');
   vInfoUpd();
@@ -2430,6 +2432,11 @@ $('rAud').addEventListener('input',()=>{st.again=+$('rAud').value;$('tAud').text
 $('vidCard').querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{st.again=clamp(st.again+(+b.dataset.ad),0,31);$('rAud').value=st.again;$('tAud').textContent=st.again;});
 let drag=null;
 $('vf').addEventListener('pointermove',e=>{if(!drag)return;const r=$('vf').getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;st.px=clamp(drag.px0+(x-drag.x0)/W,.1,.9);{const tl=tiltLim();st.tilt=clamp(drag.t0+(y-drag.y0),tl[0],tl[1]);}$('vf').classList.add('dragging');frameHint();});
+$('vf').addEventListener('pointermove',e=>{if(!rpan||e.pointerId!==rpan.id||PIN.p.size>1)return;const r=$('vf').getBoundingClientRect(),dx=(e.clientX-rpan.x)/r.width*W,dy=(e.clientY-rpan.y)/r.height*H;
+  if(!rpan.moved&&Math.hypot(dx,dy)<10)return;rpan.moved=true;st.rox=rpan.ox+dx;st.roy=rpan.oy+dy;rzT();$('vf').classList.add('dragging');});
+$('vf').addEventListener('pointerup',e=>{if(!rpan||e.pointerId!==rpan.id)return;const p=rpan;rpan=null;$('vf').classList.remove('dragging');
+  if(!p.moved&&PIN.p.size<2)$('vf').dispatchEvent(Object.assign(new PointerEvent('pointerdown',{clientX:e.clientX,clientY:e.clientY,pointerId:e.pointerId,pointerType:'mouse',bubbles:false}),{_tap:true}));});
+$('vf').addEventListener('pointercancel',()=>{rpan=null;});
 const endDrag=()=>{if(drag){drag=null;$('vf').classList.remove('dragging');}};
 $('vf').addEventListener('pointerup',endDrag);$('vf').addEventListener('pointercancel',endDrag);
 const _uu=updateUI;updateUI=function(){_uu();vInfoUpd();};
