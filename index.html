@@ -303,11 +303,16 @@ button.lx-tab{pointer-events:auto;cursor:pointer}
 .cm-canon .pages{border-bottom:.4cqw solid var(--tcur);padding:.6cqw 6cqw 0;gap:0}
 .cm-canon .pg{background:transparent;border-radius:0;min-width:7.4cqw;height:5.6cqw;color:#ddd;font-weight:500;font-size:3.1cqw}
 .cm-canon .pg.on{background:transparent;color:#fff;font-weight:800;box-shadow:inset 0 -.9cqw 0 var(--tcur)}
-.cm-canon .pgname{display:none}
+.cm-canon .pgname{font-size:2.6cqw;font-weight:700;color:#ddd}
 .cm-canon .list{padding:1.6cqw 6cqw}
 .cm-canon .row{border-bottom:.15cqw solid #333;min-height:7.4cqw;padding:.4cqw 2.4cqw}
 .cm-canon .row .en{font-size:3.5cqw;font-weight:500}
 .cm-canon .row.sel{background:transparent;box-shadow:inset 0 0 0 .5cqw var(--tcur),inset 2.2cqw 0 0 var(--tcur),inset -2.2cqw 0 0 var(--tcur)}
+.cm-z9 .tabs{background:#000}.cm-z9 .tab.on{background:#f3d21f;color:#000}
+.cm-z9 .hdr{background:#000;border-bottom:.3cqw solid #555}
+.cm-z9 .row{background:#000;border-bottom:.2cqw solid #333}
+.cm-z9 .row.sel{background:#8a8a8a}.cm-z9 .row.sel .en,.cm-z9 .row.sel .ar{color:#fff}
+.cm-canon .tab{font-size:3cqw}
 mark{background:rgba(255,138,31,.35);color:inherit;border-radius:3px}
 .camsel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .camsel button{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:10px;padding:8px 2px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;line-height:1.25}
@@ -1073,7 +1078,7 @@ const NIKON_TABS_HE={'PLAYBACK MENU':'ניגון','PHOTO SHOOTING MENU':'ציל�
 const NIKON_BE=`b Metering/exposure: b1 ISO sensitivity step value; b2 EV steps for exposure cntrl; b3 Easy exposure compensation; b4 Matrix metering face detection; b5 Center-weighted area; b6 Fine-tune optimal exposure; b7 Keep exp. when f/ changes
 c Timers/AE lock: c1 Shutter-release button AE-L; c2 Self-timer; c3 Power off delay`;
 const NIKON_E=`e Bracketing/flash: e1 Flash sync speed; e2 Flash shutter speed; e3 Exposure comp. for flash; e4 Auto ISO sensitivity control (flash); e5 Modeling flash; e6 Auto bracketing (mode M); e7 Bracketing order; e8 Flash burst priority`;
-const CANON_HE={'SHOOT':'צילום','AF':'פוקוס','PLAY':'ניגון','WIRELESS':'אלחוטי','SET UP':'הגדרות','C.Fn':'פונקציות מותאמות'};
+const CANON_HE={'SHOOT (Movie)':'צילום במצב וידאו','SHOOT':'צילום','AF':'פוקוס','PLAY':'ניגון','WIRELESS':'אלחוטי','SET UP':'הגדרות','C.Fn':'פונקציות מותאמות'};
 const CANON_CFN12=`1: Exposure level increments; ISO speed setting increments; Speed from metering/ISO Auto; Bracketing auto cancel; Bracketing sequence; Number of bracketed shots; Safety shift`;
 const MODELS={
 a7iv:{name:'Sony α7 IV',brand:'sony',src:'https://helpguide.sony.net/ilc/2110/v1/en/contents/TP1001803623.html',tabs:[
@@ -1223,7 +1228,15 @@ r5:{name:'Canon EOS R5',brand:'canon',src:'https://cam.start.canon/en/C003/manua
 2: Same expo. for new aperture; AE lock meter. mode after focus; Restrict shooting modes; Set shutter speed range; Set aperture range
 3: Dial direction during Tv/Av; Control ring rotation; Customize buttons; Customize dials; Clear customized settings
 4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off; Add IPTC information
-5: Clear all Custom Func. (C.Fn)`,'#e07b16']]},
+5: Clear all Custom Func. (C.Fn)`,'#e07b16'],
+['SHOOT (Movie)','🎥',`1: Movie rec quality; Movie cropping; Sound recording
+2: Exposure comp.; ISO speed settings; HDR PQ settings; Auto Lighting Optimizer; Highlight tone priority; Av 1/8-stop incr.; Auto slow shutter
+3: White balance; Custom White Balance; WB correction; Picture Style; Canon Log settings; Clarity
+4: Lens aberration correction; High ISO speed NR
+5: HDR Movie Recording; Time-lapse movie
+6: Movie self-timer; Remote control
+7: IS (Image Stabilizer) mode; Shutter btn function for movies; Metering timer; Zebra settings; Shooting info. disp.; VF display format
+8: Auto pwr off temp.; Standby: Low res.; HDMI display; HDMI RAW output; Time code`,'#d6322f']]},
 r6:{name:'Canon EOS R6',brand:'canon',src:'https://cam.start.canon/en/C004/manual/html/UG-07_Set-up_0020.html',tabs:[
 ['SHOOT','●',`1: Image quality; Cropping/aspect ratio
 2: Expo.comp./AEB; ISO speed settings; HDR PQ settings; Auto Lighting Optimizer; Highlight tone priority; Anti-flicker shoot.; External Speedlite control
@@ -1255,7 +1268,15 @@ r6:{name:'Canon EOS R6',brand:'canon',src:'https://cam.start.canon/en/C004/manua
 2: Same expo. for new aperture; AE lock meter. mode after focus; Set shutter speed range; Set aperture range
 3: Dial direction during Tv/Av; Control ring rotation; Customize buttons; Customize dials; Clear customized settings
 4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off; Add IPTC information
-5: Clear all Custom Func. (C.Fn)`,'#e07b16']]},
+5: Clear all Custom Func. (C.Fn)`,'#e07b16'],
+['SHOOT (Movie)','🎥',`1: Shooting mode; Movie rec quality; Movie cropping; Sound recording
+2: Exposure comp.; ISO speed settings; HDR PQ settings; Auto Lighting Optimizer; Highlight tone priority; Av 1/8-stop incr.; Auto slow shutter
+3: White balance; Custom White Balance; WB correction; Picture Style; Canon Log settings; Clarity
+4: Lens aberration correction; High ISO speed NR
+5: HDR Movie Recording; Time-lapse movie
+6: Movie self-timer; Remote control
+7: IS (Image Stabilizer) mode; Shutter btn function for movies; Metering timer; Zebra settings; Shooting info. disp.; VF display format
+8: Standby: Low res.; HDMI display; Time code`,'#d6322f']]},
 r7:{name:'Canon EOS R7',brand:'canon',src:'https://cam.start.canon/en/C005/manual/html/UG-08_Set-up_0020.html',tabs:[
 ['SHOOT','●',`1: Image quality; Dual Pixel RAW; Still img aspect ratio
 2: Expo.comp./AEB; ISO speed settings; HDR shooting; HDR Mode; Auto Lighting Optimizer; Highlight tone priority; Anti-flicker shoot.
@@ -1291,7 +1312,14 @@ r7:{name:'Canon EOS R7',brand:'canon',src:'https://cam.start.canon/en/C005/manua
 2: Same expo. for new aperture; AE lock meter. mode after focus; Set shutter speed range; Set aperture range
 3: Dial direction to set Tv/Av; Control ring direction to set Tv/Av; Switch Main Dial/Quick Control Dial when shooting; Customize buttons; Customize dials; Clear customized settings
 4: Add cropping information; Audio compression; Default Erase option; Release shutter w/o lens; Retract lens on power off
-5: Clear all Custom Func. (C.Fn)`,'#e07b16']]}
+5: Clear all Custom Func. (C.Fn)`,'#e07b16'],
+['SHOOT (Movie)','🎥',`1: Movie rec. size; High Frame Rate; Digital zoom; Sound recording
+2: Exposure comp.; ISO speed settings; HDR shooting; Auto Lighting Optimizer; Highlight tone priority; Av 1/8-stop incr.; Auto slow shutter
+3: White balance; Custom White Balance; WB correction; Picture Style; Canon Log settings; Clarity; Shooting creative filters
+4: Lens aberration correction; High ISO speed NR
+5: Time-lapse movie; Movie self-timer; Remote control
+6: IS (Image Stabilizer) mode; Auto level; Customize Quick Controls; Shutter btn function for movies; Metering timer; Zebra settings; Shooting info. disp.
+7: Reverse display; VF display format; Standby: Low res.; HDMI display; Time code`,'#d6322f']]}
 };
 // topic locations: per model "TabIndex|Item" or "!note"
 const S=(a,f)=>({a7iv:a,fx3:f||a}), N=(z9,z6)=>({z9:z9,z6iii:z6||z9}), C=(r5,r6,r7)=>({r5:r5,r6:r6||r5,r7:r7||r6||r5});
@@ -1324,7 +1352,7 @@ const TOPICS=[
 {t:'מצב מדידת אור',k:'מדידה מדידת אור מטריצה נקודתית מרכז metering spot matrix evaluative',w:'קובע איזה חלק מהתמונה המצלמה בודקת כדי להחליט על החשיפה. מדידה של כל התמונה מתאימה לרוב המצבים. נקודתית מתאימה לנושא מואר על רקע כהה.',
  L:{...S('1|Metering Mode'),...N('1|Metering'),...C(QN,QN,'0|Metering mode')}},
 {t:'זברה (אזהרת אזורים שרופים)',k:'זברה פסים שרוף בהיר מדי zebra highlights',w:'מסמן בפסים את האזורים שבהירים מדי ועלולים להישרף. שימושי מאוד בווידאו ובשמלת כלה לבנה.',
- L:{...S('1|Zebra Display'),...N('3|g11 Zebra pattern','3|g14 Zebra pattern')}},
+ L:{...S('1|Zebra Display'),...N('3|g11 Zebra pattern','3|g14 Zebra pattern'),...C('6|Zebra settings')}},
 {t:'מצב פוקוס: יחיד או רציף',k:'פוקוס מיקוד רציף יחיד ידני af-s af-c one shot servo mf focus mode',w:'פוקוס יחיד (AF-S / One-Shot) ננעל פעם אחת, וטוב לנושא שעומד במקום. פוקוס רציף (AF-C / Servo) עוקב אחרי נושא שזז.',
  L:{...S('2|Focus Mode'),...N('1|Focus mode'),...C('1|AF operation')}},
 {t:'אזור פוקוס',k:'אזור פוקוס נקודה רחב מרכז מעקב focus area af area method tracking',w:'קובע איפה בתמונה המצלמה מחפשת פוקוס: נקודה אחת שאתה בוחר, אזור, או כל התמונה עם מעקב.',
@@ -1353,7 +1381,7 @@ const TOPICS=[
 {t:'צילום רציף וטיימר',k:'רציף סדרה טיימר השהיה drive burst continuous self timer release',w:'רציף מצלם סדרה כל עוד מחזיקים את המהדק, וזה טוב לתנועה. טיימר טוב לתמונה קבוצתית או למניעת רעידה על חצובה.',
  L:{...S('0|Drive Mode'),...N('!ב-Z9 זה לא בתפריט: מסובבים את חוגת מצב השחרור (Release mode dial) שבצד שמאל למעלה.','1|Release mode'),...C(QN,QN,'0|Drive mode')}},
 {t:'רזולוציה וקצב פריימים בווידאו',k:'וידאו סרט רזולוציה 4k fps קצב פריימים movie video frame rate',w:'קובע את איכות הווידאו (Full HD או 4K) ואת קצב הפריימים. 25p נראה טבעי בארץ, ו-50p מאפשר הילוך איטי.',
- L:{...S('0|Movie Settings'),...N('2|Frame size/frame rate'),...C('!עוברים למצב וידאו (כפתור MODE). הפריט Movie rec quality מופיע אז בלשונית הצילום. המיקום המדויק לא אומת מול המדריך.','0|Movie rec quality','0|Movie rec. size')}},
+ L:{...S('0|Movie Settings'),...N('2|Frame size/frame rate'),...C('6|Movie rec quality','6|Movie rec quality','6|Movie rec. size')}},
 {t:'חיבור לטלפון',k:'טלפון וויפי בלוטות אפליקציה העברה wifi bluetooth smartphone app',w:'מעביר תמונות לטלפון ומאפשר לצלם מרחוק. האפליקציות: Creators\' App (סוני), Camera Connect (קנון), SnapBridge (ניקון).',
  L:{...S('4|Smartphone Connection'),...N('5|Connect to smart device'),...C('3|Wi-Fi/Bluetooth connection')}},
 {t:'הגדרת כפתורים אישיים',k:'כפתור מותאם אישית fn custom button קיצור',w:'מאפשר לשים פונקציה שאתה משתמש בה הרבה, כמו ISO או זיהוי עיניים, על כפתור אחד.',
@@ -1383,13 +1411,13 @@ function gRender(scroll){
   document.querySelectorAll('#gCams button').forEach(b=>b.classList.toggle('on',b.dataset.m===mid));
   const multi=tab.groups.length>1, canon=m.brand==='canon', sony=m.brand==='sony';
   if((canon||sony)&&G.g<0)G.g=0; if(!multi)G.g=0;
-  const cm=$('cm');cm.className='cm cm-'+m.brand;
+  const cm=$('cm');cm.className='cm cm-'+m.brand+' cm-'+mid;
   const C=(lvl,i)=>hi.lvl===lvl&&hi.idx===i?' cur':'';
   let h='<div class="tabs">'+m.tabs.map((t,i)=>`<button class="tab ${i===G.t?'on':''}${C('tab',i)}" data-tab="${i}" style="--tc:${t.color||SONY_COL[t.en]||'#333'}"><span>${t.icon}</span></button>`).join('')+'</div><div class="main">';
   const tcol=tab.color||SONY_COL[tab.en]||'#333';cm.style.setProperty('--tcur',tcol);
   const itemsHtml=()=>tab.groups[G.g].items.map((it,i)=>{const sel=G.sel&&G.sel.t===G.t&&G.sel.g===G.g&&G.sel.i===i;const tp=topicAt(mid,G.t,G.g,i);
       return `<div class="row ${sel?'sel':''}${C('item',i)}" data-i="${i}"><span class="en">${esc(it)}</span>${tp?'<span class="bk">📖</span>':''}${m.brand==='nikon'?'<span class="ar">›</span>':''}</div>`;}).join('');
-  if(canon){h+='<div class="pages">'+tab.groups.map((g,i)=>`<button class="pg ${i===G.g?'on':''}${C('grp',i)}" data-g="${i}">${g.en}</button>`).join('')+`<span class="pgname">${esc(tab.en)}${esc(tab.groups[G.g].en)}</span></div><div class="list">${itemsHtml()}</div>`;}
+  if(canon){h+='<div class="pages">'+tab.groups.map((g,i)=>`<button class="pg ${i===G.g?'on':''}${C('grp',i)}" data-g="${i}">${g.en}</button>`).join('')+`<span class="pgname">${esc(tab.en.replace(" (Movie)",""))}${esc(tab.groups[G.g].en)}</span></div><div class="list">${itemsHtml()}</div>`;}
   else if(sony){let gn=0,gt=0;m.tabs.forEach((t,ti)=>t.groups.forEach((g,gi)=>{gt++;if(ti<G.t||(ti===G.t&&gi<=G.g))gn++;}));
     h+=`<div class="hdr"><span class="tt">${esc(tab.en)} &gt; ${esc(tab.groups[G.g].en)}</span><span class="th" dir="ltr">${gn}/${gt}</span></div><div class="cols"><div class="grps">`
       +tab.groups.map((g,i)=>`<div class="grp ${i===G.g?'on':''}${C('grp',i)}" data-g="${i}"><em>${i+1}</em><span>${esc(g.en)}</span></div>`).join('')+`</div><div class="list">${itemsHtml()}</div></div><div class="ftr"><span>▼ Page</span><span class="k">🗑 ?</span><span class="k"><b>MENU</b> Close</span></div>`;}
@@ -1409,7 +1437,7 @@ function gRender(scroll){
   // info
   let info='';const tp=G.topic;
   const steps=l=>pathOf(l).map(x=>`<span class="g-step"><b>${esc(x.en)}</b>${x.he?`<i>${esc(x.he)}</i>`:''}</span>`).join('<span class="g-arr">←</span>');
-  if(tp){const ref=tp.L[mid],l=locate(mid,ref);const note=tp.n&&tp.n[m.brand];
+  if(tp){const ref=tp.L[mid],l=locate(mid,ref);let note=tp.n&&tp.n[m.brand];if(l&&m.tabs[l.t].en==='SHOOT (Movie)')note='קודם מעבירים את המצלמה למצב וידאו. רק אז הלשונית האדומה מציגה את תפריט הווידאו.';
     info=`<div class="g-info"><h4>${esc(tp.t)} · ${esc(m.name)}</h4><p>${esc(tp.w)}</p>`+(l?`<div class="g-path">${steps(l)}</div>`+(note?`<p class="g-n">${esc(note)}</p>`:''):`<p class="g-n">${esc(ref?ref.slice(1):'לא מצאתי את ההגדרה הזאת במדריך הרשמי של הדגם הזה, ולכן היא לא מסומנת בתפריט.')}</p>`)+'</div>';}
   else if(G.sel)info=`<div class="g-info"><h4 dir="ltr">${esc(m.tabs[G.sel.t].groups[G.sel.g].items[G.sel.i])}</h4><p>לשורה הזאת עוד אין הסבר בעברית. רוצה שאוסיף? כתוב לי את השם שלה.</p><div class="g-path">${steps(G.sel)}</div></div>`;
   else info='<div class="g-note">חפש הגדרה ולחץ עליה: התפריט של המצלמה יראה לך בהנפשה לאן ללכת, צעד אחרי צעד. אפשר גם לדפדף בתפריט בעצמך.</div>';
