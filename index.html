@@ -673,6 +673,26 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
   .panel{gap:10px}
   .vf .ov{inset:auto!important;left:0!important;top:0!important;width:76.93%;height:76.93%;transform:scale(1.3);transform-origin:0 0}
 }
+.langsel{position:relative;flex:none;direction:ltr}
+.langsel svg{width:22px;height:16px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.25);flex:none;display:block}
+.langbtn{display:flex;align-items:center;gap:6px;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);border-radius:10px;min-height:38px;padding:0 9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.langmenu{display:none;position:absolute;top:calc(100% + 6px);inset-inline-end:0;z-index:60;min-width:168px;padding:6px;border-radius:12px;border:1px solid var(--border-medium,#333);background:#14161b;box-shadow:0 14px 30px rgba(0,0,0,.6)}
+.langmenu.on{display:block}
+.langmenu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:var(--text,#fff);font:inherit;font-size:14.5px;font-weight:500;padding:10px 10px;border-radius:8px;cursor:pointer;min-height:44px}
+.langmenu button.on{background:rgba(212,175,55,.12);color:var(--accent-gold,#D4AF37)}
+html[dir=ltr] .qd .qt,html[dir=ltr] .distbar{direction:ltr}
+html[dir=ltr] .g-r,html[dir=ltr] .feat{text-align:left}
+#camsel{grid-template-columns:repeat(5,minmax(0,1fr))}.mtabs{grid-auto-columns:minmax(0,1fr)!important}
+.camsel button,.mtabs button,.seg button,.distbar button{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.seg{grid-template-columns:repeat(3,minmax(0,1fr))}.shootbar>*{min-width:0}
+html[dir=ltr] .cm .hdr .th,html[dir=ltr] .cm .row .he,html[dir=ltr] .cm .empty,html[dir=ltr] .g-step i{direction:ltr!important}
+html[dir=ltr] .g-step i,html[dir=ltr] .g-step b{text-align:left}
+html[dir=ltr] .vf .ov [class*=d-]{direction:ltr}
+@media (max-width:560px){.langbtn span{display:none}.langbtn{padding:0 8px}
+  html[dir=ltr] .nav a{padding:7px 7px!important;font-size:12px!important}html[dir=ltr] .nav{min-width:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  html[dir=ltr] .mtabs button{font-size:11.5px}html[dir=ltr] .camsel button{font-size:11.5px}html[dir=ltr] .camsel button small{font-size:9.5px}
+  html[dir=ltr] .distbar button{padding:0 8px;font-size:12.5px}
+  html[dir=ltr] .seg button{font-size:11.5px!important;padding-inline:2px!important;white-space:normal;line-height:1.15;text-overflow:clip}}
 #camsel{grid-template-columns:repeat(5,1fr)}#camPhone{color:var(--accent-gold,#D4AF37);border-color:var(--border-gold,#D4AF37)}
 </style>
 </head>
@@ -685,6 +705,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
       <a href="#basics" data-p="basics">יסודות הצילום</a>
       <a href="#sim" data-p="sim">סימולטור</a>
     </nav>
+    <div class="langsel notr" id="langsel"><button class="langbtn" id="langBtn" aria-label="Language"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg><span id="langCode">HE</span></button><div class="langmenu" id="langMenu"><button data-l="he"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg><span>עברית</span></button><button data-l="en"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#012169"/><path d="M0 0l22 16M22 0L0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0l22 16M22 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M11 0v16M0 8h22" stroke="#fff" stroke-width="5.2"/><path d="M11 0v16M0 8h22" stroke="#C8102E" stroke-width="3"/></svg><span>English</span></button><button data-l="fr"><svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#0055A4"/><rect x="7.3" width="7.4" height="16" fill="#fff"/><rect x="14.6" width="7.4" height="16" fill="#EF4135"/></svg><span>Français</span></button><button data-l="ru"><svg viewBox="0 0 22 16"><rect width="22" height="5.4" fill="#fff"/><rect y="5.3" width="22" height="5.4" fill="#0039A6"/><rect y="10.6" width="22" height="5.4" fill="#D52B1E"/></svg><span>Русский</span></button><button data-l="ro"><svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#002B7F"/><rect x="7.3" width="7.4" height="16" fill="#FCD116"/><rect x="14.6" width="7.4" height="16" fill="#CE1126"/></svg><span>Română</span></button></div></div>
     <span class="badge">REC</span>
   </header>
 
@@ -1019,6 +1040,41 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 </div>
 <div class="toast" id="toast"></div>
 
+<script>
+// ===== languages: the page is written in Hebrew; other languages are swapped in text node by text node =====
+window.I18N=(function(){
+  const HE=/[\u0590-\u05FF]/,T1="[A-Za-z0-9\u03b1]+(?:[.,:\\/'\\-][A-Za-z0-9\u03b1]+)*",TOK=new RegExp(T1+"(?: "+T1+")*","g");
+  const LANGS=['he','en','fr','ru','ro'],ATTRS=['placeholder','aria-label','title'];
+  let lang='he',dict={};const src=new WeakMap(),miss=new Set();
+  function skel(s){const v=[];const k=s.replace(/\s+/g,' ').trim().replace(TOK,m=>{v.push(m);return'{'+(v.length-1)+'}';});return[k,v];}
+  function one(s){const[k,v]=skel(s);const t=dict[k];if(t==null)return null;return t.replace(/\{(\d+)\}/g,(m,i)=>v[+i]!=null?v[+i]:m);}
+  function core1(c){let t=one(c);if(t!=null)return t;const m=c.match(/^([^֐-׿A-Za-z{(]*)([\s\S]*?)([\s.:!?…]*)$/);
+    if(m&&(m[1]||m[3])&&m[2]){t=one(m[2]);if(t!=null)return m[1]+t+m[3];}
+    if(/^\(.*\)$/.test(c)){t=one(c.slice(1,-1));if(t!=null)return'('+t+')';}return null;}
+  function tr(s){if(!HE.test(s))return s;const a=s.match(/^\s*/)[0],z=s.match(/\s*$/)[0],core=s.trim();let t=core1(core);
+    if(t==null)for(const re of[/(: )/,/(: |\. )/,/( · )/,/(: |\. | · )/]){const ps=core.split(re);if(ps.length<2)continue;let ok=true;
+      const o=ps.map((p,i)=>{if(i%2||!HE.test(p))return p;const x=core1(p);if(x==null)ok=false;return x;});if(ok){t=o.join('');break;}}
+    if(t==null){miss.add(skel(core)[0]);return s;}
+    return a+t+z;}
+  function doText(n){const cur=n.nodeValue,rec=src.get(n);let he=cur;if(rec&&rec.out===cur){if(rec.lang===lang)return;he=rec.he;}
+    if(!HE.test(he))return;const out=lang==='he'?he:tr(he);src.set(n,{he,out,lang});if(out!==cur)n.nodeValue=out;}
+  function doEl(e){for(const a of ATTRS){if(!e.hasAttribute||!e.hasAttribute(a))continue;const key='i18n'+a.replace('-','');let he=e.dataset[key];const cur=e.getAttribute(a);
+      if(he==null||(e.dataset[key+'o']!==cur)){he=cur;}if(!HE.test(he))continue;const out=lang==='he'?he:tr(he);e.dataset[key]=he;e.dataset[key+'o']=out;if(out!==cur)e.setAttribute(a,out);}}
+  function walk(root){if(root.nodeType===3){doText(root);return;}if(root.nodeType!==1||root.closest&&root.closest('.notr,script,style'))return;
+    doEl(root);root.querySelectorAll&&root.querySelectorAll('[placeholder],[aria-label],[title]').forEach(doEl);
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;return p&&!p.closest('.notr,script,style')?1:2;}});let n;while((n=w.nextNode()))doText(n);}
+  let busy=false;
+  const mo=new MutationObserver(ms=>{if(lang==='he'&&!anyNonHe)return;if(busy)return;busy=true;for(const m of ms){if(m.type==='characterData'){const p=m.target.parentElement;if(p&&!p.closest('.notr,script,style'))doText(m.target);}else m.addedNodes.forEach(walk);}busy=false;mo.takeRecords();});
+  let anyNonHe=false;
+  function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==='he'?'rtl':'ltr';walk(document.body);
+    const t=document.querySelector('title');if(t){t.dataset.he=t.dataset.he||t.textContent;t.textContent=lang==='he'?t.dataset.he:tr(t.dataset.he);}
+    window.dispatchEvent(new Event('langchange'));}
+  async function set(l,opt){if(!LANGS.includes(l))l='he';if(l!=='he'){try{const r=await fetch('lang/'+l+'.json');dict=r.ok?await r.json():{};}catch(_){dict=(opt&&opt.dict)||{};}if(opt&&opt.dict)dict=opt.dict;}
+    lang=l;if(l!=='he')anyNonHe=true;try{localStorage.setItem('photosimLang',l);}catch(_){ }apply();}
+  function init(){mo.observe(document.body,{subtree:true,childList:true,characterData:true});let l='he';try{l=localStorage.getItem('photosimLang')||'he';}catch(_){ }if(l!=='he')set(l);}
+  return{set,init,skel,miss,get lang(){return lang;},t:s=>lang==='he'?s:tr(s)};
+})();
+</script>
 <script>
 (()=>{
 "use strict";
@@ -2483,6 +2539,13 @@ function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg)
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===pg));
   window.scrollTo(0,0);if(pg==='sim')dirty=true;track('/'+pg);}
 window.addEventListener('hashchange',route);route();
+// ----- language picker -----
+(function(){const FL={'he': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg>', 'en': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#012169"/><path d="M0 0l22 16M22 0L0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0l22 16M22 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M11 0v16M0 8h22" stroke="#fff" stroke-width="5.2"/><path d="M11 0v16M0 8h22" stroke="#C8102E" stroke-width="3"/></svg>', 'fr': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#0055A4"/><rect x="7.3" width="7.4" height="16" fill="#fff"/><rect x="14.6" width="7.4" height="16" fill="#EF4135"/></svg>', 'ru': '<svg viewBox="0 0 22 16"><rect width="22" height="5.4" fill="#fff"/><rect y="5.3" width="22" height="5.4" fill="#0039A6"/><rect y="10.6" width="22" height="5.4" fill="#D52B1E"/></svg>', 'ro': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#002B7F"/><rect x="7.3" width="7.4" height="16" fill="#FCD116"/><rect x="14.6" width="7.4" height="16" fill="#CE1126"/></svg>'};const b=$('langBtn'),m=$('langMenu');
+  function mark(){const l=I18N.lang;b.innerHTML=FL[l]+'<span>'+l.toUpperCase()+'</span>';[...m.children].forEach(x=>x.classList.toggle('on',x.dataset.l===l));}
+  b.onclick=e=>{e.stopPropagation();m.classList.toggle('on');};document.addEventListener('click',()=>m.classList.remove('on'));
+  m.addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;I18N.set(x.dataset.l).then(mark);});
+  window.addEventListener('langchange',mark);I18N.init();mark();})();
+
 $('homeGuide').onclick=()=>$('openGuide').click();
 renderCH();setSkin(st.skin);requestAnimationFrame(loop);
 
