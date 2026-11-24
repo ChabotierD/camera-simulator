@@ -413,25 +413,287 @@ input[type=range]:disabled{opacity:.45}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#232731;border:1px solid var(--line);color:#fff;
   padding:10px 14px;border-radius:12px;font-size:13.5px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
+
+/* ===== Design theme: anodized aluminium + champagne gold (trial) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap');
+:root{
+  --bg-obsidian:#0A0A0C;--bg-chassis:#121216;--bg-panel:#18181E;--bg-elevated:#22222A;--bg-glass:rgba(18,18,22,.78);
+  --border-subtle:rgba(255,255,255,.07);--border-medium:rgba(255,255,255,.14);--border-gold:rgba(212,175,55,.45);
+  --accent-gold:#D4AF37;--accent-gold-hover:#E6C352;--accent-gold-glow:rgba(212,175,55,.18);
+  --accent-rec:#E53935;--accent-focus:#2ECC71;--accent-amber:#F39C12;
+  --text-primary:#F4F4F6;--text-secondary:#9A9AA6;--text-muted:#5C5C68;
+  --font-ui:'Rubik',-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;--font-mono:'Rubik',-apple-system,"Segoe UI",Arial,sans-serif;
+  --radius-sm:6px;--radius-md:12px;--radius-lg:18px;
+  /* map onto the app's own variables */
+  --bg:var(--bg-obsidian);--panel:var(--bg-panel);--panel2:var(--bg-chassis);--line:var(--border-subtle);
+  --text:var(--text-primary);--muted:var(--text-secondary);--acc:var(--accent-gold);--ok:var(--accent-focus);--warn:var(--accent-amber);--bad:var(--accent-rec);
+}
+html,body{background:var(--bg-obsidian);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;overflow-x:clip}
+body{background:radial-gradient(circle at 50% 0%,#191922 0%,var(--bg-obsidian) 70%) fixed}
+.app{padding-top:0}
+/* top telemetry bar */
+header{background:var(--bg-chassis);border-bottom:1px solid var(--border-subtle);margin:0 -12px 16px!important;padding:8px 20px;min-height:56px;gap:12px!important}
+header h1{font-weight:600;letter-spacing:.04em;font-size:17px}
+header .sub{color:var(--text-secondary);font-size:12px}
+.logo{height:46px;margin:0}
+.badge{display:inline-flex;align-items:center;gap:8px;border-color:var(--border-medium);font-family:var(--font-mono);letter-spacing:.06em;color:var(--text-secondary)}
+.badge::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent-rec);box-shadow:0 0 10px var(--accent-rec)}
+/* viewfinder frame */
+.vf{border-radius:var(--radius-lg);border:1px solid var(--border-medium);background:#050507;box-shadow:0 24px 60px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,.04)}
+.vf-corner{position:absolute;width:22px;height:22px;border-color:rgba(255,255,255,.45);border-style:solid;pointer-events:none;z-index:3}
+.vf-tl{top:14px;left:14px;border-width:1.5px 0 0 1.5px}.vf-tr{top:14px;right:14px;border-width:1.5px 1.5px 0 0}
+.vf-bl{bottom:14px;left:14px;border-width:0 0 1.5px 1.5px}.vf-br{bottom:14px;right:14px;border-width:0 1.5px 1.5px 0}
+@media (max-width:700px){.vf-corner{width:14px;height:14px}.vf-tl,.vf-tr{top:8px}.vf-bl,.vf-br{bottom:8px}.vf-tl,.vf-bl{left:8px}.vf-tr,.vf-br{right:8px}}
+.ov{font-family:var(--font-mono)}
+.tip{color:var(--text-muted)}
+/* control dock */
+.panel{background:var(--bg-panel);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px;gap:16px;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+@media (min-width:960px){main{grid-template-columns:minmax(0,1fr) 360px;gap:20px}}
+/* dial cards */
+.ctl{background:var(--bg-chassis);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 16px;transition:border-color .2s ease,box-shadow .2s ease}
+.ctl:hover,.ctl:focus-within{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--accent-gold-glow)}
+.ctl .name{font-size:.9rem;font-weight:500;color:var(--text-primary)}
+.ctl .def{color:var(--text-muted)}
+.ctl .val,.expo b,.rv .exif,.ctl .ends{font-family:var(--font-mono);direction:ltr;unicode-bidi:isolate;letter-spacing:-.02em}
+.ctl .val{font-size:1.1rem;font-weight:600;color:var(--accent-gold)}
+.ctl.dis .val{color:var(--text-secondary)}
+.ctl .hint{color:var(--text-secondary)}
+.ctl .row button{background:var(--bg-elevated);border-color:var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-primary)}
+.ctl .row button:hover{border-color:var(--border-gold);color:var(--accent-gold)}
+.ctl .autotag{background:var(--bg-elevated);color:var(--text-secondary)}
+/* lens slider */
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#2A2A35,#3A3A48)}
+input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#2A2A35,#3A3A48)}
+input[type=range]::-webkit-slider-thumb{width:18px;height:24px;border-radius:4px;margin-top:-9px;background:linear-gradient(180deg,#F0D060 0%,#B89225 100%);border:1px solid #FFF3C4;box-shadow:0 2px 8px rgba(0,0,0,.6);cursor:grab;transition:transform .15s ease}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.1)}
+input[type=range]::-moz-range-thumb{width:18px;height:24px;border-radius:4px;background:linear-gradient(180deg,#F0D060 0%,#B89225 100%);border:1px solid #FFF3C4;box-shadow:0 2px 8px rgba(0,0,0,.6)}
+/* mode selector */
+.seg{background:var(--bg-obsidian);padding:4px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);gap:6px}
+.seg button{font-family:var(--font-ui);font-weight:600;font-size:.85rem;border-radius:4px;color:var(--text-secondary);transition:all .2s ease}
+.seg button.on{background:var(--bg-elevated);color:var(--accent-gold);box-shadow:inset 0 0 0 1px var(--border-gold)}
+.mode-hint,.camlbl{color:var(--text-secondary)}
+.camsel button{background:var(--bg-chassis);border-color:var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-secondary);transition:all .2s ease}
+.camsel button.on{color:var(--accent-gold);border-color:var(--border-gold);box-shadow:inset 0 0 0 1px var(--border-gold);background:var(--bg-elevated)}
+.expo{background:var(--bg-chassis);border:1px solid var(--border-subtle);border-radius:var(--radius-md)}
+.tg{background:var(--bg-chassis);border-color:var(--border-subtle);color:var(--text-secondary)}
+.tg.on{background:var(--bg-elevated);border-color:var(--border-medium);color:var(--text-primary)}
+.guide-btn{background:linear-gradient(145deg,#22222A,#18181E);border:1px solid var(--border-gold);border-radius:var(--radius-md)}
+.guide-btn small{color:var(--text-secondary)}
+/* mechanical shutter release */
+.shutter{position:relative;width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#2A2A32,#141418);border:2px solid #3C3C46;
+  box-shadow:0 8px 24px rgba(0,0,0,.65),inset 0 2px 3px rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:transform .1s ease;padding:0}
+.shutter::after{content:"";width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#E8C75A,#B38B22);box-shadow:inset 0 -2px 6px rgba(0,0,0,.45);transition:all .1s ease}
+.shutter:hover::after{filter:brightness(1.08)}.shutter:active{transform:scale(.95)}.shutter:active::after{transform:scale(.93)}
+.shoot .shutter{width:66px;height:66px}.shoot .shutter::after{width:48px;height:48px}
+@media (max-width:959px) and (orientation:portrait){.shoot{background:var(--bg-glass);border-top:1px solid var(--border-medium)}}
+.thumbs img{border-color:var(--border-medium);border-radius:var(--radius-sm)}
+/* challenges, review, guide */
+.challenges h3{color:var(--text-secondary);font-weight:500;letter-spacing:.04em}
+.ch{background:var(--bg-chassis);border-color:var(--border-subtle);border-radius:var(--radius-md)}
+.ch.on{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--accent-gold-glow)}
+.ch .st{border-color:var(--border-medium);font-family:var(--font-mono)}
+.rv .info,.g-card,.g-info,.g-r{background:var(--bg-panel);border-radius:var(--radius-md)}
+.rv .info{border-color:var(--border-subtle);border-radius:var(--radius-lg)}
+.rv .exif{background:var(--bg-chassis);border:1px solid var(--border-subtle);color:var(--accent-gold)}
+.btn{border-radius:var(--radius-md);background:var(--bg-chassis);border-color:var(--border-medium)}
+.btn.pri{background:linear-gradient(180deg,#F0D060,#B89225);border-color:#FFF3C4;color:#1b1400}
+.toast{background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--border-medium);border-radius:999px}
+.guide{background:radial-gradient(circle at 50% 0%,#191922 0%,var(--bg-obsidian) 70%)}
+.g-head{background:var(--bg-chassis);border-bottom-color:var(--border-subtle)}
+.g-search{background:var(--bg-obsidian);border-color:var(--border-medium);border-radius:var(--radius-md);font-family:var(--font-ui)}
+.g-search:focus{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--accent-gold-glow)}
+.g-x{background:var(--bg-elevated);border-color:var(--border-subtle);border-radius:var(--radius-sm)}
+.g-info{border-color:var(--border-gold)}
+.g-r{border-color:var(--border-subtle)}.g-r.on{border-color:var(--border-gold)}
+.g-step{background:var(--bg-elevated);border-color:var(--border-medium)}
+.g-step b,.g-r span[dir=ltr],.g-r b[dir=ltr]{font-family:var(--font-mono);letter-spacing:-.02em}
+.g-cap .stp{background:var(--accent-gold);color:#1b1400}
+.g-n{color:#f0dc9a!important}
+.cm{box-shadow:0 0 0 7px #16161b,0 0 0 8px var(--border-medium),0 24px 60px rgba(0,0,0,.75)}
+
+/* ===== Rubik semi-bold, pages, new simulator layout ===== */
+html,body,button,input{font-family:var(--font-ui)}
+body{font-weight:600}
+.ctl .hint,.ctl .def,.mode-hint,.camlbl,.tip,.ch .d,.g-card p,.g-info p,.g-note,.rv li,.lead,.lesson p,.feat span,.big-btn span{font-weight:500}
+.ctl .val,.expo b,.rv .exif,.ov,.g-step b{font-variant-numeric:tabular-nums;letter-spacing:0}
+.ov{font-family:var(--font-ui);font-weight:600}
+.page{display:none}.page.on{display:block}
+header{position:sticky;top:0;z-index:15;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.brand{display:flex;flex:none}
+.nav{display:flex;gap:4px;flex:1;justify-content:center;min-width:0}
+.nav a{color:var(--text-secondary);text-decoration:none;padding:8px 12px;border-radius:999px;font-size:14px;white-space:nowrap;transition:all .2s}
+.nav a.on{color:var(--accent-gold);background:var(--bg-elevated);box-shadow:inset 0 0 0 1px var(--border-gold)}
+@media (max-width:520px){header{padding:6px 10px!important;gap:6px!important}.logo{height:38px}.nav a{padding:7px 9px;font-size:13px}.badge{display:none}}
+/* home */
+.hero{max-width:860px;margin:0 auto;text-align:center;padding:10px 6px 40px}
+.hero-logo{width:min(300px,62vw);height:auto;filter:drop-shadow(0 18px 40px rgba(0,0,0,.7))}
+.hero h1,.lessons h1{font-size:clamp(24px,5vw,38px);margin:10px 0 10px;font-weight:700;line-height:1.2}
+.lead{color:var(--text-secondary);font-size:clamp(15px,2.4vw,18px);line-height:1.65;max-width:640px;margin:0 auto 22px}
+.hero-btns{display:grid;gap:14px;grid-template-columns:1fr 1fr;max-width:680px;margin:0 auto 26px}
+@media (max-width:560px){.hero-btns{grid-template-columns:1fr}}
+.big-btn{display:flex;flex-direction:column;gap:5px;text-decoration:none;color:var(--text-primary);background:var(--bg-panel);border:1px solid var(--border-medium);border-radius:var(--radius-lg);padding:22px 18px;box-shadow:0 16px 40px rgba(0,0,0,.45);transition:transform .15s,border-color .2s,box-shadow .2s}
+.big-btn b{font-size:21px;font-weight:700}.big-btn span{color:var(--text-secondary);font-size:13.5px}
+.big-btn:hover{transform:translateY(-2px);border-color:var(--border-gold);box-shadow:0 0 0 3px var(--accent-gold-glow),0 16px 40px rgba(0,0,0,.45)}
+.big-btn.pri{background:linear-gradient(180deg,#F0D060,#B89225);border-color:#FFF3C4;color:#1b1400}.big-btn.pri span{color:#4a3a05}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:right;margin-bottom:22px}
+@media (max-width:700px){.feat{grid-template-columns:1fr}}
+.feat div{background:var(--bg-chassis);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px}
+.feat b{display:block;color:var(--accent-gold);margin-bottom:4px}.feat span{color:var(--text-secondary);font-size:13.5px;line-height:1.5}
+.text-link{background:none;border:0;color:var(--accent-gold);font-size:15px;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+/* lessons */
+.lessons{max-width:820px;margin:0 auto;padding:6px 2px 50px}
+.lessons h1,.lessons .lead{text-align:center}
+.lesson{background:var(--bg-panel);border:1px solid var(--border-subtle);border-radius:var(--radius-md);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.lesson[open]{border-color:var(--border-gold)}
+.lesson summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 16px;font-size:17px}
+.lesson summary::-webkit-details-marker{display:none}
+.lesson .n{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--border-gold);color:var(--accent-gold);display:flex;align-items:center;justify-content:center;font-size:14px}
+.lesson summary::after{content:"‹";margin-inline-start:auto;color:var(--text-secondary);transition:transform .2s;font-size:20px}
+.lesson[open] summary::after{transform:rotate(-90deg)}
+.lesson .body{padding:0 16px 16px}
+.lesson p{color:#d3d3db;line-height:1.75;font-size:15.5px;margin:0 0 10px}
+.lesson .tipbox{background:var(--bg-chassis);border-inline-start:3px solid var(--accent-gold);border-radius:8px;padding:10px 12px;font-size:14.5px;font-weight:500;color:#e8e2c8;margin:4px 0 12px;line-height:1.6}
+.lesson .try{display:inline-block;border:1px solid var(--border-gold);color:var(--accent-gold);background:transparent;border-radius:999px;padding:8px 14px;font-size:14px;text-decoration:none;cursor:pointer}
+.viz{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;background:var(--bg-chassis);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px 10px;margin:4px 0 12px;direction:ltr;text-align:center;font-size:12px;color:var(--text-secondary)}
+.viz div{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.viz i{display:block;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#bbb);box-shadow:0 0 0 2px #444,0 0 0 16px #1b1b21;margin:16px 0}
+.viz .bar{width:100%;border-radius:4px;background:linear-gradient(180deg,#F0D060,#B89225)}
+.viz b{color:var(--accent-gold);font-size:13px}
+/* simulator layout */
+@media (min-width:960px){.vf{width:min(100%,calc((100vh - 285px)*1.5));margin:0 auto}.vf-wrap{position:sticky;top:76px}}
+.vf-wrap .camsel{margin-bottom:8px}.vf-wrap .camlbl{margin:0 0 10px;text-align:center;font-size:12px}
+.vfblock{position:relative}
+.shootbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:12px 4px 4px}
+.shootbar .thumbs{min-height:52px;justify-self:stretch}
+.shootbar .expo{justify-self:end;flex-direction:column;align-items:flex-end;gap:0;padding:8px 12px;font-size:12px;color:var(--text-secondary);min-width:0}
+.shootbar .expo b{font-size:14px;white-space:nowrap}
+.shootbar .shutter{width:76px;height:76px}.shootbar .shutter::after{width:56px;height:56px}
+.thumbs .empty{font-weight:500;font-size:11.5px}
+@media (max-width:959px) and (orientation:portrait){
+  .app{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+  .vf-wrap{display:contents}
+  main{gap:8px}
+  .vfblock{position:sticky;top:50px;z-index:9;background:#0d0d11;border-bottom:1px solid var(--border-medium);box-shadow:0 14px 24px rgba(0,0,0,.6);margin:0 -12px;padding:6px 12px 8px}
+  .shootbar{padding-top:8px}.shootbar .shutter{width:68px;height:68px}.shootbar .shutter::after{width:50px;height:50px}
+  .toast{bottom:24px}
+}
+
+/* ===== touch controls on the camera screen ===== */
+.ov [data-act]{pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.ov [data-act]:active{filter:brightness(1.5)}
+.lx-tabs{top:9.5cqw;gap:.7cqw}.lx-tab{width:9.4cqw;height:7cqw;font-size:2.1cqw}
+.lx-tab.act{background:rgba(255,210,31,.92);color:#000;text-shadow:none;border-color:#fff}
+.lx-cell{padding:.6cqw 1cqw}
+.v.sel,.lx-cell.sel{color:#ffd21f!important;border-color:#ffd21f!important}
+.sk[data-sk=canon] .v,.sk[data-sk=nikon] .v{padding:1cqw .6cqw;margin:-1cqw -.6cqw;border-radius:.6cqw}
+.sk[data-sk=canon] .v.sel,.sk[data-sk=nikon] .v.sel{background:rgba(255,255,255,.18)}
+.qd{position:absolute;left:3cqw;right:3cqw;bottom:10cqw;display:none;flex-direction:column;gap:.8cqw;background:rgba(0,0,0,.82);border:.3cqw solid rgba(255,255,255,.75);border-radius:1.6cqw;padding:1.2cqw 1.4cqw 1.4cqw;pointer-events:auto;z-index:4;direction:ltr;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.qd.on{display:flex}
+.qd .qt{display:flex;justify-content:space-between;align-items:center;font-size:2.4cqw;color:#ddd;direction:rtl;font-family:var(--font-ui,inherit);text-shadow:none}
+.qd .qx{border:0;background:transparent;color:#fff;font-size:3.4cqw;padding:0 1.5cqw;cursor:pointer}
+.qd .qr{display:flex;align-items:stretch;gap:.8cqw}
+.qd button.qi{flex:1;min-width:0;min-height:8.6cqw;border:.25cqw solid rgba(255,255,255,.35);border-radius:1cqw;background:rgba(255,255,255,.08);color:#fff;font:700 3cqw/1.1 var(--font-ui,inherit);cursor:pointer;padding:0 .4cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qd button.qi.cur{background:#ffd21f;color:#000;border-color:#fff;transform:scale(1.06)}
+.qd button.qa{flex:none;width:8.6cqw;font-size:4.4cqw}
+.qd .qr.many button.qi{font-size:2.5cqw}
+.cn-left [data-act],.nk-top [data-act]{padding:.8cqw 1cqw;margin:-.8cqw -1cqw;border-radius:.6cqw}
+.cn-left .act,.nk-top .act{background:#ffd21f;color:#000;text-shadow:none}
+.qd button.qi small{display:block;font-size:1.9cqw;font-weight:500;opacity:.85;margin-top:.4cqw;font-family:var(--font-ui,inherit)}
+
+/* ===== scenes, light, video & audio ===== */
+.scn .lbl,.vid .lbl{font-size:12px;color:var(--text-secondary,#9aa3b2);margin:10px 0 5px;font-weight:500}
+.scn .lbl:first-child{margin-top:0}
+.seg.s4{grid-template-columns:repeat(4,1fr)}
+.scn .seg button,.vid .seg button{font-size:12.5px;padding:8px 2px;white-space:nowrap}
+.sim-runner .only-person{display:none}
+#scnCard{order:-3}.sim-video #vidCard{order:-2}
+#vidCard{display:none}.sim-video #vidCard{display:block;border-color:var(--border-gold,#d4af37)}
+.rec-ind,.vinfo,.ometer{display:none}
+.sim-video .rec-ind{display:flex;position:absolute;top:8cqw;left:50%;transform:translateX(-50%);align-items:center;gap:1.2cqw;font-size:2.6cqw;font-weight:700;background:rgba(0,0,0,.55);padding:.5cqw 1.6cqw;border-radius:.8cqw;direction:ltr;font-variant-numeric:tabular-nums}
+.rec-ind i{width:2cqw;height:2cqw;border-radius:50%;background:#777}
+.vf.recording .rec-ind i{background:#ff2d2d;box-shadow:0 0 1.5cqw #ff2d2d;animation:bl 1s steps(2) infinite}
+.vf.recording{box-shadow:0 0 0 3px #ff2d2d,0 24px 60px rgba(0,0,0,.75)!important}
+.sim-video .vinfo{display:block;position:absolute;top:12.5cqw;left:50%;transform:translateX(-50%);font-size:2.1cqw;font-weight:700;direction:ltr;background:rgba(0,0,0,.45);padding:.2cqw 1.2cqw;border-radius:.6cqw}
+.vinfo.bad{color:#ffb020}
+.sim-video .ometer{display:flex;flex-direction:column;gap:.5cqw;position:absolute;left:13cqw;bottom:10.5cqw;width:34cqw;background:rgba(0,0,0,.55);padding:.8cqw 1cqw;border-radius:.8cqw;direction:ltr}
+.vf[data-sk=canon] .ometer,.vf[data-sk=nikon] .ometer{left:3cqw;bottom:11cqw}
+.ometer div{display:flex;align-items:center;gap:.8cqw}.ometer b{font-size:1.9cqw;width:1.6cqw}
+.ometer span{flex:1;height:1.5cqw;background:linear-gradient(90deg,#2ecc71 0 78%,#f1c40f 78% 92%,#ff3b30 92%);position:relative;border-radius:.2cqw;overflow:hidden}
+.ometer u{position:absolute;top:0;bottom:0;right:0;background:#151515;width:100%}
+.icons{position:absolute;top:1.7cqw;left:24cqw;display:flex;gap:.8cqw;font-size:1.9cqw;font-weight:700;direction:ltr}
+.icons span{background:rgba(0,0,0,.5);border-radius:.6cqw;padding:.2cqw .9cqw}
+.ameter{margin:8px 0 4px}
+.arow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.alab{width:76px;font-size:11px;color:var(--text-secondary,#9aa3b2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.abar{flex:1;height:18px;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(90deg,#1f9d55 0%,#2ecc71 66%,#2ecc71 80%,#f1c40f 80%,#f1c40f 90%,#ff9f0a 90%,#ff9f0a 95%,#ff3b30 95%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.acov{position:absolute;top:0;bottom:0;right:0;width:100%;background:#0c0c10;transition:width .05s linear}
+.ahold{position:absolute;top:0;bottom:0;width:3px;background:#fff;left:0;box-shadow:0 0 4px #fff}
+.adb{width:38px;font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.ascale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-muted,#777);padding:0 46px 0 84px}
+.ascale span:nth-child(2){margin-left:18%}.ascale .g{color:#2ecc71}.ascale .r{color:#ff5a5a}
+.astat{font-size:14px;font-weight:600;min-height:1.4em;margin:6px 0 2px}
+.astat.g{color:#2ecc71}.astat.y{color:#f1c40f}.astat.r{color:#ff5a5a}
+.shutter.rec::after{background:radial-gradient(circle at 35% 35%,#ff6a5e,#c81e1e)!important}
+.shutter.rec.on::after{border-radius:22%!important;width:34px!important;height:34px!important}
+#vf.dragging{cursor:grabbing}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <img class="logo" src="icons/logo-small.png" alt="Camera Simulator" onerror="this.remove()">
-    <div class="hd-t">
-      <h1>סימולטור צילום</h1>
-      <div class="sub">שלב 1 · משולש החשיפה: צמצם, מהירות תריס ו-ISO</div>
-    </div>
-    <span class="badge">אב-טיפוס</span>
+    <a class="brand" href="#home"><img class="logo" src="icons/logo-small.png" alt="Camera Simulator" onerror="this.remove()"></a>
+    <nav class="nav" id="nav">
+      <a href="#home" data-p="home">בית</a>
+      <a href="#basics" data-p="basics">יסודות הצילום</a>
+      <a href="#sim" data-p="sim">סימולטור</a>
+    </nav>
+    <span class="badge">REC</span>
   </header>
+
+  <section class="page" id="p-home">
+    <div class="hero">
+      <img class="hero-logo" src="icons/logo.png" alt="Camera Simulator" onerror="this.remove()">
+      <h1>לומדים לצלם, בלי לפחד מהכפתורים</h1>
+      <p class="lead">Camera Simulator הוא מקום להתאמן בו על צילום לפני שמחזיקים מצלמה ביד. משנים צמצם, מהירות תריס ו-ISO, ורואים מיד איך התמונה משתנה. אפשר לטעות כמה שרוצים.</p>
+      <div class="hero-btns">
+        <a class="big-btn" href="#basics"><b>יסודות הצילום</b><span>כל החומר, מוסבר פשוט ולפי הסדר</span></a>
+        <a class="big-btn pri" href="#sim"><b>הסימולטור</b><span>מצלמה וירטואלית עם משוב ואתגרים</span></a>
+      </div>
+      <div class="feat">
+        <div><b>1. לומדים</b><span>פרקים קצרים על חשיפה, פוקוס, אור וקומפוזיציה.</span></div>
+        <div><b>2. מתרגלים</b><span>מצלמים בסימולטור ומקבלים משוב על כל תמונה.</span></div>
+        <div><b>3. מוצאים במצלמה</b><span>מדריך הגדרות בעברית ל-7 מצלמות, עם הכוונה בתפריט.</span></div>
+      </div>
+      <button class="text-link" id="homeGuide">📖 מדריך הגדרות למצלמות Sony, Nikon ו-Canon</button>
+    </div>
+  </section>
+
+  <section class="page" id="p-basics">
+    <div class="lessons">
+      <h1>יסודות הצילום</h1>
+      <p class="lead">פרקים קצרים. כדאי לקרוא לפי הסדר, ואחרי כל פרק לנסות בסימולטור.</p>
+      <div id="lessonList"></div>
+    </div>
+  </section>
+
+  <div class="page" id="p-sim">
+
 
   <main>
     <section class="vf-wrap">
+      <div class="camsel" id="camsel">
+        <button data-sk="sony" class="on">Sony<small>מסך מגע</small></button>
+        <button data-sk="canon">Canon<small>סגנון</small></button>
+        <button data-sk="nikon">Nikon<small>סגנון</small></button>
+        <button data-sk="lumix">Lumix<small>מסך מגע</small></button>
+      </div>
+      <div class="camlbl" id="camlbl"></div>
+      <div class="vfblock">
       <div class="vf" id="vf" data-sk="sony">
         <canvas id="cv" width="1200" height="800"></canvas>
         <div class="ov">
           <div class="grid" id="grid"></div>
+          <div class="vf-corner vf-tl"></div><div class="vf-corner vf-tr"></div><div class="vf-corner vf-bl"></div><div class="vf-corner vf-br"></div>
           <div class="af" id="af"><span></span><span></span><span></span><span></span></div>
           <div class="shake-warn" id="shakeWarn">((•)) סכנת רעידת יד</div>
           <div class="histo" id="histoBox"><canvas id="histo" width="128" height="64"></canvas></div>
@@ -515,22 +777,38 @@ input[type=range]:disabled{opacity:.45}
               <span class="lx-cell v d-i">ISO 200</span>
             </div>
           </div>
+          <div class="rec-ind" id="recInd"><i></i><span id="recTc">STBY</span></div>
+          <div class="vinfo" id="vInfo">25p</div>
+          <div class="ometer" id="oMeter"><div><b>1</b><span><u id="om0"></u></span></div><div><b>2</b><span><u id="om1"></u></span></div></div>
+          <div class="icons" id="oIcons"></div>
+          <div class="qd" id="qd"></div>
           <div class="blackout" id="blackout"></div>
           <div class="exposing" id="exposing"><div class="dot"></div><div id="expTxt">חושף…</div></div>
         </div>
       </div>
-      <div class="tip">גע בתמונה כדי לבחור נקודת פוקוס: על הרץ, על הרקע או על הצמחים בקדמה</div>
+      <div class="shootbar">
+        <div class="thumbs" id="thumbs"><span class="empty">התמונות שתצלם יופיעו כאן</span></div>
+        <button class="shutter" id="shutter" aria-label="צלם"></button>
+        <div class="expo"><span>חשיפה</span><b id="expoTxt">±0.0</b></div>
+      </div>
+      </div>
+      <div class="tip">הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.</div>
     </section>
 
     <aside class="panel">
-      <div class="camsel" id="camsel">
-        <button data-sk="sony" class="on">Sony<small>מסך מגע</small></button>
-        <button data-sk="canon">Canon<small>סגנון</small></button>
-        <button data-sk="nikon">Nikon<small>סגנון</small></button>
-        <button data-sk="lumix">Lumix<small>מסך מגע</small></button>
-      </div>
-      <div class="camlbl" id="camlbl"></div>
       <button class="guide-btn" id="openGuide"><span>📖 מדריך הגדרות בעברית<br><small>איפה כל דבר בתפריט: שעון, פרמוט, RAW, פוקוס…</small></span><span>‹</span></button>
+      <div class="ctl scn" id="scnCard">
+        <div class="lbl">סצנה</div>
+        <div class="seg" id="sceneSeg"><button data-v="runner" class="on">🏃 תנועה</button><button data-v="portrait">🧑 פורטרט</button><button data-v="video">🎬 וידאו סינק</button></div>
+        <div class="lbl">תאורה טבעית</div>
+        <div class="seg s4" id="lightSeg"><button data-v="sunrise">🌅 זריחה</button><button data-v="day" class="on">☀️ יום</button><button data-v="sunset">🌇 שקיעה</button><button data-v="night">🌙 לילה</button></div>
+        <div class="hint" id="lightHint"></div>
+        <div class="lbl">מאיפה האור מגיע</div>
+        <div class="seg" id="ldirSeg"><button data-v="front" class="on">מלפנים</button><button data-v="side">מהצד</button><button data-v="back">מאחור</button></div>
+        <div class="lbl only-person">מרחק מהמצולם</div>
+        <div class="seg only-person" id="distSeg"><button data-v="1800">קרוב · 1.8 מ׳</button><button data-v="2500" class="on">2.5 מ׳</button><button data-v="4000">רחוק · 4 מ׳</button></div>
+        <div class="toggles" style="margin-top:10px"><button class="tg" id="tgFill">🔦 פנס מילוי על המצלמה</button></div>
+      </div>
       <div class="seg" id="modes">
         <button data-m="M" class="on">M ידני</button>
         <button data-m="A">A צמצם</button>
@@ -559,18 +837,31 @@ input[type=range]:disabled{opacity:.45}
         <div class="hint" id="hI"></div>
       </div>
 
-      <div class="expo"><span>חשיפה לפי מד האור</span><b id="expoTxt">±0.0</b></div>
 
+      <div class="ctl vid" id="vidCard">
+        <div class="hd"><div><span class="name">🎙 סאונד</span><span class="def">רמות ההקלטה בזמן אמת</span></div><span class="val" id="aStatDb">-∞</span></div>
+        <div class="ameter" dir="ltr">
+          <div class="arow"><span class="alab" id="al0">CH1</span><div class="abar"><div class="acov" id="am0"></div><i class="ahold" id="ah0"></i></div><span class="adb" id="ad0">-60</span></div>
+          <div class="arow"><span class="alab" id="al1">CH2</span><div class="abar"><div class="acov" id="am1"></div><i class="ahold" id="ah1"></i></div><span class="adb" id="ad1">-60</span></div>
+          <div class="ascale"><span>-60</span><span>-40</span><span>-20</span><span class="g">-12</span><span class="g">-6</span><span class="r">0 dB</span></div>
+        </div>
+        <div class="astat" id="aStat"></div>
+        <div class="lbl">מיקרופונים</div>
+        <div class="toggles"><button class="tg" id="tgLav">🎤 נק מייק (דש)</button><button class="tg" id="tgGun">🎙 שוטגאן על המצלמה</button></div>
+        <div class="hint" id="micInfo"></div>
+        <div class="lbl">רמת הקלטה (Audio Rec Level)</div>
+        <div class="row"><button data-ad="-1">‹</button><input type="range" id="rAud" min="0" max="31" value="16" dir="ltr"><button data-ad="1">›</button></div>
+        <div class="ends"><span>0 · חלש</span><span id="tAud">16</span><span>31 · חזק</span></div>
+        <div class="lbl">פילטר ND (מחשיך את התמונה בלי לשנות תריס)</div>
+        <div class="seg s4" id="ndSeg"><button data-v="0" class="on">בלי</button><button data-v="2">ND4</button><button data-v="4">ND16</button><button data-v="6">ND64</button></div>
+        <div class="hint" id="vidHint">בווידאו ב-25 פריימים בשנייה שומרים על תריס 1/50. את החשיפה מתקנים בצמצם, ב-ISO או בפילטר ND.</div>
+      </div>
       <div class="toggles">
         <button class="tg on" id="tgGrid">רשת שלישים</button>
         <button class="tg on" id="tgHisto">היסטוגרמה</button>
         <button class="tg" id="tgTripod">חצובה</button>
       </div>
 
-      <div class="shoot">
-        <button class="shutter" id="shutter" aria-label="צלם"></button>
-        <div class="thumbs" id="thumbs"><span class="empty">התמונות שתצלם יופיעו כאן</span></div>
-      </div>
 
       <div class="challenges">
         <h3>אתגרים</h3>
@@ -578,6 +869,7 @@ input[type=range]:disabled{opacity:.45}
       </div>
     </aside>
   </main>
+  </div>
 </div>
 
 <div class="review" id="review">
@@ -645,10 +937,10 @@ function saveProg(){try{localStorage.setItem('photosim1',JSON.stringify({done:st
 
 const N_=()=>AP[st.ai], T_=()=>SH[st.si][1], I_=()=>ISO[st.ii];
 function camEV(){return Math.log2(N_()*N_()/T_())-Math.log2(I_()/100);}
-function offset(){return SCENE_EV-camEV();} // + = overexposed
+function offset(){return sceneEV()-(st.nd||0)-camEV();} // + = overexposed
 function nearestIdx(arr,val,get){let b=0,bd=1e9;arr.forEach((v,i)=>{const d=Math.abs(Math.log2(get(v))-Math.log2(val));if(d<bd){bd=d;b=i;}});return b;}
 function autoSolve(){
-  const evI=SCENE_EV+Math.log2(I_()/100);
+  const evI=sceneEV()-(st.nd||0)+Math.log2(I_()/100);
   if(st.mode==='A'){const t=N_()*N_()/Math.pow(2,evI);st.si=nearestIdx(SH,t,s=>s[1]);}
   if(st.mode==='S'){const n=Math.sqrt(T_()*Math.pow(2,evI));st.ai=nearestIdx(AP,n,v=>v);}
 }
@@ -816,7 +1108,7 @@ function drawRunner(g,ph){
 function runnerX(t){const u=(t%RUN_PERIOD)/RUN_PERIOD;return -0.14*W+u*1.28*W;}
 function runnerSprite(t){
   const g=SPR.getContext('2d');g.clearRect(0,0,SPR.width,SPR.height);g.save();g.translate(SOX,SOY);drawRunner(g,t*Math.PI*2*1.45);g.restore();
-  const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
+  shadeSprite(SPR,SUBJ_D);const r=cocPx(SUBJ_D);return r>=0.6?blurInto(SPR,r):SPR;
 }
 function runnerBox(t){const x=runnerX(t);return{x0:x-70,x1:x+80,y0:FEET_Y-360,y1:FEET_Y,cx:x+5,cy:FEET_Y-230};}
 
@@ -826,8 +1118,9 @@ function compose(g,t,dx,dy,zoom){
   if(zoom){g.translate(W/2,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);}
   g.translate(dx||0,dy||0);
   g.fillStyle='#b9cfe3';g.fillRect(-60,-60,W+120,H+120);
-  for(const L of LAYERS){g.drawImage(L.img,0,0);
-    if(L.id==='path'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(runnerSprite(t),x-SOX,FEET_Y-SOY);}}
+  let done=false;const sd=subjD();
+  for(const L of LAYERS){if(!done&&L.d<sd){drawSubject(g,t);done=true;}g.drawImage(L.img,0,0);}
+  if(!done)drawSubject(g,t);
   g.restore();
 }
 const TMP=mk(W,H),TG=TMP.getContext('2d');
@@ -876,17 +1169,18 @@ function drawHisto(){
 const af=$('af');
 function placeAF(){
   let x,y;
-  if(st.focusOn==='subject'){const b=runnerBox(animT);const inF=b.cx>0&&b.cx<W;x=inF?b.cx/W:st.focusPt.x;y=inF?b.cy/H:st.focusPt.y;if(inF)st.focusPt={x,y};af.classList.remove('spot');}
+  if(st.focusOn==='subject'){const b=subjBox(animT);const inF=b.cx>0&&b.cx<W;x=inF?b.cx/W:st.focusPt.x;y=inF?b.cy/H:st.focusPt.y;if(inF)st.focusPt={x,y};af.classList.remove('spot');}
   else{x=st.focusPt.x;y=st.focusPt.y;af.classList.add('spot');}
-  af.classList.toggle('ok',st.focusOn!=='subject'||(runnerBox(animT).cx>0&&runnerBox(animT).cx<W));
+  af.classList.toggle('ok',st.focusOn!=='subject'||(subjBox(animT).cx>0&&subjBox(animT).cx<W));
   af.style.left=(x*100)+'%';af.style.top=(y*100)+'%';
 }
 function loop(now){
   animT=(now-t0)/1000;
-  if(!st.busy){
+  if(!st.busy&&st.page==='sim'){
     if(dirty)rebuild();
-    compose(cx,animT);
-    applyExposure(cx,offset());
+    if(st.scene==='video')audioTick(animT);
+    compose(cx,animT);applyLight(cx);
+    applyExposure(cx,offset());applyLook(cx);
     applyNoise(cx,I_(),(Math.random()*256)|0,(Math.random()*256)|0);
     if(st.histo&&frame%6===0)drawHisto();
     placeAF();frame++;
@@ -916,7 +1210,7 @@ const SKINS={sony:{modes:{M:'M',A:'A',S:'S'},ap:n=>'F'+(Number.isInteger(n)?n.to
 st.skin='sony';try{const k=localStorage.getItem('photosimSkin');if(SKINS[k])st.skin=k;}catch(e){}
 function setSkin(k){st.skin=k;$('vf').dataset.sk=k;try{localStorage.setItem('photosimSkin',k);}catch(e){}
   document.querySelectorAll('#camsel button').forEach(b=>b.classList.toggle('on',b.dataset.sk===k));$('camlbl').textContent=SKINS[k].lbl;updateUI();}
-function updateUI(){
+let updateUI=function(){
   autoSolve();
   rA.value=st.ai;rS.value=st.si;rI.value=st.ii;
   rA.disabled=st.mode==='S';rS.disabled=st.mode==='A';
@@ -937,7 +1231,7 @@ function updateUI(){
   document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===st.mode));
   $('shakeWarn').classList.toggle('on',!st.tripod&&T_()>1/FOCAL*1.01);
   setAll('.d-shots',st.shots);
-}
+};
 function setIdx(key,v,hotId){const max={ai:AP.length-1,si:SH.length-1,ii:ISO.length-1}[key];const nv=clamp(v,0,max);if(nv===st[key])return;
   st[key]=nv;if(key==='ai')dirty=true;hot(hotId);updateUI();if(key!=='ai'&&st.mode==='S')dirty=true;}
 rA.addEventListener('input',()=>setIdx('ai',+rA.value,'vA'));
@@ -955,8 +1249,9 @@ tgl('tgTripod','tripod',()=>toast(st.tripod?'המצלמה על חצובה: אי�
 $('vf').addEventListener('pointerdown',e=>{
   if(st.busy)return;
   const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
-  const b=runnerBox(animT);let d,on='spot',name;
-  if(x>b.x0-20&&x<b.x1+20&&y>b.y0-20&&y<b.y1+10){d=SUBJ_D;on='subject';name='פוקוס על הרץ (5 מ׳)';}
+  const b=subjBox(animT);let d,on='spot',name;
+  if(x>b.x0-20&&x<b.x1+20&&y>b.y0-20&&y<b.y1+10){d=subjD();on='subject';name=st.scene==='runner'?'פוקוס על הרץ (5 מ׳)':'פוקוס על המצולם. אפשר לגרור אותו ימינה ושמאלה';
+    if(st.scene!=='runner'){drag={x0:x,px0:st.px};try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}}}
   else if((x>0.72*W&&y<0.3*H)||(y>0.88*H&&(x<0.32*W||x>0.8*W))){d=1600;name='פוקוס על הצמחים בקדמה (1.6 מ׳)';}
   else if(y<0.58*H){d=40000;name='פוקוס על הרקע (40 מ׳)';}
   else if(y<0.66*H){d=15000;name='פוקוס על הדשא הרחוק (15 מ׳)';}
@@ -973,11 +1268,16 @@ const CH=[
   {t:'חשיפה מדויקת',d:'צלם תמונה שמד האור שלה בטווח של ±0.3 סטופ.',ok:r=>Math.abs(r.o)<=0.34},
   {t:'הקפא את הרץ',d:'הרץ בפריים ובפוקוס, חד לגמרי בלי טשטוש תנועה, וחשיפה תקינה.',ok:r=>r.inF&&r.focusOK&&r.motion<=2.5&&!r.shake&&Math.abs(r.o)<=0.7},
   {t:'רקע חלומי',d:'הרץ חד, והרקע מאחוריו מטושטש מאוד. רמז: צמצם פתוח.',ok:r=>r.inF&&r.focusOK&&r.bgBlur>=14&&Math.abs(r.o)<=0.7},
-  {t:'תחושת מהירות',d:'הרץ מטושטש מתנועה, הרקע חד ויציב, וחשיפה תקינה. רמז: חצובה, ואיך מחזירים אור?',ok:r=>r.inF&&r.motion>=11&&!r.shake&&Math.abs(r.o)<=0.7}
+  {t:'תחושת מהירות',d:'הרץ מטושטש מתנועה, הרקע חד ויציב, וחשיפה תקינה. רמז: חצובה, ואיך מחזירים אור?',ok:r=>r.inF&&r.motion>=11&&!r.shake&&Math.abs(r.o)<=0.7},
+  {s:'portrait',t:'פורטרט קלאסי',d:'המצולם חד ועל קו השליש, הרקע מטושטש מאוד, וחשיפה תקינה.',ok:r=>r.focusOK&&r.bgBlur>=14&&!r.shake&&Math.abs(r.o)<=0.7&&(Math.abs(r.px-1/3)<.1||Math.abs(r.px-2/3)<.1)},
+  {s:'portrait',t:'שעת הזהב',d:'פורטרט בשקיעה עם אור מאחור ופנס מילוי, בחשיפה תקינה.',ok:r=>r.light==='sunset'&&r.ldir==='back'&&r.fill&&r.focusOK&&!r.shake&&Math.abs(r.o)<=0.7},
+  {s:'portrait',t:'פורטרט בלילה',d:'המצולם חד ומואר בלילה, בלי רעידה ובלי לעבור ISO 6400.',ok:r=>r.light==='night'&&r.focusOK&&!r.shake&&r.iso<=6400&&Math.abs(r.o)<=0.7},
+  {s:'video',t:'סינק נקי',d:'תריס 1/50, חשיפה תקינה, המצולם חד ועם מרחב מבט, וסאונד בשיא בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi> בלי קליפינג.',ok:r=>r.video&&r.label==='1/50'&&Math.abs(r.o)<=0.7&&r.focusOK&&r.px>=.56&&r.amax>=-12.5&&r.amax<=-5.5&&!r.aclip&&r.mic!=='int'},
+  {s:'video',t:'סינק בלילה',d:'סינק בלילה עם פנס מילוי, חצובה, ונק מייק ברמה טובה.',ok:r=>r.video&&r.light==='night'&&r.fill&&r.tripod&&r.mic==='lav'&&Math.abs(r.o)<=0.7&&r.amax>=-14&&!r.aclip}
 ];
-function renderCH(){const L=$('chList');L.innerHTML='';CH.forEach((c,i)=>{const el=document.createElement('div');
+function renderCH(){const L=$('chList');L.innerHTML='';let num=0;CH.forEach((c,i)=>{if((c.s||'runner')!==st.scene)return;num++;const el=document.createElement('div');
   el.className='ch'+(st.challenge===i+1?' on':'')+(st.done[i]?' done':'');
-  el.innerHTML=`<div class="st">${st.done[i]?'✓':i+1}</div><div><div class="t">${c.t}</div><div class="d">${c.d}</div></div>`;
+  el.innerHTML=`<div class="st">${st.done[i]?'✓':num}</div><div><div class="t">${c.t}</div><div class="d">${c.d}</div></div>`;
   el.onclick=()=>{st.challenge=st.challenge===i+1?0:i+1;renderCH();if(st.challenge)toast('אתגר פעיל: '+c.t);};L.appendChild(el);});}
 
 // ================= Capture =================
@@ -991,13 +1291,14 @@ function shutterSound(t){try{AC=AC||new(window.AudioContext||window.webkitAudioC
 const ACC=mk(W,H),AG=ACC.getContext('2d'),SMP=mk(W,H),SG=SMP.getContext('2d');
 const shots=[];
 async function capture(){
+  if(st.scene==='video'){toggleRec();return;}
   if(st.busy)return;st.busy=true;$('shutter').disabled=true;
   if(dirty)rebuild();
   const t=T_(),N=N_(),iso=I_(),o=offset(),tStart=animT;
   shutterSound(t);
   const shake=!st.tripod&&t>1/FOCAL*1.01;
   const shakeAmp=shake?Math.min(30,(t*FOCAL-1)*2.4+2):0;
-  const motion=RUN_SPEED*t;
+  const motion=st.scene==='runner'?RUN_SPEED*t:0;
   const n=clamp(Math.ceil(Math.max(motion,shakeAmp*2)/2.2),1,64);
   // hand-shake path
   const r=rng((Math.random()*1e9)|0);const sx=[],sy=[];let x=0,y=0,vx=0,vy=0;
@@ -1010,8 +1311,8 @@ async function capture(){
     compose(SG,ti,shake?sx[i]/mx*shakeAmp:0,shake?sy[i]/mx*shakeAmp*.7:0,shake?1.05:0);
     AG.globalAlpha=1/(i+1);AG.drawImage(SMP,0,0);
   }
-  AG.globalAlpha=1;
-  applyExposure(AG,o);applyNoise(AG,iso,(Math.random()*256)|0,(Math.random()*256)|0);
+  AG.globalAlpha=1;applyLight(AG);
+  applyExposure(AG,o);applyLook(AG);applyNoise(AG,iso,(Math.random()*256)|0,(Math.random()*256)|0);
   const url=ACC.toDataURL('image/jpeg',0.9);
   // show blackout / long exposure
   $('blackout').classList.add('on');
@@ -1022,8 +1323,8 @@ async function capture(){
   $('exposing').classList.remove('on');$('blackout').classList.remove('on');
   // analysis
   const mid=tStart+t/2,rx=runnerX(mid);
-  const res={o,t,N,iso,motion,shake,shakeAmp,inF:rx>0.06*W&&rx<0.92*W,focusOK:cocPx(SUBJ_D)<2.5,bgBlur:cocPx(40000),
-    label:SH[st.si][0],mode:st.mode};
+  const res={o,t,N,iso,motion,shake,shakeAmp,inF:st.scene!=='runner'||(rx>0.06*W&&rx<0.92*W),focusOK:cocPx(subjD())<2.5,bgBlur:cocPx(40000),
+    label:SH[st.si][0],mode:st.mode,scene:st.scene,light:st.light,ldir:st.ldir,fill:st.fill,px:st.px,pd:st.pd};
   const shot={url,res,ch:st.challenge?st.challenge-1:-1,win:false};
   if(shot.ch>=0&&CH[shot.ch].ok(res)){shot.win=true;st.done[shot.ch]=true;saveProg();renderCH();}
   shots.unshift(shot);if(shots.length>12)shots.pop();
@@ -1032,11 +1333,13 @@ async function capture(){
   st.busy=false;$('shutter').disabled=false;
 }
 function feedback(r){
+  if(r.video)return videoFeedback(r);
   const L=[];const a=Math.abs(r.o);
   if(a<=0.34)L.push(['g','חשיפה מדויקת. התמונה לא בהירה ולא כהה מדי.']);
   else if(r.o>0)L.push([a<=1?'y':'r',`התמונה בהירה מדי ב-${a.toFixed(1)} סטופ. כדי להחשיך: לסגור צמצם, להגביר מהירות, או להוריד ISO.`]);
   else L.push([a<=1?'y':'r',`התמונה כהה מדי ב-${a.toFixed(1)} סטופ. כדי להבהיר: לפתוח צמצם, להאט מהירות, או להעלות ISO.`]);
-  if(!r.inF)L.push(['r','הרץ לא היה בפריים ברגע הצילום. נסה לתזמן את הלחיצה כשהוא באמצע.']);
+  if(r.scene==='portrait')portraitFeedback(r,L);
+  else if(!r.inF)L.push(['r','הרץ לא היה בפריים ברגע הצילום. נסה לתזמן את הלחיצה כשהוא באמצע.']);
   else{
     if(!r.focusOK)L.push(['y','הפוקוס לא היה על הרץ, ולכן הוא יצא רך. גע בו בעינית כדי להחזיר אליו את הפוקוס.']);
     if(r.motion<=2.5)L.push(['g','התנועה קפואה: הרץ חד לגמרי.']);
@@ -1046,13 +1349,14 @@ function feedback(r){
   if(r.shake)L.push(['r',`רעידת יד: צילמת ב-${r.label} בלי חצובה. כלל אצבע: ביד חופשית לא לצלם איטי מ-1 חלקי אורך העדשה (כאן 1/85).`]);
   if(r.bgBlur>=14)L.push(['g','הרקע מטושטש יפה, והנושא נפרד ממנו. זה האפקט של צמצם פתוח.']);
   else if(r.bgBlur<5)L.push(['g','עומק שדה גדול: גם הרקע יחסית חד. טוב לנוף, פחות לפורטרט.']);
+  lightFeedback(r,L);
   if(r.iso>=3200)L.push(['y',`ISO ${r.iso} מייצר רעש בולט. אם יש מספיק אור, עדיף ISO נמוך.`]);
   else if(r.iso<=200)L.push(['g','ISO נמוך: התמונה נקייה מרעש.']);
   return L;
 }
 function openReview(s){
   $('rvImg').src=s.url;curShot=s;
-  $('rvExif').textContent=`${s.res.label}  ·  f/${s.res.N}  ·  ISO ${s.res.iso}  ·  85mm  ·  ${s.res.mode}`;
+  $('rvExif').textContent=(s.res.video?'25p  ·  ':'')+`${s.res.label}  ·  f/${s.res.N}  ·  ISO ${s.res.iso}  ·  85mm  ·  ${s.res.mode}`;
   const b=$('rvBanner');
   if(s.ch>=0){b.className='banner '+(s.win?'win':'lose');b.textContent=s.win?`✓ אתגר הושלם: ${CH[s.ch].t}`:`עוד לא: ${CH[s.ch].t}. בדוק את ההערות למטה.`;b.style.display='';}
   else b.style.display='none';
@@ -1067,7 +1371,7 @@ $('rvSave').onclick=async()=>{if(!curShot)return;const name='photosim-'+Date.now
   const a=document.createElement('a');a.href=curShot.url;a.download=name;document.body.appendChild(a);a.click();a.remove();};
 $('rvBack').onclick=()=>$('review').classList.remove('on');
 $('shutter').addEventListener('click',capture);
-document.addEventListener('keydown',e=>{if(e.code==='Escape')$('guide').classList.remove('on');if(e.target.tagName==='INPUT'&&e.target.type!=='range')return;if(e.code==='Space'&&!$('review').classList.contains('on')&&!$('guide').classList.contains('on')){e.preventDefault();capture();}
+document.addEventListener('keydown',e=>{if(e.code==='Escape')$('guide').classList.remove('on');if(e.target.tagName==='INPUT'&&e.target.type!=='range')return;if(e.code==='Space'&&st.page==='sim'&&!$('review').classList.contains('on')&&!$('guide').classList.contains('on')){e.preventDefault();capture();}
   if(e.code==='Escape')$('review').classList.remove('on');});
 
 // ================= Start =================
@@ -1514,8 +1818,292 @@ $('closeGuide').onclick=()=>{stopPlay();$('guide').classList.remove('on');};
 $('gCams').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;G.model=b.dataset.m;try{localStorage.setItem('photosimModel',G.model);}catch(e){}
   stopPlay();if(G.topic)goTopic(G.topic);else{G.t=0;G.g=-1;G.sel=null;gRender();}});
 $('gSearch').addEventListener('input',e=>{stopPlay();G.q=e.target.value;gRender();});
+
+const LESSONS=[
+{t:'מהי חשיפה',p:['חשיפה היא כמות האור שמגיעה לחיישן של המצלמה. יותר מדי אור והתמונה יוצאת בהירה ו"שרופה". פחות מדי אור והיא יוצאת כהה.','שלושה דברים קובעים את החשיפה: הצמצם, מהירות התריס וה-ISO. שלושתם יחד נקראים משולש החשיפה, וזה הבסיס של כל הצילום.'],tip:'אין חשיפה "נכונה" אחת. יש חשיפה שמתאימה למה שרצית להראות.'},
+{t:'צמצם',p:['הצמצם הוא פתח בתוך העדשה. פתח גדול מכניס הרבה אור, ופתח קטן מכניס מעט. המספר מבלבל בהתחלה: f/1.8 הוא פתח גדול, ו-f/16 הוא פתח קטן.','הצמצם קובע גם כמה מהתמונה חדה. בצמצם פתוח (מספר קטן) רק הנושא חד והרקע נמרח. בצמצם סגור (מספר גדול) כמעט הכל חד.'],viz:'ap',tip:'פורטרט: f/1.8 עד f/2.8. קבוצה של אנשים: f/5.6. נוף: f/8 עד f/11.',go:'נסה: פתח וסגור צמצם ותסתכל על הרקע'},
+{t:'מהירות תריס',p:['מהירות התריס היא כמה זמן החיישן חשוף לאור. 1/1000 שנייה זה מהר מאוד, ו-1/30 זה איטי.','מהירות גבוהה מקפיאה תנועה. מהירות נמוכה מורחת אותה: גם את מה שזז בתמונה, וגם את הרעידה של היד שלך.'],tip:'כלל אצבע לצילום ביד: לא לרדת מתחת ל-1 חלקי אורך המוקד. בעדשת 85 מ"מ זה בערך 1/100.',go:'נסה: צלם את הרץ ב-1/1000 ואז ב-1/25'},
+{t:'ISO',p:['ISO הוא הרגישות של החיישן לאור. ISO 100 הוא נקי וחד. ככל שמעלים אותו התמונה מתבהרת, אבל מופיע רעש, כלומר גרעיניות.','מעלים ISO כשאין ברירה: כשכבר פתחת צמצם, ואי אפשר להאט עוד את התריס בלי לקבל מריחה.'],tip:'עדיף תמונה חדה עם קצת רעש מתמונה נקייה ומרוחה.',go:'נסה: העלה ל-ISO 12800 ותראה את הרעש'},
+{t:'הסטופ: איך מחליפים בין השלושה',p:['סטופ הוא יחידת מידה לאור. סטופ אחד למעלה הוא פי שניים אור, וסטופ אחד למטה הוא חצי.','מ-1/250 ל-1/125 זה סטופ יותר אור. מ-ISO 200 ל-400 גם. מ-f/5.6 ל-f/4 גם. לכן אפשר להחליף: אם סגרת צמצם בסטופ, תאט את התריס בסטופ, והחשיפה נשארת זהה.'],viz:'stop',tip:'כל שינוי באחד מהשלושה עולה לך משהו: עומק שדה, מריחה או רעש. הצילום הוא לבחור על מה מוותרים.'},
+{t:'מד האור וההיסטוגרמה',p:['מד האור הוא הסרגל הקטן עם ה-0 באמצע. כשהסמן על 0, המצלמה חושבת שהחשיפה מאוזנת. פלוס אומר בהיר יותר, ומינוס כהה יותר.','ההיסטוגרמה היא גרף של כל התמונה: כהים בצד שמאל, בהירים בצד ימין. גרף שנדבק לקצה הימני אומר שיש אזורים שרופים בלי פרטים.'],tip:'בשמש חזקה אל תסמוך על המסך. תסתכל על ההיסטוגרמה.',go:'נסה: הזז ערכים ותסתכל על הגרף'},
+{t:'מצבי הצילום',p:['M (ידני): אתה קובע את שלושת הערכים. A או Av (עדיפות צמצם): אתה בוחר צמצם, והמצלמה בוחרת מהירות. S או Tv (עדיפות תריס): אתה בוחר מהירות, והמצלמה בוחרת צמצם.','רוב הצלמים עובדים בעדיפות צמצם ביום-יום, ועוברים לידני כשהאור קבוע או כשהמצלמה טועה.'],tip:'בקנון קוראים לזה Av ו-Tv. בסוני ובניקון A ו-S. זה אותו הדבר.',go:'נסה: עבור בין M, A ו-S'},
+{t:'פוקוס',p:['הפוקוס קובע איזה מרחק מהמצלמה יהיה חד. פוקוס יחיד (AF-S או One-Shot) ננעל פעם אחת, ומתאים לנושא שעומד. פוקוס רציף (AF-C או Servo) עוקב אחרי נושא שזז.','באנשים, הפוקוס צריך להיות על העין הקרובה למצלמה. במצלמות חדשות יש זיהוי עיניים שעושה את זה לבד.'],tip:'צמצם פתוח מאוד משאיר אזור חד צר מאוד. טעות קטנה בפוקוס תיראה מיד.',go:'נסה: גע ברקע ואז ברץ'},
+{t:'אורך מוקד',p:['אורך המוקד, במילימטרים, קובע כמה רחב רואים. 24 מ"מ רחב ומכניס הרבה לפריים. 85 מ"מ צר ומקרב. 200 מ"מ מקרב מאוד.','עדשה רחבה מגזימה מרחקים ומעוותת פנים מקרוב. עדשה ארוכה "מדביקה" את הרקע לנושא ומחמיאה לפנים.'],tip:'לפורטרט: 50 עד 135 מ"מ. לאירוע בחלל צפוף: 24 עד 35 מ"מ.'},
+{t:'איזון לבן',p:['לכל מקור אור יש צבע. נורה ביתית צהובה, צל כחלחל, פלורסנט ירקרק. איזון לבן מתקן את זה, כדי שלבן ייראה לבן.','האוטומטי (AWB) טוב ברוב המצבים. באולם עם תאורה מעורבת עדיף לקבוע ערך קבוע, כדי שכל התמונות ייראו אותו הדבר.'],tip:'מי שמצלם ב-RAW יכול לתקן איזון לבן בעריכה בלי לאבד איכות.'},
+{t:'קומפוזיציה',p:['חוק השלישים: מחלקים את הפריים לשלוש על שלוש, ושמים את הנושא על אחד הקווים ולא באמצע. את האופק שמים על קו עליון או תחתון, וישר.','קווים מובילים, כמו שביל או גדר, מושכים את העין אל הנושא. משאירים מקום בכיוון שאליו הנושא מסתכל או זז. ובודקים את הרקע: עמוד שיוצא מהראש הורס תמונה טובה.'],tip:'לפני שלוחצים, עוברים בעיניים על ארבע הפינות של הפריים.',go:'נסה: צלם את הרץ על קו השליש'},
+{t:'אור',p:['אור רך, כמו ביום מעונן או ליד חלון, מחמיא ויוצר צללים עדינים. אור קשה, כמו שמש בצהריים, יוצר צללים חדים וניגודיות.','גם הכיוון חשוב. אור מהצד נותן נפח. אור מאחור יוצר הילה וצללית. אור ישר מלפנים משטח.'],tip:'השעה שאחרי הזריחה והשעה שלפני השקיעה נותנות אור חם ורך. לכן קוראים להן שעת הזהב.'},
+{t:'תאורה טבעית לפי שעות היום',p:['האור משתנה לאורך היום, בכמות, בצבע ובכיוון. בזריחה ובשקיעה הוא חם, רך ומגיע נמוך מהצד. בצהריים הוא חזק ומגיע מלמעלה, ויוצר צללים קשים על הפנים. בלילה כמעט אין אור טבעי.','שלושה כיוונים בסיסיים: אור מלפנים מאיר הכל אבל משטח. אור מהצד נותן נפח. אור מאחור יוצר הילה, אבל מחשיך את הפנים, ולכן מוסיפים מילוי.'],tip:'בצהריים מחפשים צל פתוח. בשקיעה מעמידים את המצולם עם הגב לשמש ומוסיפים מילוי עדין.',go:'נסה: החלף בין זריחה, יום, שקיעה ולילה'},
+{t:'איך מצלמים פורטרט',p:['בפורטרט הנושא הוא האדם, והרקע רק תומך. עדשה של 50 עד 135 מ"מ, צמצם פתוח כדי לטשטש את הרקע, ופוקוס על העין הקרובה למצלמה.','מצלמים בגובה העיניים של המצולם. משאירים מעט מקום מעל הראש, וממקמים את העיניים בערך בשליש העליון של הפריים. מרחיקים את המצולם מהרקע כדי שיתמוסס.'],tip:'מהירות של 1/125 ומעלה. גם מי שעומד במקום זז קצת.',go:'נסה: סצנת פורטרט, וגרור את המצולם לקו השליש'},
+{t:'וידאו: צילום סינק',p:['סינק הוא קטע ראיון שבו רואים ושומעים אדם מדבר. המרואיין לא מסתכל למצלמה אלא למראיין שלידה, ולכן ממקמים אותו בשליש של הפריים ומשאירים מקום ריק בכיוון המבט שלו. לזה קוראים מרחב מבט.','בווידאו התריס קבוע: ב-25 פריימים בשנייה מצלמים ב-1/50. זה כלל ה-180 מעלות, והוא נותן תנועה טבעית. את החשיפה מתקנים בצמצם, ב-ISO, ובחוץ בעזרת פילטר ND.'],tip:'חצובה, פוקוס על העיניים, ובדיקת סאונד לפני שמתחילים. סינק עם סאונד גרוע לא שווה כלום.',go:'נסה: סצנת וידאו סינק'},
+{t:'סאונד: מיקרופונים ורמות',p:['המיקרופון הפנימי של המצלמה קולט את כל הסביבה מרחוק, ולכן לא מתאים לראיון. שוטגאן על המצלמה קולט בעיקר את מה שמולו. נק מייק (מיקרופון דש) צמוד לבגד וקרוב לפה, ונותן קול נקי בכל מרחק.','את הרמה קוראים בבר הסאונד, בדציבלים. השיאים של הדיבור צריכים להגיע בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi>. אם הבר מגיע ל-0 יש קליפינג: הקול נחתך ואי אפשר לתקן. אם הוא נמוך מדי, בהגברה בעריכה יעלה גם הרעש.'],tip:'בשטח עובדים עם שני ערוצים: נק מייק בערוץ 1 ושוטגאן בערוץ 2 כגיבוי. ותמיד עם אוזניות.',go:'נסה: הפעל נק מייק ושחק ברמת ההקלטה'},
+{t:'RAW או JPEG',p:['JPEG הוא קובץ מוכן: המצלמה כבר עיבדה ודחסה אותו. הוא קטן ונוח לשליחה, אבל קשה לתקן בו טעויות.','RAW שומר את כל המידע מהחיישן. הקובץ גדול וחייב עריכה, אבל אפשר להציל בו חשיפה ואיזון לבן.'],tip:'באירוע שאי אפשר לחזור עליו, כמו חתונה, מצלמים RAW.'}
+];
+function vizHtml(k){
+  if(k==='ap')return '<div class="viz">'+[['f/1.8',46],['f/2.8',36],['f/5.6',22],['f/11',12],['f/16',7]].map(a=>`<div><i style="width:${a[1]}px;height:${a[1]}px"></i><b>${a[0]}</b></div>`).join('')+'</div>';
+  if(k==='stop')return '<div class="viz">'+[['-2','¼',14],['-1','½',28],['0','×1',44],['+1','×2',62],['+2','×4',84]].map(a=>`<div><span class="bar" style="height:${a[2]}px"></span><b>${a[0]}</b><span>${a[1]} אור</span></div>`).join('')+'</div>';
+  return '';}
+$('lessonList').innerHTML=LESSONS.map((l,i)=>`<details class="lesson"${i===0?' open':''}><summary><span class="n">${i+1}</span>${l.t}</summary><div class="body">${l.p.map(x=>`<p>${x}</p>`).join('')}${vizHtml(l.viz)}<div class="tipbox">💡 ${l.tip}</div>${l.go?`<a class="try" href="#sim">▶ ${l.go}</a>`:''}</div></details>`).join('');
+
+// ---------- touch controls on the camera screen ----------
+st.wb=0;st.look=0;
+const WBS=[['AWB','אוטומטי',null,0],['DAY','אור יום',null,0],['CLOUD','מעונן','#ffb25a',.28],['SHADE','צל','#ff9a3c',.42],['TUNG','נורה','#4d8dff',.5],['FLUO','פלורסנט','#c06bff',.3]];
+const LOOKS=[['STD','רגיל'],['VIVID','חי'],['B&W','שחור-לבן']];
+function applyLook(g){
+  const w=WBS[st.wb];
+  if(w[2]){g.save();g.globalCompositeOperation='soft-light';g.globalAlpha=w[3];g.fillStyle=w[2];g.fillRect(0,0,W,H);g.globalCompositeOperation='source-over';g.globalAlpha=w[3]*.18;g.fillRect(0,0,W,H);g.restore();}
+  if(st.look===2){g.save();g.globalCompositeOperation='saturation';g.fillStyle='#808080';g.fillRect(0,0,W,H);g.restore();}
+  else if(st.look===1){TG.clearRect(0,0,W,H);TG.drawImage(g.canvas,0,0);g.save();g.globalCompositeOperation='overlay';g.globalAlpha=.4;g.drawImage(TMP,0,0);g.restore();}
+}
+(function tag(){
+  const set=(sel,a)=>document.querySelectorAll(sel).forEach(e=>e.dataset.act=a);
+  set('.sk .d-s','si');set('.sk .d-a','ai');set('.sk .d-i','ii');set('.sk .d-meter','ev');
+  set('.cn-mode,.cn-mode2,.nk-mode','mode');set('.lx-touch','touch');
+  document.querySelectorAll('.cn-left').forEach(c=>['af','wb','look'].forEach((a,i)=>{if(c.children[i]){c.children[i].dataset.act=a;if(a==='look')c.children[i].dataset.def='STD';}}));
+  document.querySelectorAll('.nk-top>div:first-child').forEach(c=>['mode','af','look','wb'].forEach((a,i)=>{if(c.children[i]){c.children[i].dataset.act=a;if(a==='look')c.children[i].dataset.def='SD';}}));
+  document.querySelectorAll('.lx-tabs.l').forEach(c=>['mode','look','af','wb','fn'].forEach((a,i)=>{if(c.children[i])c.children[i].dataset.act=a;}));
+  document.querySelectorAll('.lx-tabs.r').forEach(c=>['shoot','rec','face','disp','play'].forEach((a,i)=>{if(c.children[i])c.children[i].dataset.act=a;}));
+})();
+function syncTabs(){
+  document.querySelectorAll('[data-act=wb]').forEach(e=>{e.textContent=WBS[st.wb][0];e.classList.toggle('act',st.wb>0);});
+  document.querySelectorAll('[data-act=look]').forEach(e=>{e.textContent=st.look?LOOKS[st.look][0]:(e.dataset.def||'▭');e.classList.toggle('act',st.look>0);});
+  document.querySelectorAll('[data-act=fn]').forEach(e=>e.classList.toggle('act',st.tripod));
+  document.querySelectorAll('[data-act=face]').forEach(e=>e.classList.toggle('act',st.focusOn==='subject'));
+}
+let QD=null,qdT;
+function qdClose(){QD=null;$('qd').classList.remove('on');document.querySelectorAll('.v.sel,.lx-cell.sel').forEach(e=>e.classList.remove('sel'));}
+function qdRender(){
+  if(!QD)return;const n=QD.labels.length,c=QD.get();let h=`<div class="qt"><span>${QD.title}</span><button class="qx" data-q="x">✕</button></div><div class="qr">`;
+  if(n>6){h+=`<button class="qi qa" data-q="-1">‹</button>`;for(let i=c-2;i<=c+2;i++){h+=(i<0||i>=n)?'<button class="qi" disabled style="opacity:.15"></button>':`<button class="qi ${i===c?'cur':''}" data-q="i${i}">${QD.labels[i]}</button>`;}h+=`<button class="qi qa" data-q="1">›</button>`;}
+  else{h=h.replace('<div class="qr">','<div class="qr'+(n>4?' many':'')+'">');QD.labels.forEach((l,i)=>{h+=`<button class="qi ${i===c?'cur':''}" data-q="i${i}">${l}</button>`;});}
+  $('qd').innerHTML=h+'</div>';$('qd').classList.add('on');clearTimeout(qdT);qdT=setTimeout(qdClose,7000);
+}
+function qdOpen(o,srcSel){qdClose();QD=o;if(srcSel)document.querySelectorAll(srcSel).forEach(e=>e.classList.add('sel'));qdRender();}
+function qdParam(key){
+  if(key==='si'&&st.mode==='A'){toast('במצב A המצלמה קובעת את המהירות. עבור ל-M או ל-S כדי לשנות');return;}
+  if(key==='ai'&&st.mode==='S'){toast('במצב S המצלמה קובעת את הצמצם. עבור ל-M או ל-A כדי לשנות');return;}
+  const cfg={ai:['צמצם',AP.map(n=>'F'+n),'vA','.d-a'],si:['מהירות תריס',SH.map(x=>x[0]),'vS','.d-s'],ii:['ISO',ISO.map(String),'vI','.d-i']}[key];
+  qdOpen({title:cfg[0],labels:cfg[1],get:()=>st[key],set:i=>{setIdx(key,i,cfg[2]);if(key==='ai'||st.mode==='S')dirty=true;}},cfg[3]);
+}
+function setDisp(grid,histo){st.grid=grid;st.histo=histo;$('grid').style.display=grid?'':'none';$('histoBox').style.display=histo?'':'none';$('tgGrid').classList.toggle('on',grid);$('tgHisto').classList.toggle('on',histo);}
+function screenAct(a){
+  if(a==='si'||a==='ai'||a==='ii')return qdParam(a);
+  if(a==='mode'){st.mode={M:'A',A:'S',S:'M'}[st.mode];dirty=true;qdClose();updateUI();return toast('מצב '+SKINS[st.skin].modes[st.mode]+': '+MODEHINT[st.mode].split(':')[0]);}
+  if(a==='ev')return toast(st.mode==='M'?'זה מד האור. במצב M משנים את החשיפה בצמצם, במהירות או ב-ISO':'המצלמה שומרת על חשיפה מאוזנת לפי מד האור');
+  if(a==='wb')return qdOpen({title:'איזון לבן',labels:WBS.map(w=>`${w[0]}<small>${w[1]}</small>`),get:()=>st.wb,set:i=>{st.wb=i;syncTabs();}});
+  if(a==='look')return qdOpen({title:'סגנון תמונה',labels:LOOKS.map(l=>`${l[0]}<small>${l[1]}</small>`),get:()=>st.look,set:i=>{st.look=i;syncTabs();}});
+  if(a==='af')return qdOpen({title:'נקודת פוקוס',labels:['הנושא<small>ראשי</small>','רקע<small>40 מ׳</small>','ספסל<small>8 מ׳</small>','קדמה<small>1.6 מ׳</small>'],get:()=>(st.focusD===subjD()?0:({40000:1,8000:2,1600:3}[st.focusD]??-1)),
+    set:i=>{const d=[subjD(),40000,8000,1600][i];st.focusD=d;st.focusOn=i===0?'subject':'spot';st.focusPt=[{x:.5,y:.5},{x:.5,y:.3},{x:.85,y:.68},{x:.15,y:.92}][i];dirty=true;syncTabs();}});
+  if(a==='fn'){$('tgTripod').click();syncTabs();return;}
+  if(a==='shoot')return capture();
+  if(a==='rec'){if(st.scene!=='video')setScene('video');else toggleRec();return;}
+  if(a==='face'){st.focusD=subjD();st.focusOn='subject';dirty=true;syncTabs();return toast('זיהוי פנים: הפוקוס על הנושא');}
+  if(a==='disp'){const k=st.grid&&st.histo?1:(st.grid?2:0);setDisp(k!==2,k===0);return toast(['תצוגה מלאה: רשת והיסטוגרמה','רשת בלבד','מסך נקי'][k]);}
+  if(a==='play'){if(shots.length)openReview(shots[0]);else toast('עוד לא צילמת תמונה');return;}
+  if(a==='touch')return toast('גע בתמונה כדי לבחור נקודת פוקוס');
+}
+$('vf').addEventListener('pointerdown',e=>{
+  const q=e.target.closest('#qd');
+  if(q){e.stopPropagation();e.preventDefault();const b=e.target.closest('[data-q]');if(!b||!QD)return;const v=b.dataset.q;
+    if(v==='x')return qdClose();const n=QD.labels.length;let i=v[0]==='i'?+v.slice(1):QD.get()+(+v);i=Math.max(0,Math.min(n-1,i));QD.set(i);qdRender();return;}
+  const t=e.target.closest('[data-act]');
+  if(t){e.stopPropagation();e.preventDefault();if(st.busy)return;screenAct(t.dataset.act);return;}
+  if(QD){qdClose();e.stopPropagation();}
+},true);
+syncTabs();
+// ---------- scenes, natural light, portrait, video & audio ----------
+Object.assign(st,{scene:'runner',light:'day',ldir:'front',fill:false,px:.5,pd:2500,lav:false,gun:false,again:16,nd:0,rec:false});
+const LIGHTS={
+  sunrise:{ev:10,he:'זריחה',hint:'אור רך וחם שמגיע נמוך מהצד. זמן מצוין לפורטרט. יש פחות אור מאשר בצהריים, אז פותחים צמצם או מעלים ISO.'},
+  day:{ev:12,he:'אור יום',hint:'הרבה אור, אבל שמש גבוהה יוצרת צללים קשים על הפנים. מחפשים צל פתוח, או מעמידים את המצולם עם הגב לשמש ומוסיפים מילוי.'},
+  sunset:{ev:9,he:'שקיעה',hint:'שעת הזהב: אור חם ונמוך. נסה אור מאחור כדי לקבל הילה, ופנס מילוי עדין כדי שהפנים לא ייצאו כהות.'},
+  night:{ev:4,he:'לילה',hint:'כמעט אין אור טבעי. צריך צמצם פתוח, ISO גבוה וחצובה, או פנס מילוי. שים לב לרעש ולרעידה.'}};
+function sceneEV(){return LIGHTS[st.light].ev;}
+function subjD(){return st.scene==='runner'?SUBJ_D:st.pd;}
+function fillAlpha(){return st.fill?clamp(Math.pow(2,7.5-sceneEV())*Math.pow(2500/subjD(),2)/1.5,0,.92):0;}
+let _lt=0;
+const LTMP=mk(700,1200);
+function lighten(c,m){if(m<=1.02)return;const g=c.getContext('2d'),tg=LTMP.getContext('2d');let guard=0;
+  g.save();g.globalCompositeOperation='lighter';
+  while(m>=2&&guard++<4){tg.clearRect(0,0,c.width,c.height);tg.drawImage(c,0,0);g.drawImage(LTMP,0,0);m/=2;}
+  if(m>1.02){tg.clearRect(0,0,c.width,c.height);tg.drawImage(c,0,0);g.globalAlpha=m-1;g.drawImage(LTMP,0,0);}
+  g.restore();}
+function shadeSprite(c,d){const g=c.getContext('2d'),w=c.width,h=c.height;g.save();g.globalCompositeOperation='source-atop';
+  if(st.ldir==='side'){const gr=g.createLinearGradient(w*.28,0,w*.72,0);gr.addColorStop(0,'rgba(0,0,10,.62)');gr.addColorStop(.55,'rgba(0,0,10,.12)');gr.addColorStop(1,'rgba(255,240,210,.14)');g.fillStyle=gr;g.fillRect(0,0,w,h);}
+  else if(st.ldir==='back'){g.fillStyle='rgba(0,0,12,.6)';g.fillRect(0,0,w,h);}
+  if(st.light==='day'&&st.ldir==='front'&&st.scene!=='runner'){const gr=g.createLinearGradient(0,h*.05,0,h*.2);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.45,'rgba(0,0,0,.34)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,w,h*.3);}
+  g.restore();}
+// ----- person (portrait / interview) -----
+const PW=620,PH=1120,PAX=310,PAY=150,PSPR=mk(PW,PH),EYE_Y=0.36*H;
+function drawPerson(g,mouth,look,video){
+  const skin='#d9a37c',shade='#b98561',hair='#3a2618',shirt=video?'#7a2f3a':'#2f6f9f';
+  g.lineCap='round';g.lineJoin='round';
+  g.fillStyle=shirt;g.beginPath();g.moveTo(-212,340);g.quadraticCurveTo(-205,195,-92,165);g.lineTo(92,165);g.quadraticCurveTo(205,195,212,340);g.lineTo(232,960);g.lineTo(-232,960);g.closePath();g.fill();
+  g.fillStyle='rgba(0,0,0,.14)';g.fillRect(-232,345,58,615);g.fillRect(174,345,58,615);
+  g.fillStyle=shade;g.fillRect(-42,95,84,95);
+  g.fillStyle=skin;g.beginPath();g.moveTo(-62,165);g.lineTo(0,240);g.lineTo(62,165);g.closePath();g.fill();
+  g.beginPath();g.ellipse(-100,22,14,26,0,0,7);g.ellipse(100,22,14,26,0,0,7);g.fill();
+  g.beginPath();g.ellipse(0,15,98,125,0,0,7);g.fill();
+  g.fillStyle=hair;g.beginPath();g.ellipse(0,-72,106,50,0,0,7);g.fill();g.fillRect(-104,-78,20,62);g.fillRect(84,-78,20,62);
+  g.strokeStyle='#2a1b12';g.lineWidth=6;g.beginPath();g.moveTo(-58,-24);g.lineTo(-20,-27);g.moveTo(20,-27);g.lineTo(58,-24);g.stroke();
+  for(const sx of[-38,38]){g.fillStyle='#fff';g.beginPath();g.ellipse(sx,0,17,10,0,0,7);g.fill();g.fillStyle='#2a1b12';g.beginPath();g.arc(sx+look*6,0,8,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(sx+look*6-3,-3,2.2,0,7);g.fill();}
+  g.strokeStyle=shade;g.lineWidth=5;g.beginPath();g.moveTo(look*5,12);g.lineTo(look*12,50);g.lineTo(look*2,54);g.stroke();
+  if(mouth>.12){g.fillStyle='#5a1f1f';g.beginPath();g.ellipse(look*4,82,20,4+mouth*13,0,0,7);g.fill();}
+  else{g.strokeStyle='#8a3b34';g.lineWidth=5;g.beginPath();g.arc(look*4,66,26,Math.PI*.2,Math.PI*.8);g.stroke();}
+  if(video&&st.lav){g.strokeStyle='#111';g.lineWidth=3;g.beginPath();g.moveTo(30,262);g.quadraticCurveTo(60,420,40,960);g.stroke();g.fillStyle='#111';g.beginPath();g.roundRect?g.roundRect(18,238,24,30,6):g.rect(18,238,24,30);g.fill();g.fillStyle='#555';g.fillRect(24,232,12,10);}
+}
+let pCache={k:'',img:null};
+function personSprite(){
+  const video=st.scene==='video',mouth=video?Math.round(AUD.env*4)/4:0,r=Math.round(cocPx(st.pd)*2)/2;
+  const k=[st.scene,mouth,st.ldir,st.light,st.fill,st.pd,r,st.lav].join('|');
+  if(pCache.k===k)return pCache.img;
+  const g=PSPR.getContext('2d');g.clearRect(0,0,PW,PH);g.save();g.translate(PAX,PAY);drawPerson(g,mouth,video?-1:0,video);g.restore();
+  shadeSprite(PSPR,st.pd);const img=r>=0.6?blurInto(PSPR,r):(()=>{const c=mk(PW,PH);c.getContext('2d').drawImage(PSPR,0,0);return c;})();
+  pCache={k,img};return img;}
+function pScale(){return 2500/st.pd;}
+function subjBox(t){if(st.scene==='runner')return runnerBox(t);const k=pScale(),x=st.px*W;return{x0:x-235*k,x1:x+235*k,y0:EYE_Y-135*k,y1:H,cx:x,cy:EYE_Y+12*k};}
+function drawSubject(g,t){_lt=t;
+  if(st.scene==='runner'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(runnerSprite(t),x-SOX,FEET_Y-SOY);return;}
+  const k=pScale(),x=st.px*W;
+  if(st.ldir==='back'){const gr=g.createRadialGradient(x,EYE_Y-20*k,60*k,x,EYE_Y-20*k,330*k);gr.addColorStop(0,'rgba(255,236,190,.55)');gr.addColorStop(1,'rgba(255,236,190,0)');g.save();g.globalCompositeOperation='lighter';g.fillStyle=gr;g.fillRect(x-340*k,EYE_Y-360*k,680*k,700*k);g.restore();}
+  g.drawImage(personSprite(),x-PAX*k,EYE_Y-PAY*k,PW*k,PH*k);}
+// ----- natural light over the whole scene -----
+function glow(g,x,y,r,col,a){const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,col);gr.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=a;g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}
+function fillPass(g){const a=fillAlpha();if(a<.02)return;g.save();g.globalCompositeOperation='screen';g.globalAlpha=a;const t=_lt;
+  if(st.scene==='runner'){const x=runnerX(t);if(x>-220&&x<W+220)g.drawImage(SPR,x-SOX,FEET_Y-SOY);}
+  else{const k=pScale(),x=st.px*W;g.drawImage(pCache.img||PSPR,x-PAX*k,EYE_Y-PAY*k,PW*k,PH*k);}
+  g.restore();}
+function applyLight(g){
+  const L=st.light;if(L==='day'){fillPass(g);return;}g.save();
+  if(L==='sunrise'){g.globalCompositeOperation='multiply';g.fillStyle='#ffd9c2';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.12*W,.5*H,.7*W,'#ff9d6a',.55);const gr=g.createLinearGradient(0,0,0,.55*H);gr.addColorStop(0,'rgba(140,120,200,.35)');gr.addColorStop(1,'rgba(255,170,120,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,.55*H);}
+  else if(L==='sunset'){g.globalCompositeOperation='multiply';g.fillStyle='#ffb27d';g.fillRect(0,0,W,H);g.globalCompositeOperation='screen';glow(g,.86*W,.5*H,.75*W,'#ff6a1f',.7);const gr=g.createLinearGradient(0,0,0,.5*H);gr.addColorStop(0,'rgba(90,60,160,.4)');gr.addColorStop(1,'rgba(255,120,60,0)');g.globalAlpha=1;g.fillStyle=gr;g.fillRect(0,0,W,.5*H);}
+  else{g.globalCompositeOperation='multiply';g.fillStyle='#53629a';g.fillRect(0,0,W,H);const gr=g.createLinearGradient(0,0,0,.62*H);gr.addColorStop(0,'#0b1030');gr.addColorStop(.75,'#3b4470');gr.addColorStop(1,'#ffffff');g.fillStyle=gr;g.fillRect(0,0,W,.62*H);
+    g.globalCompositeOperation='screen';for(const lx of[.3*W,.68*W]){glow(g,lx,.385*H,150,'#ffd98a',.95);glow(g,lx,.62*H,260,'#c98f3a',.4);}}
+  g.restore();fillPass(g);}
+// ----- audio -----
+const AUD={pk:[-60,-60],hold:[-60,-60],holdT:[0,0],clipT:[-9,-9],env:0,target:0,nextT:0,stats:null};
+const MIC={int:{sp:-34,amb:-44,he:'פנימי',dist:1},gun:{sp:-23,amb:-51,he:'שוטגאן',dist:1},lav:{sp:-13,amb:-60,he:'נק מייק',dist:0}};
+function mics(){return st.lav&&st.gun?['lav','gun']:st.lav?['lav','int']:st.gun?['gun','int']:['int','int'];}
+function audioTick(now){
+  if(now>AUD.nextT){AUD.target=Math.random()<.2?0.03:(.5+Math.random()*.5);AUD.nextT=now+.08+Math.random()*.17;}
+  AUD.env+=(AUD.target-AUD.env)*.35;
+  const gain=(st.again-16)*1.5,dd=20*Math.log10(st.pd/2500),mm=mics();
+  mm.forEach((m,i)=>{const M=MIC[m];const sp=M.sp-(M.dist?dd:0)+20*Math.log10(Math.max(AUD.env,.001));const amb=M.amb+(st.light==='night'?-4:0)+(Math.random()*3-1.5);
+    let lv=10*Math.log10(Math.pow(10,sp/10)+Math.pow(10,amb/10))+gain;const clip=lv>=-0.2;lv=clamp(lv,-60,0);
+    AUD.pk[i]=Math.max(lv,AUD.pk[i]-1.8);
+    if(lv>=AUD.hold[i]){AUD.hold[i]=lv;AUD.holdT[i]=now;}else if(now-AUD.holdT[i]>1.4)AUD.hold[i]=Math.max(-60,AUD.hold[i]-.7);
+    if(clip)AUD.clipT[i]=now;
+    if(st.rec&&AUD.stats){AUD.stats.max[i]=Math.max(AUD.stats.max[i],lv);if(clip)AUD.stats.clip[i]++;}
+    const pct=(AUD.pk[i]+60)/60*100;$('am'+i).style.width=(100-pct)+'%';$('om'+i).style.width=(100-pct)+'%';
+    $('ah'+i).style.left='calc('+((AUD.hold[i]+60)/60*100)+'% - 2px)';$('ad'+i).textContent=AUD.hold[i]<=-59?'-∞':AUD.hold[i].toFixed(0);
+    $('al'+i).textContent='CH'+(i+1)+' '+M.he;});
+  const h=AUD.hold[0],S=$('aStat');let c,tx;
+  if(now-AUD.clipT[0]<1.5){c='r';tx='קליפינג! הקול נחתך. הורד את רמת ההקלטה';}
+  else if(h>-6){c='y';tx='חזק מדי, קרוב לקליפינג. הורד מעט';}
+  else if(h>=-12.5){c='g';tx='רמה מצוינת: השיאים בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi>';}
+  else if(h>=-20){c='y';tx='קצת חלש. הגבר מעט את הרמה';}
+  else{c='r';tx='חלש מדי. הגבר רמה או קרב מיקרופון לפה';}
+  S.className='astat '+c;if(S._t!==tx){S._t=tx;S.innerHTML=tx;}$('aStatDb').textContent=(h<=-59?'-∞':h.toFixed(0))+' dB';
+  if(st.rec){const f=Math.floor((now-AUD.stats.t0)*25);const p=n=>String(n).padStart(2,'0');$('recTc').textContent='REC 00:'+p(Math.floor(f/1500))+':'+p(Math.floor(f/25)%60)+':'+p(f%25);if(now-AUD.stats.t0>12)toggleRec();}
+}
+function micText(){return st.lav&&st.gun?'נק מייק בערוץ 1 ושוטגאן בערוץ 2 כגיבוי. כך עובדים בשטח: אם אחד נכשל, יש את השני.':st.lav?'נק מייק צמוד לבגד, קרוב לפה. הקול חזק ונקי בכל מרחק מהמצלמה. זו הבחירה הראשונה לסינק. ערוץ 2 נשאר על המיקרופון הפנימי.':st.gun?'שוטגאן קולט בעיקר את מה שמולו ומחליש את הצדדים. טוב בהרבה מהמיקרופון הפנימי, אבל ככל שמתרחקים מהמצולם הקול נחלש.':'בלי מיקרופון חיצוני, המצלמה קולטת את כל הסביבה מרחוק. הדיבור חלש ויש הרבה רעש רקע. לא מתאים לסינק.';}
+function toggleRec(){
+  if(st.scene!=='video')return;
+  if(!st.rec){st.rec=true;AUD.stats={max:[-60,-60],clip:[0,0],t0:animT};$('vf').classList.add('recording');$('shutter').classList.add('on');toast('מקליט. לחץ שוב כדי לעצור');return;}
+  st.rec=false;$('vf').classList.remove('recording');$('shutter').classList.remove('on');$('recTc').textContent='STBY';
+  const S=AUD.stats,dur=animT-S.t0;if(dur<1.2){toast('הקלטה קצרה מדי. הקלט לפחות שתי שניות');return;}
+  const res={video:true,o:offset(),t:T_(),N:N_(),iso:I_(),label:SH[st.si][0],mode:st.mode,scene:'video',light:st.light,ldir:st.ldir,fill:st.fill,px:st.px,pd:st.pd,tripod:st.tripod,
+    focusOK:cocPx(st.pd)<2.5,bgBlur:cocPx(40000),amax:S.max[0],aclip:S.clip[0]>2,mic:mics()[0],mic2:mics()[1],amax2:S.max[1],dur,nd:st.nd,motion:0,shake:false,inF:true};
+  const shot={url:cv.toDataURL('image/jpeg',.9),res,ch:st.challenge?st.challenge-1:-1,win:false};
+  if(shot.ch>=0&&CH[shot.ch].ok(res)){shot.win=true;st.done[shot.ch]=true;saveProg();renderCH();}
+  shots.unshift(shot);if(shots.length>12)shots.pop();renderThumbs();openReview(shot);}
+function expLines(r,L){const a=Math.abs(r.o);
+  if(a<=0.34)L.push(['g','חשיפה מדויקת.']);
+  else if(r.o>0)L.push([a<=1?'y':'r',`התמונה בהירה מדי ב-${a.toFixed(1)} סטופ.`+(r.video?' בווידאו לא מגבירים תריס: סוגרים צמצם, מורידים ISO או מוסיפים פילטר ND.':'')]);
+  else L.push([a<=1?'y':'r',`התמונה כהה מדי ב-${a.toFixed(1)} סטופ.`+(r.video?' בווידאו לא מאטים תריס: פותחים צמצם, מעלים ISO, מורידים ND או מוסיפים אור.':'')]);}
+function lightFeedback(r,L){
+  if(!r.scene||r.scene==='runner'&&r.light==='day'&&r.ldir==='front'&&!r.fill)return;
+  if(r.ldir==='back'&&!r.fill)L.push(['y','האור מגיע מאחור והפנים יצאו כהות. זה יפה כצללית, אבל לפנים ברורות מוסיפים פנס מילוי או מסובבים את המצולם.']);
+  if(r.ldir==='back'&&r.fill)L.push(['g','אור מאחור עם מילוי מלפנים: הילה סביב המצולם ופנים מוארות. שילוב קלאסי.']);
+  if(r.ldir==='side')L.push(['g','אור מהצד נותן נפח ועומק לפנים. צד אחד מואר וצד אחד בצל.']);
+  if(r.light==='day'&&r.ldir==='front'&&r.scene!=='runner')L.push(['y','שמש ישירה בצהריים יוצרת צללים קשים מתחת לעיניים. עדיף צל פתוח, אור מהצד, או אור מאחור עם מילוי.']);
+  if(r.light==='night'&&!r.fill&&r.scene!=='runner')L.push(['y','בלילה בלי מקור אור המצולם מואר רק מהפנסים ברקע. פנס מילוי יאפשר ISO נמוך יותר ופנים נקיות.']);
+  if(r.light==='night'&&r.fill)L.push(['g','פנס המילוי מאיר את המצולם, והרקע נשאר לילי.']);
+  if(r.fill&&r.light==='day'&&r.ldir!=='back')L.push(['y','באור יום חזק פנס קטן על המצלמה כמעט לא משפיע. הוא מועיל בעיקר בלילה, בשקיעה או מול אור אחורי.']);
+  if(r.light==='sunrise'||r.light==='sunset')L.push(['g','אור '+(r.light==='sunset'?'שקיעה':'זריחה')+' חם ורך. שים לב שהוא משתנה מהר, אז בודקים חשיפה כל כמה דקות.']);}
+function portraitFeedback(r,L){
+  if(!r.focusOK)L.push(['r','הפוקוס לא על המצולם. בפורטרט הפוקוס חייב להיות על העין. גע בפנים כדי למקד.']);
+  else L.push(['g','הפוקוס על המצולם.']);
+  const third=Math.abs(r.px-1/3)<.1||Math.abs(r.px-2/3)<.1,center=Math.abs(r.px-.5)<.07;
+  if(third)L.push(['g','המצולם על קו השליש. קומפוזיציה נעימה עם מקום לרקע.']);
+  else if(center)L.push(['g','המצולם במרכז: קומפוזיציה סימטרית וישירה. נסה גם להזיז אותו לקו השליש.']);
+  else L.push(['y','המצולם קרוב מדי לקצה הפריים. גרור אותו לקו השליש או למרכז.']);
+  if(r.pd<=1800)L.push(['g','קרוב למצולם: פריים הדוק של פנים. עומק השדה צר מאוד, אז הפוקוס חייב לשבת בדיוק.']);
+  if(r.pd>=4000)L.push(['g','רחוק מהמצולם: רואים יותר מהגוף ומהסביבה, והרקע פחות מטושטש.']);
+  if(!r.shake&&r.t>1/100)L.push(['y','גם כשהמצולם עומד, אנשים זזים קצת. לפורטרט עדיף 1/125 ומעלה.']);}
+function videoFeedback(r){const L=[];
+  if(r.label==='1/50')L.push(['g','תריס 1/50 ב-25 פריימים: כלל ה-180 מעלות. התנועה תיראה טבעית.']);
+  else if(r.t<1/50)L.push(['y',`תריס ${r.label} מהיר מדי לווידאו. התנועה תיראה קופצנית. חוזרים ל-1/50 ומתקנים חשיפה בצמצם, ב-ISO או ב-ND.`]);
+  else L.push(['y',`תריס ${r.label} איטי מדי. כל תנועה תימרח. חוזרים ל-1/50.`]);
+  expLines(r,L);
+  L.push(r.focusOK?['g','הפוקוס על המרואיין.']:['r','הפוקוס לא על המרואיין. גע בפנים שלו.']);
+  if(r.px>=.56)L.push(['g','מרחב מבט נכון: המרואיין מסתכל שמאלה, ויש לו מקום ריק בכיוון המבט.']);
+  else if(r.px>.44)L.push(['y','המרואיין במרכז. בסינק מזיזים אותו לשליש, כך שיהיה מקום ריק בכיוון שאליו הוא מסתכל.']);
+  else L.push(['r','המרואיין מסתכל אל קצה הפריים ואין לו מרחב מבט. גרור אותו לצד ימין.']);
+  L.push(r.tripod?['g','המצלמה על חצובה: פריים יציב לאורך כל הראיון.']:['y','צילום מהיד. בסינק עדיף חצובה, כדי שהפריים לא יזוז.']);
+  lightFeedback(r,L);
+  const m=r.mic;
+  if(r.aclip)L.push(['r','הסאונד בקליפינג: הקול נחתך ואי אפשר לתקן את זה בעריכה. מורידים את רמת ההקלטה.']);
+  else if(r.amax>-6)L.push(['y',`שיא של <bdi dir="ltr">${r.amax.toFixed(0)} dB</bdi>. קרוב מדי לתקרה. משאירים מרווח ביטחון.`]);
+  else if(r.amax>=-12.5)L.push(['g',`סאונד ברמה טובה: שיא של <bdi dir="ltr">${r.amax.toFixed(0)} dB</bdi>, בין <bdi dir="ltr">-12</bdi> ל-<bdi dir="ltr">-6</bdi>.`]);
+  else if(r.amax>=-20)L.push(['y',`הסאונד קצת חלש: שיא של <bdi dir="ltr">${r.amax.toFixed(0)} dB</bdi>. מגבירים מעט.`]);
+  else L.push(['r',`הסאונד חלש מדי: שיא של <bdi dir="ltr">${r.amax.toFixed(0)} dB</bdi>. בהגברה בעריכה יעלה גם הרעש.`]);
+  if(m==='int')L.push(['r','הוקלט במיקרופון הפנימי של המצלמה: הרבה רעש סביבה והדיבור רחוק. לסינק שמים נק מייק או שוטגאן.']);
+  else if(m==='gun')L.push(['y','הוקלט בשוטגאן על המצלמה. טוב, אבל רגיש למרחק. נק מייק ייתן קול קרוב ואחיד יותר.']);
+  else L.push(['g','הוקלט בנק מייק: קול קרוב ונקי.'+(r.mic2==='gun'?' ויש שוטגאן בערוץ 2 כגיבוי.':'')]);
+  if(r.iso>=3200)L.push(['y',`ISO ${r.iso} מייצר רעש בתמונה.`]);
+  return L;}
+// ----- scene UI -----
+function segBind(id,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
+function setSeg(id,v){[...$(id).children].forEach(x=>x.classList.toggle('on',x.dataset.v===String(v)));}
+function sceneUI(){
+  const simEl=$('p-sim');simEl.classList.remove('sim-runner','sim-portrait','sim-video');simEl.classList.add('sim-'+st.scene);
+  $('lightHint').textContent=LIGHTS[st.light].hint;$('micInfo').textContent=micText();
+  $('shutter').classList.toggle('rec',st.scene==='video');
+  document.querySelector('.tip').textContent=st.scene==='runner'?'הכפתורים והערכים שעל המסך פעילים: גע במהירות, בצמצם או ב-ISO כדי לשנות. נגיעה בתמונה בוחרת פוקוס.':st.scene==='portrait'?'גרור את המצולם ימינה ושמאלה כדי לבנות את הפריים. נגיעה בפנים ממקדת.':'גרור את המרואיין לשליש הנכון, בדוק את בר הסאונד, ולחץ על הכפתור האדום כדי להקליט.';
+  const ic=[];if(st.fill)ic.push('🔦');if(st.scene==='video'){if(st.lav)ic.push('🎤 LAV');if(st.gun)ic.push('🎙 GUN');if(st.nd)ic.push('ND'+Math.pow(2,st.nd));}
+  $('oIcons').innerHTML=ic.map(x=>`<span>${x}</span>`).join('');
+  const v=$('vInfo');v.textContent='25p · '+SH[st.si][0]+(SH[st.si][0]==='1/50'?' ✓':' · מומלץ 1/50');v.classList.toggle('bad',SH[st.si][0]!=='1/50');
+  pCache.k='';dirty=true;}
+function setScene(sc){if(st.rec){st.rec=false;$('vf').classList.remove('recording');$('shutter').classList.remove('on');$('recTc').textContent='STBY';}
+  st.scene=sc;st.challenge=0;if(sc==='video'){st.px=.64;}else if(sc==='portrait'){st.px=.5;}
+  st.focusD=subjD();st.focusOn='subject';setSeg('sceneSeg',sc);renderCH();sceneUI();updateUI();syncTabs();
+  toast(sc==='runner'?'סצנת תנועה: רץ בפארק':sc==='portrait'?'סצנת פורטרט: אפשר לגרור את המצולם':'סצנת וידאו: צילום סינק עם סאונד');}
+segBind('sceneSeg',v=>setScene(v));
+segBind('lightSeg',v=>{st.light=v;sceneUI();updateUI();const o=offset();toast(LIGHTS[v].he+(Math.abs(o)>1?(o<0?': חשוך מדי עכשיו. פתח צמצם, האט תריס או העלה ISO':': בהיר מדי עכשיו. סגור צמצם, הגבר תריס או הורד ISO'):': החשיפה מתאימה'));});
+segBind('ldirSeg',v=>{st.ldir=v;sceneUI();});
+segBind('distSeg',v=>{const was=st.focusD===st.pd;st.pd=+v;if(was||st.focusOn==='subject')st.focusD=st.pd;sceneUI();});
+segBind('ndSeg',v=>{st.nd=+v;sceneUI();updateUI();});
+$('tgFill').onclick=()=>{st.fill=!st.fill;$('tgFill').classList.toggle('on',st.fill);sceneUI();toast(st.fill?'פנס מילוי דולק: מאיר את המצולם מקרוב':'פנס מילוי כבוי');};
+$('tgLav').onclick=()=>{st.lav=!st.lav;$('tgLav').classList.toggle('on',st.lav);sceneUI();};
+$('tgGun').onclick=()=>{st.gun=!st.gun;$('tgGun').classList.toggle('on',st.gun);sceneUI();};
+$('rAud').addEventListener('input',()=>{st.again=+$('rAud').value;$('tAud').textContent=st.again;});
+$('vidCard').querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{st.again=clamp(st.again+(+b.dataset.ad),0,31);$('rAud').value=st.again;$('tAud').textContent=st.again;});
+let drag=null;
+$('vf').addEventListener('pointermove',e=>{if(!drag)return;const r=$('vf').getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W;st.px=clamp(drag.px0+(x-drag.x0)/W,.14,.86);$('vf').classList.add('dragging');});
+const endDrag=()=>{if(drag){drag=null;$('vf').classList.remove('dragging');}};
+$('vf').addEventListener('pointerup',endDrag);$('vf').addEventListener('pointercancel',endDrag);
+const _uu=updateUI;updateUI=function(){_uu();if($('vInfo')){const v=$('vInfo');v.textContent='25p · '+SH[st.si][0]+(SH[st.si][0]==='1/50'?' ✓':' · מומלץ 1/50');v.classList.toggle('bad',SH[st.si][0]!=='1/50');}};
+sceneUI();
+
+const PAGES=['home','basics','sim'];
+function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg))pg='home';st.page=pg;
+  PAGES.forEach(x=>$('p-'+x).classList.toggle('on',x===pg));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===pg));
+  window.scrollTo(0,0);if(pg==='sim')dirty=true;}
+window.addEventListener('hashchange',route);route();
+$('homeGuide').onclick=()=>$('openGuide').click();
 renderCH();setSkin(st.skin);requestAnimationFrame(loop);
-setTimeout(()=>toast('שנה צמצם, מהירות ו-ISO, ולחץ על כפתור הצילום'),600);
+
 })();
 </script>
 </body>
