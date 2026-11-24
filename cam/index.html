@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0f">
+<title>Camera Simulator · מצלמה חיה</title>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0f;--panel:#15171c;--panel2:#1c1f26;--line:rgba(255,255,255,.14);--text:#eef0f4;--muted:#9aa3b2;
+  --gold:#D4AF37;--goldline:rgba(212,175,55,.45);--ok:#3ddc84;--warn:#ffb020;--bad:#ff4d4d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Rubik',-apple-system,"Segoe UI",Arial,sans-serif;font-weight:600}
+.app{max-width:900px;margin:0 auto;padding:12px 12px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:1.05rem;margin:0;display:flex;align-items:center;gap:8px}
+header img{width:30px;height:30px;border-radius:8px}
+a.back{color:var(--gold);text-decoration:none;font-size:.9rem;border:1px solid var(--goldline);border-radius:10px;padding:7px 12px;white-space:nowrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.intro h2{margin:0 0 8px;font-size:1.15rem}
+.intro p,.intro li{font-weight:400;color:var(--muted);line-height:1.55;margin:0 0 6px}
+.intro ul{margin:6px 0 10px;padding-inline-start:20px}
+.priv{border:1px solid var(--goldline);border-radius:10px;padding:9px 11px;color:var(--text)!important;font-weight:500!important;background:rgba(212,175,55,.08)}
+button{font:inherit;cursor:pointer}
+.go{width:100%;border:0;border-radius:12px;padding:14px;font-size:1.05rem;font-weight:700;color:#141414;background:linear-gradient(180deg,#E6C352,#B8942A)}
+.err{color:var(--bad);font-weight:500;margin-top:10px;display:none;line-height:1.5}
+#live{display:none;flex-direction:column;gap:12px}
+.stage{position:relative;background:#000;border-radius:14px;overflow:hidden;border:1px solid var(--line);line-height:0}
+.stage{margin:0 auto;width:100%}.stage video{width:100%;height:auto;display:block;background:#000}
+.ov{position:absolute;pointer-events:none}
+#frame{inset:0}
+.grid{position:absolute;inset:0;background:
+  linear-gradient(to right,transparent calc(33.333% - .5px),rgba(255,255,255,.55) calc(33.333% - .5px),rgba(255,255,255,.55) calc(33.333% + .5px),transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(255,255,255,.55) calc(66.666% - .5px),rgba(255,255,255,.55) calc(66.666% + .5px),transparent calc(66.666% + .5px)),
+  linear-gradient(to bottom,transparent calc(33.333% - .5px),rgba(255,255,255,.55) calc(33.333% - .5px),rgba(255,255,255,.55) calc(33.333% + .5px),transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(255,255,255,.55) calc(66.666% - .5px),rgba(255,255,255,.55) calc(66.666% + .5px),transparent calc(66.666% + .5px))}
+.lvl{position:absolute;left:50%;top:50%;width:46%;height:0;transform:translate(-50%,-50%)}
+.lvl i{position:absolute;left:0;right:0;top:-1.5px;height:3px;border-radius:2px;background:var(--warn);transform-origin:center;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.lvl b{position:absolute;left:-14%;right:-14%;top:-.5px;height:1px;background:rgba(255,255,255,.5)}
+.lvl.ok i{background:var(--ok)}
+.lvl span{position:absolute;left:50%;top:10px;transform:translateX(-50%);font-size:12px;line-height:1;background:rgba(0,0,0,.55);padding:4px 8px;border-radius:6px;direction:ltr}
+#hist{position:absolute;top:10px;left:10px;width:132px;height:66px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.35);border-radius:6px}
+.ameter{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(0,0,0,.55);border-radius:8px;padding:7px 9px;line-height:1;direction:ltr;display:flex;align-items:center;gap:8px;font-size:12px}
+.bar{position:relative;flex:1;height:12px;border-radius:3px;overflow:hidden;background:linear-gradient(90deg,#27c46b 0 80%,#f2c230 80% 90%,#ff4d4d 90% 100%)}
+.bar .mask{position:absolute;top:0;bottom:0;right:0;background:#17191d;width:100%}
+.bar .hold{position:absolute;top:0;bottom:0;width:3px;background:#fff;left:0}
+.ameter .db{min-width:46px;text-align:right;font-variant-numeric:tabular-nums}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tools button{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:10px;padding:10px 4px;font-size:.85rem;font-weight:600}
+.tools button.on{color:var(--gold);border-color:var(--goldline)}
+.fb{display:flex;flex-direction:column;gap:8px}
+.fb .ln{display:flex;gap:9px;align-items:flex-start;font-weight:500;line-height:1.45;font-size:.95rem}
+.fb .ln i{flex:none;width:11px;height:11px;border-radius:50%;margin-top:6px;background:var(--muted)}
+.fb .g i{background:var(--ok)}.fb .y i{background:var(--warn)}.fb .r i{background:var(--bad)}
+.fb h3{margin:0 0 2px;font-size:.8rem;color:var(--muted);font-weight:600}
+.note{font-weight:400;color:var(--muted);font-size:.82rem;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1><img src="../icons/favicon-96.png" alt="">מצלמה חיה</h1>
+    <a class="back" href="../#sim">חזרה לסימולטור</a>
+  </header>
+
+  <div class="card intro" id="intro">
+    <h2>תרגול עם המצלמה של הטלפון</h2>
+    <p>מכוונים את הטלפון אל מי שמצלמים, ומקבלים ביקורת חיה על ארבעה דברים:</p>
+    <ul>
+      <li><b>קומפוזיציה:</b> רשת שלישים מעל התמונה.</li>
+      <li><b>חשיפה:</b> היסטוגרמה אמיתית, עם התראה על אזורים שרופים או שחורים.</li>
+      <li><b>אופק:</b> פלס שמראה אם המצלמה ישרה.</li>
+      <li><b>סאונד:</b> בר סאונד אמיתי מהמיקרופון, עם התראת קליפינג.</li>
+    </ul>
+    <p class="priv">התמונה והקול נשארים בטלפון שלך. שום דבר לא מוקלט, לא נשמר ולא נשלח לשום מקום.</p>
+    <p>בלחיצה על הכפתור הדפדפן יבקש רשות למצלמה ולמיקרופון. צריך לאשר.</p>
+    <button class="go" id="go">הפעל מצלמה</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div id="live">
+    <div class="stage" id="stage">
+      <video id="v" playsinline muted autoplay></video>
+      <div class="ov" id="frame">
+        <div class="grid" id="grid"></div>
+        <div class="lvl" id="lvl" style="display:none"><b></b><i id="lvlLine"></i><span id="lvlTxt">0°</span></div>
+      </div>
+      <canvas class="ov" id="hist" width="264" height="132"></canvas>
+      <div class="ov ameter" id="ameter"><span>🎤</span><div class="bar"><div class="mask" id="am"></div><div class="hold" id="ah"></div></div><span class="db" id="adb">-∞ dB</span></div>
+    </div>
+    <div class="tools">
+      <button id="tGrid" class="on">רשת</button>
+      <button id="tHist" class="on">היסטוגרמה</button>
+      <button id="tLvl">פלס</button>
+      <button id="tFlip">החלף מצלמה</button>
+    </div>
+    <div class="card fb">
+      <h3>ביקורת חיה</h3>
+      <div class="ln" id="fExp"><i></i><span>מודד חשיפה…</span></div>
+      <div class="ln" id="fLvl"><i></i><span>הפלס כבוי. לחץ על "פלס" כדי להפעיל.</span></div>
+      <div class="ln" id="fAud"><i></i><span>מודד סאונד…</span></div>
+    </div>
+    <div class="note">הביקורת היא על התוצאה שרואים ושומעים. הדפדפן לא חושף את הצמצם, התריס וה-ISO של הטלפון, ולכן הם לא מוצגים. הטלפון גם מכוון חשיפה ועוצמת קול בעצמו, כך שהמדידה מתארת את מה שהטלפון מפיק ולא את ההגדרות שלו.</div>
+  </div>
+</div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),v=$('v');
+let stream=null,facing='environment',actx=null,an=null,buf=null,raf=0;
+const A={pk:-60,hold:-60,holdT:0,clipT:-9};
+const L={on:false,ang:null,flat:false};
+const sm=document.createElement('canvas');sm.width=96;sm.height=54;const sg=sm.getContext('2d',{willReadFrequently:true});
+const hc=$('hist'),hg=hc.getContext('2d');
+function showErr(m){const e=$('err');e.textContent=m;e.style.display='block';}
+function setLn(id,c,t){const e=$(id);if(e._t===c+t)return;e._t=c+t;e.className='ln '+c;e.lastElementChild.textContent=t;}
+
+async function start(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showErr('הדפדפן הזה לא מאפשר גישה למצלמה. נסה ב-Chrome או ב-Safari מעודכן.');return;}
+  stop();
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080}},
+      audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+  }catch(e){
+    try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false});}
+    catch(e2){showErr(e2&&e2.name==='NotAllowedError'?'לא ניתנה הרשאה למצלמה. אפשר לאשר אותה בהגדרות האתר בדפדפן, ואז לרענן את העמוד.':'לא הצלחתי לפתוח את המצלמה ('+(e2&&e2.name||'שגיאה')+').');return;}
+  }
+  v.srcObject=stream;try{await v.play();}catch(_){}
+  $('intro').style.display='none';$('live').style.display='flex';
+  const at=stream.getAudioTracks();
+  if(at.length){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')await actx.resume();
+      const src=actx.createMediaStreamSource(new MediaStream(at));an=actx.createAnalyser();an.fftSize=2048;buf=new Float32Array(an.fftSize);src.connect(an);}catch(_){an=null;}}
+  else an=null;
+  if(!an){$('ameter').style.display='none';setLn('fAud','y','אין גישה למיקרופון, ולכן אין מדידת סאונד. אפשר לאשר מיקרופון בהגדרות האתר ולרענן.');}
+  else $('ameter').style.display='flex';
+  cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+}
+function stop(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
+
+let lastH=0;
+function loop(now){
+  raf=requestAnimationFrame(loop);
+  if(an)audio(now/1000);
+  if(now-lastH>160&&v.videoWidth){lastH=now;exposure();}
+}
+function audio(t){
+  an.getFloatTimeDomainData(buf);let p=0;for(let i=0;i<buf.length;i++){const a=Math.abs(buf[i]);if(a>p)p=a;}
+  let db=p>0?20*Math.log10(p):-60;const clip=p>=0.985;db=Math.max(-60,Math.min(0,db));
+  A.pk=Math.max(db,A.pk-1.2);
+  if(db>=A.hold){A.hold=db;A.holdT=t;}else if(t-A.holdT>1.4)A.hold=Math.max(-60,A.hold-.6);
+  if(clip)A.clipT=t;
+  $('am').style.width=(100-(A.pk+60)/60*100)+'%';$('ah').style.left='calc('+((A.hold+60)/60*100)+'% - 2px)';
+  $('adb').textContent=(A.hold<=-59?'-∞':A.hold.toFixed(0))+' dB';
+  const h=A.hold;
+  if(t-A.clipT<1.5)setLn('fAud','r','קליפינג! הקול נחתך. התרחק מעט מהמקור או הנמך את הקול.');
+  else if(h>-6)setLn('fAud','y','סאונד חזק מדי, קרוב לקליפינג.');
+  else if(h>=-12.5)setLn('fAud','g','סאונד ברמה מצוינת: השיאים בין ‎-12 ל-‎-6.');
+  else if(h>=-24)setLn('fAud','y','סאונד קצת חלש. קרב את הטלפון למי שמדבר.');
+  else setLn('fAud','r','סאונד חלש מדי. קרב את הטלפון לפה של המדבר, או שהסביבה שקטה כרגע.');
+}
+function exposure(){
+  sg.drawImage(v,0,0,sm.width,sm.height);let d;try{d=sg.getImageData(0,0,sm.width,sm.height).data;}catch(_){return;}
+  const H=new Uint32Array(64);let hi=0,lo=0,sum=0;const n=d.length/4;
+  for(let i=0;i<d.length;i+=4){const y=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];H[Math.min(63,y>>2)]++;sum+=y;if(y>=250)hi++;else if(y<=6)lo++;}
+  const W=hc.width,Hh=hc.height;hg.clearRect(0,0,W,Hh);let mx=1;for(let i=1;i<63;i++)if(H[i]>mx)mx=H[i];
+  hg.fillStyle='rgba(255,255,255,.92)';const bw=W/64;for(let i=0;i<64;i++){const bh=Math.min(1,H[i]/mx)*(Hh-6);hg.fillRect(i*bw,Hh-bh,bw+.5,bh);}
+  const ph=hi/n,pl=lo/n,mean=sum/n;
+  if(ph>.01){hg.fillStyle='#ff4d4d';hg.fillRect(W-5,0,5,Hh);}
+  if(pl>.05){hg.fillStyle='#4d8dff';hg.fillRect(0,0,5,Hh);}
+  if(ph>.06)setLn('fExp','r','חלק גדול מהתמונה שרוף ('+Math.round(ph*100)+'%). אין שם פרטים. שנה זווית, או הרחק מהחלון או מהשמיים.');
+  else if(ph>.01)setLn('fExp','y','יש אזורים שרופים ('+(ph*100).toFixed(0)+'%). בדוק שהם לא על הפנים.');
+  else if(mean<45)setLn('fExp','r','התמונה חשוכה מדי. חסר אור על המצולם: התקרב למקור אור או הוסף תאורה.');
+  else if(pl>.25)setLn('fExp','y','הרבה שחור בלי פרטים ('+Math.round(pl*100)+'%). אם זה הרקע זה בסדר, אם זה המצולם חסר אור.');
+  else if(mean>205)setLn('fExp','y','התמונה בהירה מאוד. ייתכן שהיא שטופה באור.');
+  else setLn('fExp','g','חשיפה תקינה: אין אזורים שרופים, והבהירות מאוזנת.');
+}
+
+// ----- level -----
+const IOS=typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function';
+function onMotion(e){const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;
+  let x=g.x,y=g.y,z=g.z||0;if(IOS){x=-x;y=-y;}
+  L.flat=Math.abs(z)>8.6;const a=Math.atan2(x,y)*180/Math.PI;let dv=a-90*Math.round(a/90);
+  L.ang=L.ang==null?dv:L.ang+(dv-L.ang)*.2;drawLvl();}
+function drawLvl(){
+  if(!L.on)return;const el=$('lvl');
+  if(L.ang==null){setLn('fLvl','y','אין נתונים מחיישן התנועה במכשיר הזה.');return;}
+  if(L.flat){el.style.display='none';setLn('fLvl','y','הטלפון שוכב. הרם אותו לעמידה כדי לבדוק אופק.');return;}
+  el.style.display='block';const a=L.ang,ok=Math.abs(a)<1;el.classList.toggle('ok',ok);
+  $('lvlLine').style.transform='rotate('+a.toFixed(1)+'deg)';$('lvlTxt').textContent=Math.abs(a).toFixed(1)+'°';
+  if(ok)setLn('fLvl','g','המצלמה ישרה.');
+  else if(Math.abs(a)<3)setLn('fLvl','y','המצלמה נוטה מעט ('+Math.abs(a).toFixed(1)+' מעלות). יישר עד שהקו ירוק.');
+  else setLn('fLvl','r','האופק עקום ('+Math.abs(a).toFixed(0)+' מעלות). יישר את הטלפון.');
+}
+async function toggleLvl(){
+  if(L.on){L.on=false;window.removeEventListener('devicemotion',onMotion);$('lvl').style.display='none';$('tLvl').classList.remove('on');setLn('fLvl','','הפלס כבוי. לחץ על "פלס" כדי להפעיל.');return;}
+  if(typeof DeviceMotionEvent==='undefined'){setLn('fLvl','y','במכשיר הזה אין חיישן תנועה, ולכן אין פלס.');return;}
+  if(IOS){try{const r=await DeviceMotionEvent.requestPermission();if(r!=='granted'){setLn('fLvl','y','לא ניתנה הרשאה לחיישן התנועה.');return;}}catch(_){setLn('fLvl','y','לא ניתנה הרשאה לחיישן התנועה.');return;}}
+  L.on=true;L.ang=null;$('tLvl').classList.add('on');window.addEventListener('devicemotion',onMotion);
+  setLn('fLvl','y','מחכה לנתונים מחיישן התנועה…');
+  setTimeout(()=>{if(L.on&&L.ang==null)setLn('fLvl','y','אין נתונים מחיישן התנועה במכשיר הזה (במחשב אין חיישן כזה).');},1500);
+}
+function fit(){if(v.videoWidth)$('stage').style.maxWidth=Math.round(innerHeight*.7*v.videoWidth/v.videoHeight)+'px';}
+v.addEventListener('loadedmetadata',fit);v.addEventListener('resize',fit);addEventListener('resize',fit);
+$('go').onclick=start;
+$('tGrid').onclick=e=>{const on=e.currentTarget.classList.toggle('on');$('grid').style.display=on?'block':'none';};
+$('tHist').onclick=e=>{const on=e.currentTarget.classList.toggle('on');hc.style.display=on?'block':'none';};
+$('tLvl').onclick=toggleLvl;
+$('tFlip').onclick=()=>{facing=facing==='environment'?'user':'environment';start();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);}else if(stream){raf=requestAnimationFrame(loop);}});
+window.addEventListener('pagehide',stop);
+})();
+</script>
+</body>
+</html>
