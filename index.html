@@ -702,13 +702,18 @@ html[dir=ltr] .vf .ov [class*=d-]{direction:ltr}
 .excard .exb button{min-height:42px;border-radius:9px;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:0 4px}
 .excard .exb .pri{background:linear-gradient(180deg,#E6C352,#B8942A);color:#141414;border:0}
 /* iPhone status bar and notch: keep the header, the language button and full-screen panels below it */
-header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
+header{padding-top:calc(8px + env(safe-area-inset-top))!important;background:rgba(10,10,14,.82)}
+@media (max-width:520px){header{padding-top:calc(6px + env(safe-area-inset-top))!important}}
+.langrow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 4px;direction:ltr}
+.langrow button{display:flex;align-items:center;gap:7px;border:1px solid var(--border-medium,#333);background:var(--bg-elevated,#1c1f26);color:var(--text,#fff);border-radius:10px;min-height:42px;padding:0 12px;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.langrow button.on{color:var(--accent-gold,#D4AF37);border-color:var(--border-gold,#D4AF37);background:rgba(212,175,55,.1)}
+.langrow svg{width:22px;height:16px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.25);flex:none}
 .guide,.review{padding-top:env(safe-area-inset-top)}
 @media (max-width:959px){.vfblock{top:calc(50px + env(safe-area-inset-top))!important}}
 .app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
 /* ===== phone held sideways: the screen beside a narrow control column, settings in a third column ===== */
 @media (orientation:landscape) and (max-height:560px){
-  header{position:static!important;padding-top:0}
+  header{position:static!important;padding-top:4px!important}
   .app{padding-top:4px;padding-bottom:8px}
   input,select,textarea{font-size:16px!important}
   main{grid-template-columns:auto minmax(0,1fr)!important;gap:8px;align-items:start}
@@ -754,6 +759,7 @@ header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
       <img class="hero-logo" src="icons/logo.png" alt="Camera Simulator" onerror="this.remove()">
       <h1>לומדים לצלם, בלי לפחד מהכפתורים</h1>
       <p class="lead">Camera Simulator הוא מקום להתאמן בו על צילום לפני שמחזיקים מצלמה ביד. משנים צמצם, מהירות תריס ו-ISO, ורואים מיד איך התמונה משתנה. אפשר לטעות כמה שרוצים.</p>
+      <div class="langrow notr"></div>
       <div class="hero-btns">
         <a class="big-btn" href="#basics"><b>יסודות הצילום</b><span>כל החומר, מוסבר פשוט ולפי הסדר</span></a>
         <a class="big-btn pri" href="#sim"><b>הסימולטור</b><span>מצלמה וירטואלית עם משוב ואתגרים</span></a>
@@ -1049,6 +1055,7 @@ header{padding-top:env(safe-area-inset-top);background:rgba(10,10,14,.82)}
     </aside>
   </main>
   </div>
+  <div class="langrow notr"></div>
   <footer class="foot">© 2026 דניאל אורי שבוטיה · Daniel Ori Chabotier · Photo by Us<br>כל הזכויות שמורות · <a href="#terms">תנאי שימוש ורישיון</a> · <a href="cam/">מצלמה חיה (ניסיוני)</a></footer>
 </div>
 
@@ -2625,7 +2632,9 @@ function route(){let pg=(location.hash||'#home').slice(1);if(!PAGES.includes(pg)
 window.addEventListener('hashchange',route);route();
 // ----- language picker -----
 (function(){const FL={'he': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#fff"/><rect y="2" width="22" height="2.2" fill="#0038b8"/><rect y="11.8" width="22" height="2.2" fill="#0038b8"/><path d="M11 5.1l2.5 4.3h-5zM11 10.9L8.5 6.6h5z" fill="none" stroke="#0038b8" stroke-width=".7"/></svg>', 'en': '<svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#012169"/><path d="M0 0l22 16M22 0L0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0l22 16M22 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M11 0v16M0 8h22" stroke="#fff" stroke-width="5.2"/><path d="M11 0v16M0 8h22" stroke="#C8102E" stroke-width="3"/></svg>', 'fr': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#0055A4"/><rect x="7.3" width="7.4" height="16" fill="#fff"/><rect x="14.6" width="7.4" height="16" fill="#EF4135"/></svg>', 'ru': '<svg viewBox="0 0 22 16"><rect width="22" height="5.4" fill="#fff"/><rect y="5.3" width="22" height="5.4" fill="#0039A6"/><rect y="10.6" width="22" height="5.4" fill="#D52B1E"/></svg>', 'ro': '<svg viewBox="0 0 22 16"><rect width="7.4" height="16" fill="#002B7F"/><rect x="7.3" width="7.4" height="16" fill="#FCD116"/><rect x="14.6" width="7.4" height="16" fill="#CE1126"/></svg>'};const b=$('langBtn'),m=$('langMenu');
-  function mark(){const l=I18N.lang;b.innerHTML=FL[l]+'<span>'+l.toUpperCase()+'</span>';[...m.children].forEach(x=>x.classList.toggle('on',x.dataset.l===l));}
+  const NM={he:'עברית',en:'English',fr:'Français',ru:'Русский',ro:'Română'};
+  document.querySelectorAll('.langrow').forEach(r=>{r.innerHTML=Object.keys(FL).map(k=>'<button data-l="'+k+'">'+FL[k]+'<span>'+NM[k]+'</span></button>').join('');r.addEventListener('click',e=>{const x=e.target.closest('button');if(x)I18N.set(x.dataset.l).then(mark);});});
+  function mark(){const l=I18N.lang;b.innerHTML=FL[l]+'<span>'+l.toUpperCase()+'</span>';[...m.children].forEach(x=>x.classList.toggle('on',x.dataset.l===l));document.querySelectorAll('.langrow button').forEach(x=>x.classList.toggle('on',x.dataset.l===l));}
   b.onclick=e=>{e.stopPropagation();m.classList.toggle('on');};document.addEventListener('click',()=>m.classList.remove('on'));
   m.addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;I18N.set(x.dataset.l).then(mark);});
   window.addEventListener('langchange',mark);I18N.init();mark();})();
